@@ -2,23 +2,52 @@
 <html>
   <head>
     <title>Orbit Extension Settings</title>
+    <link rel="stylesheet" href="./options.css" />
   </head>
   <body>
-    <form>
-      <div>
-        <label for="token">Enter your API Token: </label>
-        <input type="text" name="token" id="token" required />
-      </div>
-      <div>
-        <label for="workspace">Enter your workspace name: </label>
-        <input type="workspace" name="workspace" id="workspace" required />
-      </div>
-      <div>
-        <input type="submit" id="save" value="Subscribe!" />
-      </div>
-    </form>
+    <div class="flex-1 mx-auto w-full" style="width: 980px;">
+      <header class="mt-2 mb-6 pt-5 pb-3 flex items-center">
+        <div class="mr-5">
+          <img
+            alt="Back to homepage"
+            src="../../icons/orbit-logo-color-1x.png"
+            srcset="
+              ../../icons/orbit-logo-color-2x.png 2x,
+              ../../icons/orbit-logo-color-3x.png 3x
+            "
+            style="height: 30px; max-width: inherit;"
+          />
+        </div>
+      </header>
+      <div class="mx-auto pt-6 w-full max-w-screen-sm">
+        <h1 class="mb-6">Orbit Extension Settings</h1>
+        <form>
+          <div class="field">
+            <div class="text-lg mb-2">
+              <label for="token">API Token</label>
+            </div>
+            <input type="text" name="token" id="token" autocomplete="off" />
+          </div>
+          <div class="field">
+            <div class="text-lg mb-2">
+              <label for="workspace">Workspace</label>
+            </div>
+            <input
+              type="text"
+              name="workspace"
+              id="workspace"
+              autocomplete="off"
+            />
+          </div>
 
-    <div id="status"></div>
-    <script src="options.js"></script>
+          <div class="actions">
+            <div class="pt-4">
+              <button id="save">Save</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <script src="./options.js"></script>
   </body>
 </html>

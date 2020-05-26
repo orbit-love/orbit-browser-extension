@@ -8,16 +8,18 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "parcel src/github/background.js src/options/options.js",
-    "build": "parcel build src/github/background.js src/options/options.js"
+    "start": "mkdir -p extension && cp manifest.json extension/ && parcel src/github/background.js icons/* src/**/*.html src/**/*.css -d extension",
+    "build": "mkdir -p extension && cp manifest.json extension/ && parcel build src/github/background.js icons/* src/**/*.html src/**/*.css -d extension"
   },
   "devDependencies": {
     "@babel/core": "^7.9.6",
     "@babel/plugin-transform-runtime": "^7.9.6",
-    "parcel-bundler": "^1.12.4"
+    "parcel-bundler": "^1.12.4",
+    "postcss": "^7.0.31"
   },
   "dependencies": {
     "chrome-extension-async": "^3.4.1",
-    "github-injection": "^1.0.1"
+    "github-injection": "^1.0.1",
+    "tailwindcss": "^1.4.6"
   }
 }

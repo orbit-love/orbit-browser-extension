@@ -4,7 +4,7 @@
 
 ## Installation
 
-Clone the repository:
+Clone the repository and install the dependencies:
 
 ```bash
 git clone git@github.com:orbit-love/orbit-browser-extension.git
