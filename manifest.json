@@ -2,14 +2,11 @@
   "manifest_version": 2,
   "name": "Orbit",
   "version": "0.0.1",
-  "description": "Orbit Chrome extension",
-  "short_name": "Short Orbit Name",
-  "permissions": [
-    "activeTab",
-    "declarativeContent",
-    "storage",
-    "https://app.orbit.love/"
-  ],
+  "description": "Orbit’s Chrome extension allows you to get information on your community members, directly on GitHub issues and Pull Requests.",
+  "short_name": "Orbit",
+  "homepage_url": "https://orbit.love",
+  "minimum_chrome_version": "42",
+  "permissions": ["storage"],
   "content_scripts": [
     {
       "run_at": "document_start",
