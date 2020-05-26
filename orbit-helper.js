@@ -1,20 +1,22 @@
-const ORBIT_API_ROOT_URL = "https://app.orbit.love";
+const ORBIT_API_ROOT_URL = "https://orbit.eu.ngrok.io";
 
-function getOrbitCredentials() {
+async function getOrbitCredentials(credentialsHolder) {
+  const items = await chrome.storage.sync.get({
+    token: "",
+    workspace: "",
+  });
   return {
-    API_TOKEN: "<PERSONAL TOKEN>",
-    WORKSPACE: "<WORKSPACE NAME>",
+    API_TOKEN: items.token,
+    WORKSPACE: items.workspace,
   };
 }
 
 const orbitAPI = {
-  async getMemberContributions(member) {
+  async getMemberContributions(ORBIT_CREDENTIALS, member) {
     const normalizedMember = member.toLowerCase();
-    const normalizedWorkspace = getOrbitCredentials().WORKSPACE.toLowerCase();
+    const normalizedWorkspace = ORBIT_CREDENTIALS.WORKSPACE.toLowerCase();
     const response = await fetch(
-      `${ORBIT_API_ROOT_URL}/${normalizedWorkspace}/members/${normalizedMember}?api_key=${
-        getOrbitCredentials().API_TOKEN
-      }`,
+      `${ORBIT_API_ROOT_URL}/${normalizedWorkspace}/members/${normalizedMember}?api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
       {
         headers: {
           accept: "application/json",
@@ -28,13 +30,11 @@ const orbitAPI = {
     };
   },
 
-  async getMemberActivitiesOnThisRepo(member) {
+  async getMemberActivitiesOnThisRepo(ORBIT_CREDENTIALS, member) {
     const normalizedMember = member.toLowerCase();
-    const normalizedWorkspace = getOrbitCredentials().WORKSPACE.toLowerCase();
+    const normalizedWorkspace = ORBIT_CREDENTIALS.WORKSPACE.toLowerCase();
     const response = await fetch(
-      `${ORBIT_API_ROOT_URL}/${normalizedWorkspace}/members/${normalizedMember}/activities?api_key=${
-        getOrbitCredentials().API_TOKEN
-      }`,
+      `${ORBIT_API_ROOT_URL}/${normalizedWorkspace}/members/${normalizedMember}/activities?api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
       {
         headers: {
           accept: "application/json",

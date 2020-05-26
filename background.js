@@ -1,4 +1,5 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  const ORBIT_CREDENTIALS = await getOrbitCredentials();
   gitHubInjection(async () => {
     const commentHeader = window.document.getElementsByClassName(
       "timeline-comment-header"
@@ -7,7 +8,10 @@ document.addEventListener("DOMContentLoaded", () => {
       ".timeline-comment-actions"
     );
     const gitHubUsername = commentHeader.querySelector(".author").innerText;
-    const orbitActionElement = await createOrbitDetailsElement(gitHubUsername);
+    const orbitActionElement = await createOrbitDetailsElement(
+      ORBIT_CREDENTIALS,
+      gitHubUsername
+    );
     commentActionsElement.insertBefore(
       orbitActionElement,
       commentActionsElement.firstChild

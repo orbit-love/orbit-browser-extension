@@ -19,6 +19,7 @@
       ],
       "css": ["background.css"],
       "js": [
+        "vendor/chrome-extension-async.js",
         "vendor/github-injection.js",
         "orbit-helper.js",
         "orbit-action.js",
@@ -32,5 +33,6 @@
       "32": "icons/icon32.png"
     }
   },
-  "web_accessible_resources": ["icons/*.png"]
+  "web_accessible_resources": ["icons/*.png"],
+  "options_page": "options.html"
 }

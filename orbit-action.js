@@ -1,11 +1,14 @@
-async function createOrbitDetailsElement(gitHubUsername) {
+async function createOrbitDetailsElement(ORBIT_CREDENTIALS, gitHubUsername) {
   const {
     contributions_collection,
     contributions_total,
-  } = await orbitAPI.getMemberContributions(gitHubUsername);
+  } = await orbitAPI.getMemberContributions(ORBIT_CREDENTIALS, gitHubUsername);
   const {
     contributions_on_this_repo_total,
-  } = await orbitAPI.getMemberActivitiesOnThisRepo(gitHubUsername);
+  } = await orbitAPI.getMemberActivitiesOnThisRepo(
+    ORBIT_CREDENTIALS,
+    gitHubUsername
+  );
 
   const detailsElement = window.document.createElement("details");
   detailsElement.classList.add(
@@ -65,7 +68,7 @@ async function createOrbitDetailsElement(gitHubUsername) {
   detailsMenuLink.setAttribute("aria-label", "See profile on Orbit");
   detailsMenuLink.setAttribute("role", "menuitem");
   const normalizedGitHubUsername = gitHubUsername.toLowerCase();
-  const normalizedWorkspace = getOrbitCredentials().WORKSPACE.toLowerCase();
+  const normalizedWorkspace = ORBIT_CREDENTIALS.WORKSPACE.toLowerCase();
   detailsMenuLink.setAttribute(
     "href",
     `${ORBIT_API_ROOT_URL}/${normalizedWorkspace}/members/${normalizedGitHubUsername}`
