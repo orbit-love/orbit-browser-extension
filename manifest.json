@@ -14,13 +14,13 @@
         "https://github.com/*/*/pull/*",
         "https://github.com/*/*/issues/*"
       ],
-      "css": ["orbit-action.css"],
+      "css": ["src/github/orbit-action.css"],
       "js": [
         "vendor/chrome-extension-async.js",
         "vendor/github-injection.js",
-        "orbit-helper.js",
-        "orbit-action.js",
-        "background.js"
+        "src/github/orbit-helper.js",
+        "src/github/orbit-action.js",
+        "src/github/background.js"
       ]
     }
   ],
@@ -31,5 +31,5 @@
     }
   },
   "web_accessible_resources": ["icons/*.png"],
-  "options_page": "options.html"
+  "options_page": "src/options/options.html"
 }
