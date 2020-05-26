@@ -1,3 +1,5 @@
+import { orbitAPI, ORBIT_API_ROOT_URL } from "./orbit-helpers";
+
 /**
  * Creates the Orbit action button and popover menu for a given username.
  *
@@ -19,7 +21,10 @@
  * @param {*} ORBIT_CREDENTIALS
  * @param {*} gitHubUsername
  */
-async function createOrbitDetailsElement(ORBIT_CREDENTIALS, gitHubUsername) {
+export async function createOrbitDetailsElement(
+  ORBIT_CREDENTIALS,
+  gitHubUsername
+) {
   /**
    * As a convention, $variables are “state variables” which can be updated in any
    * functions inside this very function. We used this to implement the “fetch on hover”

@@ -1,3 +1,9 @@
+import "chrome-extension-async";
+import gitHubInjection from "github-injection";
+
+import { getOrbitCredentials } from "./orbit-helpers";
+import { createOrbitDetailsElement } from "./orbit-action";
+
 document.addEventListener("DOMContentLoaded", async () => {
   /**
    * Retrieve the Orbit credentials and options from Chrome sync storage.

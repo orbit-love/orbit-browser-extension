@@ -15,13 +15,7 @@
         "https://github.com/*/*/issues/*"
       ],
       "css": ["src/github/orbit-action.css"],
-      "js": [
-        "vendor/chrome-extension-async.js",
-        "vendor/github-injection.js",
-        "src/github/orbit-helper.js",
-        "src/github/orbit-action.js",
-        "src/github/background.js"
-      ]
+      "js": ["dist/github/background.js"]
     }
   ],
   "browser_action": {
@@ -31,5 +25,5 @@
     }
   },
   "web_accessible_resources": ["icons/*.png"],
-  "options_page": "src/options/options.html"
+  "options_page": "dist/options/options.html"
 }

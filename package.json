@@ -1,0 +1,23 @@
+{
+  "name": "orbit-browser-extension",
+  "version": "0.0.1",
+  "description": "Orbit browser extension",
+  "main": "background.js",
+  "repository": "git@github.com:orbit-love/orbit-browser-extension.git",
+  "author": "Nicolas Goutay <nicolas.goutay@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "parcel src/github/background.js src/options/options.js",
+    "build": "parcel build src/github/background.js src/options/options.js"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.9.6",
+    "@babel/plugin-transform-runtime": "^7.9.6",
+    "parcel-bundler": "^1.12.4"
+  },
+  "dependencies": {
+    "chrome-extension-async": "^3.4.1",
+    "github-injection": "^1.0.1"
+  }
+}

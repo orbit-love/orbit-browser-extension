@@ -2,7 +2,7 @@
  * The URL of the API root.
  * To be changed to `https://orbit.eu.ngrok.io` for local development.
  */
-const ORBIT_API_ROOT_URL = "https://orbit.eu.ngrok.io";
+export const ORBIT_API_ROOT_URL = "https://orbit-nico.eu.ngrok.io";
 
 /**
  * Headers common to all API calls.
@@ -15,7 +15,7 @@ const ORBIT_HEADERS = {
  * Returns an object with values retrieved from Chrome sync storage.
  * Workspace is lowercased to match the API expectations.
  */
-async function getOrbitCredentials() {
+export async function getOrbitCredentials() {
   const items = await chrome.storage.sync.get({
     token: "",
     workspace: "",
@@ -31,7 +31,7 @@ async function getOrbitCredentials() {
  * - `orbitAPI#getMemberContributions`
  * - `orbitAPI#getMemberActivitiesOnThisRepo`
  */
-const orbitAPI = {
+export const orbitAPI = {
   /**
    * Fetch all of a given member’s public contributions on GitHub,
    * independently of the repo and return relevant metrics

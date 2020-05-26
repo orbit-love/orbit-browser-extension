@@ -8,6 +8,7 @@ Clone the repository:
 
 ```bash
 git clone git@github.com:orbit-love/orbit-browser-extension.git
+yarn
 ```
 
 On Google Chrome:
@@ -23,9 +24,11 @@ On Google Chrome:
 
 ## Development
 
-To use the local API instead of the prod one, change `ORBIT_API_ROOT_URL` in `orbit-helper.js` to your ngrok tunnel address.
+Run `yarn start` to watch the changes.
 
 To reload the extension after some changes, open [`chrome://extensions`](chrome://extensions) and click on the “reload” button for the Orbit one.
+
+To use the local API instead of the prod one, change `ORBIT_API_ROOT_URL` in `orbit-helper.js` to your ngrok tunnel address.
 
 ## Deployment
 
