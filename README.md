@@ -10,9 +10,9 @@ Clone the repository:
 git clone git@github.com:orbit-love/orbit-browser-extension.git
 ```
 
-On Google Chrome: 
+On Google Chrome:
 
-1. Open [chrome://extensions](chrome://extensions);
+1. Open [`chrome://extensions`](chrome://extensions);
 2. Toggle the “developer mode” (_wink wink_) in the top-right corner;
 3. Click on “Load unpacked”;
 4. Select the `orbit-browser-extension` folder;
@@ -23,7 +23,9 @@ On Google Chrome:
 
 ## Development
 
-To reload the extension, open [chrome://extensions](chrome://extensions) and click on the “reload” button for the Orbit one.
+To use the local API instead of the prod one, change `ORBIT_API_ROOT_URL` in `orbit-helper.js` to your ngrok tunnel address.
+
+To reload the extension after some changes, open [`chrome://extensions`](chrome://extensions) and click on the “reload” button for the Orbit one.
 
 ## Deployment
 
