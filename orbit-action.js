@@ -54,20 +54,16 @@ async function createOrbitDetailsElement(ORBIT_CREDENTIALS, gitHubUsername) {
     if (!$isLoading && !$hasLoaded) {
       fillInContent();
       $isLoading = true;
-      const {
-        is_a_member,
-        contributions_collection,
-        contributions_total,
-      } = await orbitAPI.getMemberContributions(
-        ORBIT_CREDENTIALS,
-        gitHubUsername
-      );
-      const {
-        contributions_on_this_repo_total,
-      } = await orbitAPI.getMemberActivitiesOnThisRepo(
-        ORBIT_CREDENTIALS,
-        gitHubUsername
-      );
+      const [
+        { is_a_member, contributions_collection, contributions_total },
+        { contributions_on_this_repo_total },
+      ] = await Promise.all([
+        orbitAPI.getMemberContributions(ORBIT_CREDENTIALS, gitHubUsername),
+        orbitAPI.getMemberActivitiesOnThisRepo(
+          ORBIT_CREDENTIALS,
+          gitHubUsername
+        ),
+      ]);
       $is_a_member = is_a_member;
       $contributions_collection = contributions_collection;
       $contributions_total = contributions_total;
