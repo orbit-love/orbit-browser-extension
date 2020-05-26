@@ -8,7 +8,7 @@ Clone the repository and install the dependencies:
 
 ```bash
 git clone git@github.com:orbit-love/orbit-browser-extension.git
-yarn
+yarn && yarn build
 ```
 
 On Google Chrome:
@@ -16,7 +16,7 @@ On Google Chrome:
 1. Open [`chrome://extensions`](chrome://extensions);
 2. Toggle the “developer mode” (_wink wink_) in the top-right corner;
 3. Click on “Load unpacked”;
-4. Select the `orbit-browser-extension` folder;
+4. Select the `orbit-browser-extension/extension` folder;
 5. An Orbit logo should appear in the top-right corner of Chrome indicating that the extension is active;
 6. Right-click on this logo, then click on Options;
 7. Fill in the form with your API key and workspace name (the extension uses the prod API by default), and save;
