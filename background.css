@@ -6,3 +6,9 @@
   position: relative;
   top: 1px;
 }
+
+.no-hover,
+.no-hover:hover {
+  color: rgb(88, 96, 105) !important;
+  background-color: inherit !important;
+}

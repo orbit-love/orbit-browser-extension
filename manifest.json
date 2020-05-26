@@ -4,7 +4,12 @@
   "version": "0.0.1",
   "description": "Orbit Chrome extension",
   "short_name": "Short Orbit Name",
-  "permissions": ["activeTab", "declarativeContent", "storage"],
+  "permissions": [
+    "activeTab",
+    "declarativeContent",
+    "storage",
+    "https://app.orbit.love/"
+  ],
   "content_scripts": [
     {
       "run_at": "document_start",
@@ -13,7 +18,12 @@
         "https://github.com/*/*/issues/*"
       ],
       "css": ["background.css"],
-      "js": ["vendor/github-injection.js", "orbit-action.js", "background.js"]
+      "js": [
+        "vendor/github-injection.js",
+        "orbit-helper.js",
+        "orbit-action.js",
+        "background.js"
+      ]
     }
   ],
   "browser_action": {
