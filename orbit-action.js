@@ -1,5 +1,6 @@
 async function createOrbitDetailsElement(ORBIT_CREDENTIALS, gitHubUsername) {
   const {
+    is_a_member,
     contributions_collection,
     contributions_total,
   } = await orbitAPI.getMemberContributions(ORBIT_CREDENTIALS, gitHubUsername);
@@ -50,34 +51,50 @@ async function createOrbitDetailsElement(ORBIT_CREDENTIALS, gitHubUsername) {
   detailsMenuElement.setAttribute("style", "width: 300px;");
   detailsElement.appendChild(detailsMenuElement);
 
-  const detailsMenuRepositoryContributions = window.document.createElement(
-    "span"
-  );
-  detailsMenuRepositoryContributions.setAttribute("role", "menuitem");
-  detailsMenuRepositoryContributions.classList.add("dropdown-item", "no-hover");
-  detailsMenuRepositoryContributions.innerText = `Contributed ${contributions_on_this_repo_total} times to this repository`;
-  detailsMenuElement.appendChild(detailsMenuRepositoryContributions);
+  if (is_a_member) {
+    const detailsMenuRepositoryContributions = window.document.createElement(
+      "span"
+    );
+    detailsMenuRepositoryContributions.setAttribute("role", "menuitem");
+    detailsMenuRepositoryContributions.classList.add(
+      "dropdown-item",
+      "no-hover"
+    );
+    detailsMenuRepositoryContributions.innerText = `Contributed ${contributions_on_this_repo_total} times to this repository`;
+    detailsMenuElement.appendChild(detailsMenuRepositoryContributions);
 
-  const detailsMenuTotalContributions = window.document.createElement("span");
-  detailsMenuTotalContributions.setAttribute("role", "menuitem");
-  detailsMenuTotalContributions.classList.add("dropdown-item", "no-hover");
-  detailsMenuTotalContributions.innerText = `Contributed ${contributions_total} times to ${contributions_collection.total_repository_contributions} repositories`;
-  detailsMenuElement.appendChild(detailsMenuTotalContributions);
+    const detailsMenuTotalContributions = window.document.createElement("span");
+    detailsMenuTotalContributions.setAttribute("role", "menuitem");
+    detailsMenuTotalContributions.classList.add("dropdown-item", "no-hover");
+    detailsMenuTotalContributions.innerText = `Contributed ${contributions_total} times to ${contributions_collection.total_repository_contributions} repositories`;
+    detailsMenuElement.appendChild(detailsMenuTotalContributions);
 
-  const detailsMenuLink = window.document.createElement("a");
-  detailsMenuLink.setAttribute("aria-label", "See profile on Orbit");
-  detailsMenuLink.setAttribute("role", "menuitem");
-  const normalizedGitHubUsername = gitHubUsername.toLowerCase();
-  const normalizedWorkspace = ORBIT_CREDENTIALS.WORKSPACE.toLowerCase();
-  detailsMenuLink.setAttribute(
-    "href",
-    `${ORBIT_API_ROOT_URL}/${normalizedWorkspace}/members/${normalizedGitHubUsername}`
-  );
-  detailsMenuLink.setAttribute("target", "_blank");
-  detailsMenuLink.setAttribute("rel", "noopener");
-  detailsMenuLink.classList.add("dropdown-item", "btn-link");
-  detailsMenuLink.innerText = `See ${gitHubUsername}’s profile on Orbit`;
-  detailsMenuElement.appendChild(detailsMenuLink);
+    const detailsMenuLink = window.document.createElement("a");
+    detailsMenuLink.setAttribute("aria-label", "See profile on Orbit");
+    detailsMenuLink.setAttribute("role", "menuitem");
+    const normalizedGitHubUsername = gitHubUsername.toLowerCase();
+    const normalizedWorkspace = ORBIT_CREDENTIALS.WORKSPACE.toLowerCase();
+    detailsMenuLink.setAttribute(
+      "href",
+      `${ORBIT_API_ROOT_URL}/${normalizedWorkspace}/members/${normalizedGitHubUsername}`
+    );
+    detailsMenuLink.setAttribute("target", "_blank");
+    detailsMenuLink.setAttribute("rel", "noopener");
+    detailsMenuLink.classList.add("dropdown-item", "btn-link");
+    detailsMenuLink.innerText = `See ${gitHubUsername}’s profile on Orbit`;
+    detailsMenuElement.appendChild(detailsMenuLink);
+  } else {
+    const detailsMenuRepositoryContributions = window.document.createElement(
+      "span"
+    );
+    detailsMenuRepositoryContributions.setAttribute("role", "menuitem");
+    detailsMenuRepositoryContributions.classList.add(
+      "dropdown-item",
+      "no-hover"
+    );
+    detailsMenuRepositoryContributions.innerText = `${gitHubUsername} is not in your Orbit workspace`;
+    detailsMenuElement.appendChild(detailsMenuRepositoryContributions);
+  }
 
   return detailsElement;
 }

@@ -24,7 +24,15 @@ const orbitAPI = {
       }
     );
     const { data } = await response.json();
+    if (!data) {
+      return {
+        is_a_member: false,
+        contributions_collection: 0,
+        contributions_total: 0,
+      };
+    }
     return {
+      is_a_member: true,
       contributions_collection: data.attributes.contributions_collection,
       contributions_total: data.attributes.contributions_total,
     };
@@ -42,6 +50,11 @@ const orbitAPI = {
       }
     );
     const { data, included } = await response.json();
+    if (!data) {
+      return {
+        contributions_on_this_repo_total: 0,
+      };
+    }
     const repositoryFullName = `${window.location.pathname.split("/")[1]}/${
       window.location.pathname.split("/")[2]
     }`;
