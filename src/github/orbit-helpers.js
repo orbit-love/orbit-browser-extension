@@ -2,7 +2,7 @@
  * The URL of the API root.
  * To be changed to `https://orbit.eu.ngrok.io` for local development.
  */
-export const ORBIT_API_ROOT_URL = "https://orbit-nico.eu.ngrok.io";
+export const ORBIT_API_ROOT_URL = "https://app.orbit.love";
 
 /**
  * Headers common to all API calls.
