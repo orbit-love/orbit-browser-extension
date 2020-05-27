@@ -10,11 +10,30 @@ beforeEach(async () => {
     "phacks"
   );
 
-  const mockJsonPromise = Promise.resolve({});
-  const mockFetchPromise = Promise.resolve({
-    json: () => mockJsonPromise,
-  });
-  global.fetch = jest.fn().mockImplementation(() => mockFetchPromise);
+  global.fetch = jest
+    .fn()
+    .mockImplementationOnce(() =>
+      Promise.resolve({
+        json: () =>
+          Promise.resolve({
+            data: {
+              attributes: {
+                contributions_collection: {
+                  total_repository_contributions: 10,
+                },
+                contributions_total: 50,
+              },
+            },
+          }),
+        ok: true,
+      })
+    )
+    .mockImplementationOnce(() =>
+      Promise.resolve({
+        json: () => Promise.resolve({ data: [], included: [] }),
+        ok: true,
+      })
+    );
 });
 
 afterEach(() => {
@@ -47,6 +66,28 @@ test("createOrbitDetailsElement should trigger 2 fetch requests on mouseover, no
   expect(global.fetch).toHaveBeenCalledTimes(0);
 });
 
+test("createOrbitDetailsElement should display an error message if there was an error fetching data", async () => {
+  const mockJsonPromise = Promise.resolve({});
+  const mockFetchPromise = Promise.resolve({
+    json: () => mockJsonPromise,
+    ok: false,
+    status: 500,
+  });
+  global.fetch = jest.fn().mockImplementation(() => mockFetchPromise);
+  fireEvent(
+    getByRole(orbitDetailsElement, "button"),
+    new MouseEvent("mouseover", {
+      bubbles: true,
+      cancelable: true,
+    })
+  );
+  await waitFor(() => {
+    expect(
+      getByText(orbitDetailsElement, "There was an error fetching Orbit data")
+    );
+  });
+});
+
 test("createOrbitDetailsElement should display an error message if credentials are missing", async () => {
   orbitDetailsElement = await createOrbitDetailsElement(
     { API_TOKEN: "", WORKSPACE: "workspace" },
@@ -59,16 +100,9 @@ test("createOrbitDetailsElement should display an error message if credentials a
       cancelable: true,
     })
   );
-  await waitFor(
-    () => {
-      expect(
-        getByText(orbitDetailsElement, "API token or workspace is missing")
-      );
-    },
-    {
-      container: orbitDetailsElement,
-    }
-  );
+  await waitFor(() => {
+    expect(getByText(orbitDetailsElement, "API token or workspace is missing"));
+  });
 });
 
 test("createOrbitDetailsElement should display a loading indicator", async () => {
@@ -79,17 +113,19 @@ test("createOrbitDetailsElement should display a loading indicator", async () =>
       cancelable: true,
     })
   );
-  await waitFor(
-    () => {
-      expect(getByText(orbitDetailsElement, "Loading Orbit data…"));
-    },
-    {
-      container: orbitDetailsElement,
-    }
-  );
+  await waitFor(() => {
+    expect(getByText(orbitDetailsElement, "Loading Orbit data…"));
+  });
 });
 
-test("createOrbitDetailsElement should display when the user is not a member", async () => {
+test("createOrbitDetailsElement should display an error message when the user is not a member", async () => {
+  const mockJsonPromise = Promise.resolve({});
+  const mockFetchPromise = Promise.resolve({
+    json: () => mockJsonPromise,
+    ok: false,
+    status: 404,
+  });
+  global.fetch = jest.fn().mockImplementation(() => mockFetchPromise);
   fireEvent(
     getByRole(orbitDetailsElement, "button"),
     new MouseEvent("mouseover", {
@@ -97,42 +133,14 @@ test("createOrbitDetailsElement should display when the user is not a member", a
       cancelable: true,
     })
   );
-  await waitFor(
-    () => {
-      expect(
-        getByText(orbitDetailsElement, "phacks is not in your Orbit workspace")
-      );
-    },
-    {
-      container: orbitDetailsElement,
-    }
-  );
+  await waitFor(() => {
+    expect(
+      getByText(orbitDetailsElement, "phacks is not in your Orbit workspace")
+    );
+  });
 });
 
 test("createOrbitDetailsElement should display Orbit info if the github user is a member", async () => {
-  global.fetch.mockClear();
-  global.fetch = jest
-    .fn()
-    .mockImplementationOnce(() =>
-      Promise.resolve({
-        json: () =>
-          Promise.resolve({
-            data: {
-              attributes: {
-                contributions_collection: {
-                  total_repository_contributions: 10,
-                },
-                contributions_total: 50,
-              },
-            },
-          }),
-      })
-    )
-    .mockImplementationOnce(() =>
-      Promise.resolve({
-        json: () => Promise.resolve({}),
-      })
-    );
   fireEvent(
     getByRole(orbitDetailsElement, "button"),
     new MouseEvent("mouseover", {
@@ -140,18 +148,10 @@ test("createOrbitDetailsElement should display Orbit info if the github user is 
       cancelable: true,
     })
   );
-  await waitFor(
-    () => {
-      expect(
-        getByText(
-          orbitDetailsElement,
-          "Contributed 50 times to 10 repositories"
-        )
-      );
-      expect(getByText(orbitDetailsElement, "See phacks’s profile on Orbit"));
-    },
-    {
-      container: orbitDetailsElement,
-    }
-  );
+  await waitFor(() => {
+    expect(
+      getByText(orbitDetailsElement, "Contributed 50 times to 10 repositories")
+    );
+    expect(getByText(orbitDetailsElement, "See phacks’s profile on Orbit"));
+  });
 });

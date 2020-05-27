@@ -36,6 +36,7 @@ export async function createOrbitDetailsElement(
     $contributions_collection,
     $contributions_total,
     $contributions_on_this_repo_total,
+    $success,
     $detailsMenuElement;
 
   const normalizedGitHubUsername = gitHubUsername.toLowerCase();
@@ -121,8 +122,13 @@ export async function createOrbitDetailsElement(
        * member activities) at the same time, resulting in better performance.
        */
       const [
-        { is_a_member, contributions_collection, contributions_total },
-        { contributions_on_this_repo_total },
+        {
+          success: successContributions,
+          is_a_member,
+          contributions_collection,
+          contributions_total,
+        },
+        { success: successActivities, contributions_on_this_repo_total },
       ] = await Promise.all([
         orbitAPI.getMemberContributions(
           ORBIT_CREDENTIALS,
@@ -134,6 +140,7 @@ export async function createOrbitDetailsElement(
         ),
       ]);
 
+      $success = successContributions && successActivities;
       $is_a_member = is_a_member;
       $contributions_collection = contributions_collection;
       $contributions_total = contributions_total;
@@ -179,11 +186,29 @@ export async function createOrbitDetailsElement(
    */
   function insertContentWhenHasLoaded() {
     $detailsMenuElement.innerHTML = "";
-    if ($is_a_member) {
+    if (!$success) {
+      insertContentForError();
+    } else if ($is_a_member) {
       insertContentForMember();
     } else {
       insertContentForNonMember();
     }
+  }
+
+  /**
+   * Create a <span> indicating there was an error fetching Orbit data.
+   */
+  function insertContentForError() {
+    const detailsMenuRepositoryContributions = window.document.createElement(
+      "span"
+    );
+    detailsMenuRepositoryContributions.setAttribute("role", "menuitem");
+    detailsMenuRepositoryContributions.classList.add(
+      "dropdown-item",
+      "no-hover"
+    );
+    detailsMenuRepositoryContributions.textContent = `There was an error fetching Orbit data`;
+    $detailsMenuElement.appendChild(detailsMenuRepositoryContributions);
   }
 
   /**

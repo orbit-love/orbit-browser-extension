@@ -42,27 +42,41 @@ export const orbitAPI = {
    * @returns {is_a_member, contributions_collection, contributions_total}
    */
   async getMemberContributions(ORBIT_CREDENTIALS, member) {
-    const response = await fetch(
-      `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/${member}?api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
-      {
-        headers: {
-          ...ORBIT_HEADERS,
-        },
+    try {
+      const response = await fetch(
+        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/${member}?api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
+        {
+          headers: {
+            ...ORBIT_HEADERS,
+          },
+        }
+      );
+      if (!response.ok) {
+        switch (response.status) {
+          case 404:
+            return {
+              success: true,
+              is_a_member: false,
+            };
+          default:
+            return {
+              success: false,
+            };
+        }
       }
-    );
-    const { data } = await response.json();
-    if (!data) {
+      const { data } = await response.json();
       return {
-        is_a_member: false,
-        contributions_collection: 0,
-        contributions_total: 0,
+        success: true,
+        is_a_member: true,
+        contributions_collection: data.attributes.contributions_collection,
+        contributions_total: data.attributes.contributions_total,
+      };
+    } catch (err) {
+      console.error(err);
+      return {
+        success: false,
       };
     }
-    return {
-      is_a_member: true,
-      contributions_collection: data.attributes.contributions_collection,
-      contributions_total: data.attributes.contributions_total,
-    };
   },
 
   /**
@@ -74,29 +88,45 @@ export const orbitAPI = {
    * @returns {is_a_member, contributions_on_this_repo_total}
    */
   async getMemberActivitiesOnThisRepo(ORBIT_CREDENTIALS, member) {
-    const response = await fetch(
-      `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/${member}/activities?api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
-      {
-        headers: {
-          ...ORBIT_HEADERS,
-        },
+    try {
+      const response = await fetch(
+        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/${member}/activities?api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
+        {
+          headers: {
+            ...ORBIT_HEADERS,
+          },
+        }
+      );
+      if (!response.ok) {
+        switch (response.status) {
+          case 404:
+            return {
+              success: true,
+              is_a_member: false,
+            };
+          default:
+            return {
+              success: false,
+            };
+        }
       }
-    );
-    const { data, included } = await response.json();
-    if (!data) {
+      const { data, included } = await response.json();
+      const repositoryFullName = _getRepositoryFullName();
+      const filteredActivities = _filterActivitiesByRepo(
+        data,
+        included,
+        repositoryFullName
+      );
       return {
-        contributions_on_this_repo_total: 0,
+        success: true,
+        contributions_on_this_repo_total: filteredActivities.length,
+      };
+    } catch (err) {
+      console.error(err);
+      return {
+        success: false,
       };
     }
-    const repositoryFullName = _getRepositoryFullName();
-    const filteredActivities = _filterActivitiesByRepo(
-      data,
-      included,
-      repositoryFullName
-    );
-    return {
-      contributions_on_this_repo_total: filteredActivities.length,
-    };
   },
 };
 
@@ -124,7 +154,7 @@ export function _filterActivitiesByRepo(
     data.attributes.full_name === repositoryFullName;
   const repositoryId = included
     .filter(filterIncludedByTypeRepository)
-    .filter(filterIncludedByRepositoryFullName)[0].id;
+    .filter(filterIncludedByRepositoryFullName)[0]?.id;
 
   /**
    * Then filter the activities by that repositoryId
