@@ -185,7 +185,10 @@ export async function createOrbitDetailsElement(
       "dropdown-item",
       "no-hover"
     );
-    detailsMenuRepositoryContributions.textContent = `Contributed ${$contributions_on_this_repo_total} times to this repository`;
+    detailsMenuRepositoryContributions.textContent =
+      $contributions_on_this_repo_total === 1
+        ? "First contribution to this repository"
+        : `Contributed ${$contributions_on_this_repo_total} times to this repository`;
     $detailsMenuElement.appendChild(detailsMenuRepositoryContributions);
 
     /**
@@ -194,7 +197,13 @@ export async function createOrbitDetailsElement(
     const detailsMenuTotalContributions = window.document.createElement("span");
     detailsMenuTotalContributions.setAttribute("role", "menuitem");
     detailsMenuTotalContributions.classList.add("dropdown-item", "no-hover");
-    detailsMenuTotalContributions.textContent = `Contributed ${$contributions_total} times to ${$contributions_collection.total_repository_contributions} repositories`;
+    detailsMenuTotalContributions.textContent = `Contributed ${$contributions_total} times to ${
+      $contributions_collection.total_repository_contributions
+    } repositor${
+      $contributions_collection.total_repository_contributions === 1
+        ? "y"
+        : "ies"
+    }`;
     $detailsMenuElement.appendChild(detailsMenuTotalContributions);
 
     /**
