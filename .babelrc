@@ -4,7 +4,8 @@
     "test": {
       "plugins": [
         "@babel/plugin-transform-modules-commonjs",
-        "@babel/plugin-proposal-optional-chaining"
+        "@babel/plugin-proposal-optional-chaining",
+        "@babel/plugin-transform-runtime"
       ]
     }
   }
