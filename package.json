@@ -9,11 +9,18 @@
   "private": true,
   "scripts": {
     "start": "mkdir -p extension && cp manifest.json extension/ && parcel src/github/background.js icons/* src/**/*.html src/**/*.css -d extension",
-    "build": "mkdir -p extension && cp manifest.json extension/ && parcel build src/github/background.js icons/* src/**/*.html src/**/*.css -d extension"
+    "build": "mkdir -p extension && cp manifest.json extension/ && parcel build src/github/background.js icons/* src/**/*.html src/**/*.css -d extension",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "devDependencies": {
     "@babel/core": "^7.9.6",
+    "@babel/plugin-proposal-optional-chaining": "^7.10.0",
+    "@babel/plugin-transform-modules-commonjs": "^7.9.6",
     "@babel/plugin-transform-runtime": "^7.9.6",
+    "@bumble/jest-chrome": "0.5.1",
+    "@testing-library/dom": "^7.5.8",
+    "jest": "^26.0.1",
     "parcel-bundler": "^1.12.4",
     "postcss": "^7.0.31"
   },

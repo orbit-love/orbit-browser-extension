@@ -153,7 +153,7 @@ export async function createOrbitDetailsElement(
     const detailsMenuLoadingIndicator = window.document.createElement("span");
     detailsMenuLoadingIndicator.setAttribute("role", "menuitem");
     detailsMenuLoadingIndicator.classList.add("dropdown-item", "no-hover");
-    detailsMenuLoadingIndicator.innerText = `Loading Orbit data…`;
+    detailsMenuLoadingIndicator.textContent = `Loading Orbit data…`;
     $detailsMenuElement.appendChild(detailsMenuLoadingIndicator);
   }
 
@@ -185,7 +185,7 @@ export async function createOrbitDetailsElement(
       "dropdown-item",
       "no-hover"
     );
-    detailsMenuRepositoryContributions.innerText = `Contributed ${$contributions_on_this_repo_total} times to this repository`;
+    detailsMenuRepositoryContributions.textContent = `Contributed ${$contributions_on_this_repo_total} times to this repository`;
     $detailsMenuElement.appendChild(detailsMenuRepositoryContributions);
 
     /**
@@ -194,7 +194,7 @@ export async function createOrbitDetailsElement(
     const detailsMenuTotalContributions = window.document.createElement("span");
     detailsMenuTotalContributions.setAttribute("role", "menuitem");
     detailsMenuTotalContributions.classList.add("dropdown-item", "no-hover");
-    detailsMenuTotalContributions.innerText = `Contributed ${$contributions_total} times to ${$contributions_collection.total_repository_contributions} repositories`;
+    detailsMenuTotalContributions.textContent = `Contributed ${$contributions_total} times to ${$contributions_collection.total_repository_contributions} repositories`;
     $detailsMenuElement.appendChild(detailsMenuTotalContributions);
 
     /**
@@ -210,7 +210,7 @@ export async function createOrbitDetailsElement(
     detailsMenuLink.setAttribute("target", "_blank");
     detailsMenuLink.setAttribute("rel", "noopener");
     detailsMenuLink.classList.add("dropdown-item", "btn-link");
-    detailsMenuLink.innerText = `See ${gitHubUsername}’s profile on Orbit`;
+    detailsMenuLink.textContent = `See ${gitHubUsername}’s profile on Orbit`;
     $detailsMenuElement.appendChild(detailsMenuLink);
   }
 
@@ -227,7 +227,7 @@ export async function createOrbitDetailsElement(
       "dropdown-item",
       "no-hover"
     );
-    detailsMenuRepositoryContributions.innerText = `${gitHubUsername} is not in your Orbit workspace`;
+    detailsMenuRepositoryContributions.textContent = `${gitHubUsername} is not in your Orbit workspace`;
     $detailsMenuElement.appendChild(detailsMenuRepositoryContributions);
   }
 }

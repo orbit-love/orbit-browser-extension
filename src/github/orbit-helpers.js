@@ -88,8 +88,8 @@ export const orbitAPI = {
         contributions_on_this_repo_total: 0,
       };
     }
-    const repositoryFullName = getRepositoryFullName();
-    const filteredActivities = filterActivitiesByRepo(
+    const repositoryFullName = _getRepositoryFullName();
+    const filteredActivities = _filterActivitiesByRepo(
       data,
       included,
       repositoryFullName
@@ -110,7 +110,11 @@ export const orbitAPI = {
  *
  * @returns a filtered list of activities.
  */
-function filterActivitiesByRepo(activities, included, repositoryFullName) {
+export function _filterActivitiesByRepo(
+  activities,
+  included,
+  repositoryFullName
+) {
   /**
    * First, find out the internal repositoryId by filtering the `included`
    * data by type === repository and full_name === repositoryFullName
@@ -136,7 +140,7 @@ function filterActivitiesByRepo(activities, included, repositoryFullName) {
  * window.location.pathname looks like “/orbit-love/orbit-model/pull/3”
  * This would return `orbit-love/orbit-model`
  */
-function getRepositoryFullName() {
+export function _getRepositoryFullName() {
   return `${window.location.pathname.split("/")[1]}/${
     window.location.pathname.split("/")[2]
   }`;
