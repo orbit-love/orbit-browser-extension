@@ -8,6 +8,7 @@ Clone the repository and install the dependencies:
 
 ```bash
 git clone git@github.com:orbit-love/orbit-browser-extension.git
+cd orbit-browser-extension
 yarn && yarn build
 ```
 
