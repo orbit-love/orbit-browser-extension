@@ -47,6 +47,30 @@ test("createOrbitDetailsElement should trigger 2 fetch requests on mouseover, no
   expect(global.fetch).toHaveBeenCalledTimes(0);
 });
 
+test("createOrbitDetailsElement should display an error message if credentials are missing", async () => {
+  orbitDetailsElement = await createOrbitDetailsElement(
+    { API_TOKEN: "", WORKSPACE: "workspace" },
+    "phacks"
+  );
+  fireEvent(
+    getByRole(orbitDetailsElement, "button"),
+    new MouseEvent("mouseover", {
+      bubbles: true,
+      cancelable: true,
+    })
+  );
+  await waitFor(
+    () => {
+      expect(
+        getByText(orbitDetailsElement, "API token or workspace is missing")
+      );
+    },
+    {
+      container: orbitDetailsElement,
+    }
+  );
+});
+
 test("createOrbitDetailsElement should display a loading indicator", async () => {
   fireEvent(
     getByRole(orbitDetailsElement, "button"),

@@ -93,7 +93,7 @@ export async function createOrbitDetailsElement(
   );
   $detailsMenuElement.setAttribute("aria-label", "See Orbit details");
   $detailsMenuElement.setAttribute("role", "menu");
-  $detailsMenuElement.setAttribute("style", "width: 300px;");
+  $detailsMenuElement.setAttribute("style", "width: 350px;");
   detailsElement.addEventListener("mouseover", mouseoverListener, true);
   detailsElement.appendChild($detailsMenuElement);
 
@@ -103,10 +103,12 @@ export async function createOrbitDetailsElement(
    * This method is responsible for fetching data on mouseover.
    * The $isLoading and $hasLoaded “state variables” allow us to implement
    * a simple caching mechanism which only triggers a single request.
-   * @param {*} event
    */
-  async function mouseoverListener(event) {
-    if (!$isLoading && !$hasLoaded) {
+  async function mouseoverListener() {
+    if (Object.values(ORBIT_CREDENTIALS).some((value) => value === "")) {
+      detailsElement.removeEventListener("mouseover", mouseoverListener, true);
+      insertContentWhenNoCredentials();
+    } else if (!$isLoading && !$hasLoaded) {
       /**
        * Display the loading indicator content inside the popover (the user
        * might have clicked before the request has finished).
@@ -141,9 +143,23 @@ export async function createOrbitDetailsElement(
       /**
        * Clean up the event listener and display the actual content.
        */
-      event.target.removeEventListener("mouseover", mouseoverListener, true);
+      detailsElement.removeEventListener("mouseover", mouseoverListener, true);
       insertContentWhenHasLoaded();
     }
+  }
+
+  function insertContentWhenNoCredentials() {
+    const missingCredentialsInfo1 = window.document.createElement("span");
+    missingCredentialsInfo1.setAttribute("role", "menuitem");
+    missingCredentialsInfo1.classList.add("dropdown-item", "no-hover");
+    missingCredentialsInfo1.textContent = `API token or workspace is missing`;
+    $detailsMenuElement.appendChild(missingCredentialsInfo1);
+
+    const missingCredentialsInfo2 = window.document.createElement("span");
+    missingCredentialsInfo2.setAttribute("role", "menuitem");
+    missingCredentialsInfo2.classList.add("dropdown-item", "no-hover");
+    missingCredentialsInfo2.textContent = `Right click the extension icon to access Options`;
+    $detailsMenuElement.appendChild(missingCredentialsInfo2);
   }
 
   /**
