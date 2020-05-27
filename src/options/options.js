@@ -1,5 +1,6 @@
 // Saves options to chrome.storage
-function save_options() {
+function save_options(event) {
+  event.preventDefault();
   var token = document.getElementById("token").value;
   var workspace = document.getElementById("workspace").value;
   chrome.storage.sync.set(
@@ -13,7 +14,7 @@ function save_options() {
       status.textContent = "Settings saved.";
       setTimeout(function () {
         status.textContent = "";
-      }, 1500);
+      }, 2000);
     }
   );
 }

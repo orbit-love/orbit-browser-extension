@@ -124,3 +124,8 @@ input[type="button"] {
   padding-bottom: 7px;
   padding-top: 7px;
 }
+
+a,
+#status {
+  color: #6c4df6;
+}
