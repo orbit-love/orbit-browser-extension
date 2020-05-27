@@ -82,7 +82,8 @@ textarea {
   padding-top: 7px;
 }
 
-label {
+label,
+.label-like {
   display: block;
   font-weight: 400;
   margin-bottom: 8px;

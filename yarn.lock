@@ -1172,6 +1172,15 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
+"@tailwindcss/custom-forms@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@tailwindcss/custom-forms/-/custom-forms-0.2.1.tgz#40e5ed1fff6d29d8ed1c508a0b2aaf8da96962e0"
+  integrity sha512-XdP5XY6kxo3x5o50mWUyoYWxOPV16baagLoZ5uM41gh6IhXzhz/vJYzqrTb/lN58maGIKlpkxgVsQUNSsbAS3Q==
+  dependencies:
+    lodash "^4.17.11"
+    mini-svg-data-uri "^1.0.3"
+    traverse "^0.6.6"
+
 "@testing-library/dom@^7.5.8":
   version "7.5.8"
   resolved "https://registry.yarnpkg.com/@testing-library/dom/-/dom-7.5.8.tgz#35eb20f1cfd90629a09728954fd916ea142e5de5"
@@ -1367,6 +1376,11 @@ alphanum-sort@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/alphanum-sort/-/alphanum-sort-1.0.2.tgz#97a1119649b211ad33691d9f9f486a8ec9fbe0a3"
   integrity sha1-l6ERlkmyEa0zaR2fn0hqjsn74KM=
+
+alpinejs@^2.3.5:
+  version "2.3.5"
+  resolved "https://registry.yarnpkg.com/alpinejs/-/alpinejs-2.3.5.tgz#f077d535979cc7e565d8af3365779cee3b5246e1"
+  integrity sha512-/zQiqmiM3gBVKD+yeP7p9XzOXfhxxDMAfoaJRpXiAJykGaeSe3L+bvp/a6uRQMygPV+UUdgAk8fdfToJttRcUQ==
 
 ansi-escapes@^4.2.1:
   version "4.3.1"
@@ -4514,7 +4528,7 @@ lodash.uniq@^4.5.0:
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
   integrity sha1-0CJTc662Uq3BvILklFM5qEJ1R3M=
 
-lodash@^4.17.13, lodash@^4.17.15, lodash@^4.17.4:
+lodash@^4.17.11, lodash@^4.17.13, lodash@^4.17.15, lodash@^4.17.4:
   version "4.17.15"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
   integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
@@ -4663,6 +4677,11 @@ mimic-fn@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/mimic-fn/-/mimic-fn-2.1.0.tgz#7ed2c2ccccaf84d3ffcb7a69b57711fc2083401b"
   integrity sha512-OqbOk5oEQeAZ8WXWydlu9HJjz9WVdEIvamMCcXmuqUYjTknH/sqsWvhQ3vgwKFRR1HpjvNBKQ37nbJgYzGqGcg==
+
+mini-svg-data-uri@^1.0.3:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/mini-svg-data-uri/-/mini-svg-data-uri-1.2.3.tgz#e16baa92ad55ddaa1c2c135759129f41910bc39f"
+  integrity sha512-zd6KCAyXgmq6FV1mR10oKXYtvmA9vRoB6xPSTUJTbFApCtkefDnYueVR1gkof3KcdLZo1Y8mjF2DFmQMIxsHNQ==
 
 minimalistic-assert@^1.0.0, minimalistic-assert@^1.0.1:
   version "1.0.1"
@@ -6912,6 +6931,11 @@ tr46@^2.0.2:
   integrity sha512-3n1qG+/5kg+jrbTzwAykB5yRYtQCTqOGKq5U5PE3b0a1/mzo6snDhjGS0zJVJunO0NrT3Dg1MLy5TjWP/UJppg==
   dependencies:
     punycode "^2.1.1"
+
+traverse@^0.6.6:
+  version "0.6.6"
+  resolved "https://registry.yarnpkg.com/traverse/-/traverse-0.6.6.tgz#cbdf560fd7b9af632502fed40f918c157ea97137"
+  integrity sha1-y99WD9e5r2MlAv7UD5GMFX6pcTc=
 
 tslib@^1.9.0:
   version "1.13.0"

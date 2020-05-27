@@ -30,5 +30,6 @@
     "128": "icons/icon128.png"
   },
   "web_accessible_resources": ["icons/*.png"],
-  "options_page": "src/options/options.html"
+  "options_page": "src/options/options.html",
+  "content_security_policy": "script-src 'self' https://cdn.jsdelivr.net 'unsafe-eval'; object-src 'self'"
 }

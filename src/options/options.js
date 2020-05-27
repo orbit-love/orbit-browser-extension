@@ -1,38 +1,94 @@
-// Saves options to chrome.storage
-function save_options(event) {
-  event.preventDefault();
-  var token = document.getElementById("token").value;
-  var workspace = document.getElementById("workspace").value;
-  chrome.storage.sync.set(
-    {
-      token,
-      workspace,
-    },
-    function () {
-      // Update status to let user know options were saved.
-      var status = document.getElementById("status");
-      status.textContent = "Settings saved.";
-      setTimeout(function () {
-        status.textContent = "";
-      }, 2000);
-    }
-  );
-}
+import "chrome-extension-async";
+/**
+ * The URL of the API root.
+ * To be changed to `https://orbit.eu.ngrok.io` for local development.
+ */
+export const ORBIT_API_ROOT_URL = "https://app.orbit.love";
 
-// Restores select box and checkbox state using the preferences
-// stored in chrome.storage.
-function restore_options() {
-  // Use default value color = 'red' and likesColor = true.
-  chrome.storage.sync.get(
-    {
+/**
+ * Headers common to all API calls.
+ */
+const ORBIT_HEADERS = {
+  accept: "application/json",
+};
+
+window.orbit = () => ({
+  token: "",
+  workspaces: [],
+  selectedWorkspace: undefined,
+  tokenCheckStatus: {
+    success: undefined,
+    message: "",
+  },
+  saveStatus: {
+    success: undefined,
+    message: "",
+  },
+  async init() {
+    let tokenFromStorage;
+    let selectedWorkspaceFromStorage;
+    let workspaces = [];
+    const items = await chrome.storage.sync.get({
       token: "",
       workspace: "",
-    },
-    function (items) {
-      document.getElementById("token").value = items.token;
-      document.getElementById("workspace").value = items.workspace;
+    });
+    tokenFromStorage = items.token;
+    selectedWorkspaceFromStorage = items.workspace;
+    if (tokenFromStorage) {
+      try {
+        const response = await fetch(
+          `${ORBIT_API_ROOT_URL}/workspaces?api_key=${tokenFromStorage}`,
+          {
+            headers: { ...ORBIT_HEADERS },
+          }
+        );
+        const { data } = await response.json();
+        workspaces = data;
+      } catch (err) {
+        console.error(err);
+      }
     }
-  );
-}
-document.addEventListener("DOMContentLoaded", restore_options);
-document.getElementById("save").addEventListener("click", save_options);
+    this.token = tokenFromStorage;
+    this.selectedWorkspace = selectedWorkspaceFromStorage;
+    this.workspaces = workspaces;
+  },
+  async fetchWorkspaces() {
+    try {
+      const response = await fetch(
+        `${ORBIT_API_ROOT_URL}/workspaces?api_key=${this.token}`,
+        {
+          headers: { ...ORBIT_HEADERS },
+        }
+      );
+      if (!response.ok) {
+        this.tokenCheckStatus.success = false;
+        this.tokenCheckStatus.message = "The token is invalid.";
+        return;
+      }
+      const { data } = await response.json();
+      this.workspaces = data;
+      this.tokenCheckStatus.success = true;
+      this.tokenCheckStatus.message =
+        "The token is valid, please select a workspace.";
+    } catch (err) {
+      console.error(err);
+      this.tokenCheckStatus.success = false;
+      this.tokenCheckStatus.message =
+        "There was an unexpected error while validating the token.";
+    }
+  },
+  save() {
+    let that = this;
+    chrome.storage.sync.set(
+      {
+        token: this.token,
+        workspace: this.selectedWorkspace,
+      },
+      function () {
+        that.saveStatus.success = true;
+        that.saveStatus.message =
+          "Saved successfully, you can close this page.";
+      }
+    );
+  },
+});

@@ -19,6 +19,7 @@
     "@babel/plugin-transform-modules-commonjs": "^7.9.6",
     "@babel/plugin-transform-runtime": "^7.10.0",
     "@bumble/jest-chrome": "0.5.1",
+    "@tailwindcss/custom-forms": "^0.2.1",
     "@testing-library/dom": "^7.5.8",
     "jest": "^26.0.1",
     "parcel-bundler": "^1.12.4",
@@ -26,6 +27,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.10.0",
+    "alpinejs": "^2.3.5",
     "chrome-extension-async": "^3.4.1",
     "github-injection": "^1.0.1",
     "tailwindcss": "^1.4.6"
