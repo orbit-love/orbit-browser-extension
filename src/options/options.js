@@ -1,16 +1,6 @@
 import "chrome-extension-async";
-/**
- * The URL of the API root.
- * To be changed to `https://orbit.eu.ngrok.io` for local development.
- */
-export const ORBIT_API_ROOT_URL = "https://app.orbit.love";
 
-/**
- * Headers common to all API calls.
- */
-const ORBIT_HEADERS = {
-  accept: "application/json",
-};
+import { ORBIT_API_ROOT_URL, ORBIT_HEADERS } from "../constants";
 
 window.orbit = () => ({
   token: "",
@@ -48,6 +38,7 @@ window.orbit = () => ({
         console.error(err);
       }
     }
+    this.tokenCheckStatus.success = true;
     this.token = tokenFromStorage;
     this.selectedWorkspace = selectedWorkspaceFromStorage;
     this.workspaces = workspaces;

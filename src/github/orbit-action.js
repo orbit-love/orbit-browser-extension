@@ -1,4 +1,5 @@
-import { orbitAPI, ORBIT_API_ROOT_URL } from "./orbit-helpers";
+import { orbitAPI } from "./orbit-helpers";
+import { ORBIT_API_ROOT_URL } from "../constants";
 
 /**
  * Creates the Orbit action button and popover menu for a given username.

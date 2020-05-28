@@ -1,15 +1,4 @@
-/**
- * The URL of the API root.
- * To be changed to `https://orbit.eu.ngrok.io` for local development.
- */
-export const ORBIT_API_ROOT_URL = "https://app.orbit.love";
-
-/**
- * Headers common to all API calls.
- */
-const ORBIT_HEADERS = {
-  accept: "application/json",
-};
+import { ORBIT_API_ROOT_URL, ORBIT_HEADERS } from "../constants";
 
 /**
  * Returns an object with values retrieved from Chrome sync storage.

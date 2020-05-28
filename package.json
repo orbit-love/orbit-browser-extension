@@ -8,8 +8,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "mkdir -p extension && cp manifest.json extension/ && parcel src/github/background.js icons/* src/**/*.html src/**/*.css -d extension",
-    "build": "mkdir -p extension && cp manifest.json extension/ && parcel build src/github/background.js icons/* src/**/*.html src/**/*.css -d extension",
+    "start": "mkdir -p extension && cp manifest.json extension/ && parcel src/github/background.js icons/* src/constants.js src/**/*.html src/**/*.css -d extension",
+    "build": "mkdir -p extension && cp manifest.json extension/ && parcel build src/github/background.js icons/* src/constants.js src/**/*.html src/**/*.css -d extension",
     "test": "jest",
     "test:watch": "jest --watch"
   },
