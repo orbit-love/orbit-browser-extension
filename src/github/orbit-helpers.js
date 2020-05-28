@@ -15,6 +15,13 @@ export async function getOrbitCredentials() {
   };
 }
 
+export async function isRepoInOrbitWorkspace() {
+  const { repositories } = await chrome.storage.sync.get({
+    repositories: "",
+  });
+  return repositories.includes(_getRepositoryFullName());
+}
+
 /**
  * Helper object containing methods to call specific API endpoints:
  * - `orbitAPI#getMemberContributions`
@@ -45,7 +52,6 @@ export const orbitAPI = {
           case 404:
             return {
               success: true,
-              is_a_member: false,
             };
           default:
             return {
@@ -56,7 +62,6 @@ export const orbitAPI = {
       const { data } = await response.json();
       return {
         success: true,
-        is_a_member: true,
         contributions_collection: data.attributes.contributions_collection,
         contributions_total: data.attributes.contributions_total,
       };
@@ -91,7 +96,6 @@ export const orbitAPI = {
           case 404:
             return {
               success: true,
-              is_a_member: false,
             };
           default:
             return {
@@ -109,6 +113,49 @@ export const orbitAPI = {
       return {
         success: true,
         contributions_on_this_repo_total: filteredActivities.length,
+      };
+    } catch (err) {
+      console.error(err);
+      return {
+        success: false,
+      };
+    }
+  },
+  /**
+   * Fetch all of a given GitHub user public contributions on GitHub.
+   *
+   * @param {*} ORBIT_CREDENTIALS the Orbit credentials
+   * @param {*} username the GitHub username
+   *
+   * @returns {total_issue_contributions, total_pull_request_contributions}
+   */
+  async getGitHubUserContributions(ORBIT_CREDENTIALS, username) {
+    try {
+      const response = await fetch(
+        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/github_user/${username}?api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
+        {
+          headers: {
+            ...ORBIT_HEADERS,
+          },
+        }
+      );
+      if (!response.ok) {
+        switch (response.status) {
+          // TODO: improve error handling (e.g. 401: wrong token, 500: error on our side…)
+          case 404:
+            return {
+              success: false,
+            };
+          default:
+            return {
+              success: false,
+            };
+        }
+      }
+      const { data } = await response.json();
+      return {
+        success: true,
+        contributions_total: data.attributes.contributions_total,
       };
     } catch (err) {
       console.error(err);

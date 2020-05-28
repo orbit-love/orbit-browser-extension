@@ -1,4 +1,4 @@
-import { orbitAPI } from "./orbit-helpers";
+import { isRepoInOrbitWorkspace, orbitAPI } from "./orbit-helpers";
 import { ORBIT_API_ROOT_URL } from "../constants";
 
 /**
@@ -33,12 +33,12 @@ export async function createOrbitDetailsElement(
    */
   let $isLoading,
     $hasLoaded,
-    $is_a_member,
     $contributions_collection,
     $contributions_total,
     $contributions_on_this_repo_total,
     $success,
-    $detailsMenuElement;
+    $detailsMenuElement,
+    $is_repo_in_workspace;
 
   const normalizedGitHubUsername = gitHubUsername.toLowerCase();
   const normalizedWorkspace = ORBIT_CREDENTIALS.WORKSPACE.toLowerCase();
@@ -132,34 +132,47 @@ export async function createOrbitDetailsElement(
       $isLoading = true;
       insertContentWhenIsLoading();
 
-      /**
-       * `await Promise.all[]` allows us to trigger both request (member info +
-       * member activities) at the same time, resulting in better performance.
-       */
-      const [
-        {
-          success: successContributions,
-          is_a_member,
-          contributions_collection,
-          contributions_total,
-        },
-        { success: successActivities, contributions_on_this_repo_total },
-      ] = await Promise.all([
-        orbitAPI.getMemberContributions(
-          ORBIT_CREDENTIALS,
-          normalizedGitHubUsername
-        ),
-        orbitAPI.getMemberActivitiesOnThisRepo(
-          ORBIT_CREDENTIALS,
-          normalizedGitHubUsername
-        ),
-      ]);
+      $is_repo_in_workspace = await isRepoInOrbitWorkspace();
 
-      $success = successContributions && successActivities;
-      $is_a_member = is_a_member;
-      $contributions_collection = contributions_collection;
-      $contributions_total = contributions_total;
-      $contributions_on_this_repo_total = contributions_on_this_repo_total;
+      if ($is_repo_in_workspace) {
+        /**
+         * `await Promise.all[]` allows us to trigger both request (member info +
+         * member activities) at the same time, resulting in better performance.
+         */
+        const [
+          {
+            success: successContributions,
+            contributions_collection,
+            contributions_total,
+          },
+          { success: successActivities, contributions_on_this_repo_total },
+        ] = await Promise.all([
+          orbitAPI.getMemberContributions(
+            ORBIT_CREDENTIALS,
+            normalizedGitHubUsername
+          ),
+          orbitAPI.getMemberActivitiesOnThisRepo(
+            ORBIT_CREDENTIALS,
+            normalizedGitHubUsername
+          ),
+        ]);
+
+        $success = successContributions && successActivities;
+        $contributions_collection = contributions_collection;
+        $contributions_total = contributions_total;
+        $contributions_on_this_repo_total = contributions_on_this_repo_total;
+      } else {
+        const {
+          contributions_total,
+          success,
+        } = await orbitAPI.getGitHubUserContributions(
+          ORBIT_CREDENTIALS,
+          gitHubUsername
+        );
+
+        $contributions_total = contributions_total;
+        $success = success;
+      }
       $hasLoaded = true;
 
       /**
@@ -203,7 +216,7 @@ export async function createOrbitDetailsElement(
     $detailsMenuElement.innerHTML = "";
     if (!$success) {
       insertContentForError();
-    } else if ($is_a_member) {
+    } else if ($is_repo_in_workspace) {
       insertContentForMember();
     } else {
       insertContentForNonMember();
@@ -292,7 +305,7 @@ export async function createOrbitDetailsElement(
       "dropdown-item",
       "no-hover"
     );
-    detailsMenuRepositoryContributions.textContent = `${gitHubUsername} is not in your Orbit workspace`;
+    detailsMenuRepositoryContributions.textContent = `Contributed ${$contributions_total} times on GitHub`;
     $detailsMenuElement.appendChild(detailsMenuRepositoryContributions);
   }
 }
