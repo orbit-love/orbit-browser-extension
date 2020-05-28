@@ -38,8 +38,11 @@ export function getThreshold(number) {
       return "200+";
     case number <= 1000:
       return "5000+";
-    default:
+    case Number.isInteger(number):
       return "1000+";
+    default:
+      console.error(`[Orbit Browser Extension] ${number} is not a number`);
+      return "NaN";
   }
 }
 
@@ -163,7 +166,49 @@ export const orbitAPI = {
         contributions_total: data.attributes.contributions_total,
       };
     } catch (err) {
-      console.error("I’m here");
+      console.error(err);
+      return {
+        success: false,
+      };
+    }
+  },
+  /**
+   * Create a member for the given user in the current workspace
+   *
+   * @param {*} ORBIT_CREDENTIALS the Orbit credentials
+   * @param {*} username the GitHub username
+   *
+   * @returns {success, status}
+   */
+  async addMemberToWorkspace(ORBIT_CREDENTIALS, username) {
+    try {
+      const response = await fetch(
+        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members?api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            member: {
+              github: username,
+            },
+          }),
+          headers: {
+            "Content-Type": "application/json",
+            ...ORBIT_HEADERS,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        return {
+          success: false,
+          status: response.status,
+        };
+      }
+      return {
+        success: true,
+        status: response.status,
+      };
+    } catch (err) {
       console.error(err);
       return {
         success: false,

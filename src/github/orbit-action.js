@@ -37,7 +37,8 @@ export async function createOrbitDetailsElement(
     $contributions_total,
     $contributions_on_this_repo_total,
     $success,
-    $detailsMenuElement;
+    $detailsMenuElement,
+    $is_a_member;
 
   const normalizedGitHubUsername = gitHubUsername.toLowerCase();
   const normalizedWorkspace = ORBIT_CREDENTIALS.WORKSPACE.toLowerCase();
@@ -132,59 +133,52 @@ export async function createOrbitDetailsElement(
       $isLoading = true;
       insertContentWhenIsLoading();
 
-      if (isRepoInWorkspace) {
-        /**
-         * `await Promise.all[]` allows us to trigger both request (member info +
-         * member activities) at the same time, resulting in better performance.
-         */
-        const [
-          { success: successContributions, status, contributions_total },
-          { success: successActivities, contributions_on_this_repo_total },
-        ] = await Promise.all([
-          orbitAPI.getMemberContributions(
-            ORBIT_CREDENTIALS,
-            normalizedGitHubUsername
-          ),
-          orbitAPI.getMemberActivitiesOnThisRepo(
-            ORBIT_CREDENTIALS,
-            normalizedGitHubUsername
-          ),
-        ]);
+      let success, status, contributions_total;
 
-        /**
-         * TODO: clean that up once comment-only users on that issue/repo
-         * will have been integrated as full workspace members.
-         *
-         * In the meantime, we fallback (not very gracefully) to the same
-         * behavior as when the repository is not in the workspace.
-         */
-        if (status === 404) {
-          isRepoInWorkspace = false;
-          const {
-            contributions_total,
-            success,
-          } = await orbitAPI.getGitHubUserContributions(
-            ORBIT_CREDENTIALS,
-            gitHubUsername
-          );
+      /**
+       * `await Promise.all[]` allows us to trigger both request (member info +
+       * member activities) at the same time, resulting in better performance.
+       */
+      ({
+        success,
+        status,
+        contributions_total,
+      } = await orbitAPI.getMemberContributions(
+        ORBIT_CREDENTIALS,
+        normalizedGitHubUsername
+      ));
+      $is_a_member = true;
 
-          $contributions_total = contributions_total;
-          $success = success;
-        } else {
-          $success = successContributions && successActivities;
-          $contributions_total = contributions_total;
-          $contributions_on_this_repo_total = contributions_on_this_repo_total;
-        }
-      } else {
-        const {
+      /**
+       * TODO: clean that up once comment-only users on that issue/repo
+       * will have been integrated as full workspace members.
+       *
+       * In the meantime, we fallback (not very gracefully) to the same
+       * behavior as when the repository is not in the workspace.
+       */
+      if (status === 404) {
+        isRepoInWorkspace = false;
+        $is_a_member = false;
+        ({
           contributions_total,
           success,
         } = await orbitAPI.getGitHubUserContributions(
           ORBIT_CREDENTIALS,
           gitHubUsername
+        ));
+      }
+      $success = success;
+      $contributions_total = contributions_total;
+      if (isRepoInWorkspace) {
+        const {
+          success,
+          contributions_on_this_repo_total,
+        } = await orbitAPI.getMemberActivitiesOnThisRepo(
+          ORBIT_CREDENTIALS,
+          normalizedGitHubUsername
         );
 
-        $contributions_total = contributions_total;
+        $contributions_on_this_repo_total = contributions_on_this_repo_total;
         $success = success;
       }
       $hasLoaded = true;
@@ -242,7 +236,7 @@ export async function createOrbitDetailsElement(
     $detailsMenuElement.innerHTML = "";
     if (!$success) {
       insertContentForError();
-    } else if (isRepoInWorkspace) {
+    } else if ($is_a_member) {
       insertContentForMember();
     } else {
       insertContentForNonMember();
@@ -273,22 +267,24 @@ export async function createOrbitDetailsElement(
     /**
      * <span>Contributed X times to this repository</span>
      */
-    const detailsMenuRepositoryContributions = window.document.createElement(
-      "span"
-    );
-    detailsMenuRepositoryContributions.setAttribute("role", "menuitem");
-    detailsMenuRepositoryContributions.classList.add(
-      "dropdown-item",
-      "dropdown-item-orbit",
-      "no-hover"
-    );
-    detailsMenuRepositoryContributions.textContent =
-      $contributions_on_this_repo_total === 1
-        ? "First contribution to this repository"
-        : `Contributed ${getThreshold(
-            $contributions_on_this_repo_total
-          )} times to this repository`;
-    $detailsMenuElement.appendChild(detailsMenuRepositoryContributions);
+    if (isRepoInWorkspace) {
+      const detailsMenuRepositoryContributions = window.document.createElement(
+        "span"
+      );
+      detailsMenuRepositoryContributions.setAttribute("role", "menuitem");
+      detailsMenuRepositoryContributions.classList.add(
+        "dropdown-item",
+        "dropdown-item-orbit",
+        "no-hover"
+      );
+      detailsMenuRepositoryContributions.textContent =
+        $contributions_on_this_repo_total === 1
+          ? "First contribution to this repository"
+          : `Contributed ${getThreshold(
+              $contributions_on_this_repo_total
+            )} times to this repository`;
+      $detailsMenuElement.appendChild(detailsMenuRepositoryContributions);
+    }
 
     /**
      * <span>Contributed Y times to Z repository</span>
@@ -335,8 +331,8 @@ export async function createOrbitDetailsElement(
   }
 
   /**
-   * Create a <span> indicating this GitHub user is not a member and add it
-   * to <details-menu> children.
+   * Create a <span> displaying general GitHub data and a link to add the member
+   * to the current Orbit workspace.
    */
   function insertContentForNonMember() {
     const detailsMenuRepositoryContributions = window.document.createElement(
@@ -352,5 +348,52 @@ export async function createOrbitDetailsElement(
       $contributions_total
     )} times on GitHub`;
     $detailsMenuElement.appendChild(detailsMenuRepositoryContributions);
+
+    /**
+     * <span class="dropdown-divider"></span>
+     */
+    const dropdownDivider = window.document.createElement("span");
+    dropdownDivider.setAttribute("role", "none");
+    dropdownDivider.classList.add("dropdown-divider");
+    $detailsMenuElement.appendChild(dropdownDivider);
+
+    /**
+     * <a href="…">Add X to workspace Y</a>
+     */
+    const detailsMenuLink = window.document.createElement("a");
+    detailsMenuLink.setAttribute(
+      "aria-label",
+      `Add ${gitHubUsername} to ${ORBIT_CREDENTIALS.WORKSPACE} on Orbit`
+    );
+    detailsMenuLink.setAttribute("role", "menuitem");
+    detailsMenuLink.classList.add(
+      "dropdown-item",
+      "dropdown-item-orbit",
+      "btn-link"
+    );
+    detailsMenuLink.textContent = `Add ${gitHubUsername} to ${ORBIT_CREDENTIALS.WORKSPACE} on Orbit`;
+    detailsMenuLink.addEventListener("click", handleMemberCreation);
+    $detailsMenuElement.appendChild(detailsMenuLink);
+  }
+
+  async function handleMemberCreation(event) {
+    event.target.removeEventListener("click", handleMemberCreation);
+    event.preventDefault();
+    event.stopPropagation();
+    event.target.textContent = "Creating the member…";
+
+    const { success } = await orbitAPI.addMemberToWorkspace(
+      ORBIT_CREDENTIALS,
+      gitHubUsername
+    );
+    if (success) {
+      event.target.setAttribute(
+        "href",
+        `${ORBIT_API_ROOT_URL}/${normalizedWorkspace}/members/${normalizedGitHubUsername}`
+      );
+      event.target.setAttribute("target", "_blank");
+      event.target.setAttribute("rel", "noopener");
+      event.target.textContent = `Added! See ${gitHubUsername}’s profile on Orbit`;
+    }
   }
 }
