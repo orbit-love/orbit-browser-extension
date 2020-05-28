@@ -121,7 +121,6 @@ test("createOrbitDetailsElement should display a loading indicator", async () =>
 });
 
 test("createOrbitDetailsElement should trigger 3 requests when the user is in a workspace repo, but not a member", async () => {
-  global.fetch.mockClear();
   global.fetch = jest
     .fn()
     .mockImplementationOnce(() =>
@@ -158,12 +157,10 @@ test("createOrbitDetailsElement should trigger 3 requests when the user is in a 
       cancelable: true,
     })
   );
-  expect(global.fetch).toHaveBeenCalledTimes(3);
   await waitFor(() => {
-    expect(
-      getByText(orbitDetailsElement, "phacks contributed 50 times on GitHub")
-    );
+    expect(getByText(orbitDetailsElement, "Contributed 50 times on GitHub"));
   });
+  expect(global.fetch).toHaveBeenCalledTimes(3);
 });
 
 test("createOrbitDetailsElement should display Orbit info if the github user is a member", async () => {

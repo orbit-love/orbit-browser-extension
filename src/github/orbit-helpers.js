@@ -129,6 +129,7 @@ export const orbitAPI = {
           },
         }
       );
+
       if (!response.ok) {
         return {
           success: false,
@@ -142,6 +143,7 @@ export const orbitAPI = {
         contributions_total: data.attributes.contributions_total,
       };
     } catch (err) {
+      console.error("I’m here");
       console.error(err);
       return {
         success: false,
