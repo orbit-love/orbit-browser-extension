@@ -1,3 +1,11 @@
+.dropdown-menu-orbit {
+  width: auto !important;
+}
+
+.dropdown-item-orbit {
+  padding: 4px 16px !important;
+}
+
 .orbit-icon {
   display: inline-block;
   vertical-align: text-bottom;

@@ -104,12 +104,12 @@ export async function createOrbitDetailsElement(
     "anim-scale-in",
     "dropdown-menu",
     "dropdown-menu-sw",
+    "dropdown-menu-orbit",
     "mr-n1",
     "mt-n1"
   );
   $detailsMenuElement.setAttribute("aria-label", "See Orbit details");
   $detailsMenuElement.setAttribute("role", "menu");
-  $detailsMenuElement.setAttribute("style", "width: 350px;");
   detailsElement.addEventListener("mouseover", mouseoverListener, true);
   detailsElement.appendChild($detailsMenuElement);
 
@@ -200,13 +200,21 @@ export async function createOrbitDetailsElement(
   function insertContentWhenNoCredentials() {
     const missingCredentialsInfo1 = window.document.createElement("span");
     missingCredentialsInfo1.setAttribute("role", "menuitem");
-    missingCredentialsInfo1.classList.add("dropdown-item", "no-hover");
+    missingCredentialsInfo1.classList.add(
+      "dropdown-item",
+      "dropdown-item-orbit",
+      "no-hover"
+    );
     missingCredentialsInfo1.textContent = `API token or workspace is missing`;
     $detailsMenuElement.appendChild(missingCredentialsInfo1);
 
     const missingCredentialsInfo2 = window.document.createElement("span");
     missingCredentialsInfo2.setAttribute("role", "menuitem");
-    missingCredentialsInfo2.classList.add("dropdown-item", "no-hover");
+    missingCredentialsInfo2.classList.add(
+      "dropdown-item",
+      "dropdown-item-orbit",
+      "no-hover"
+    );
     missingCredentialsInfo2.textContent = `Right click the extension icon to access Options`;
     $detailsMenuElement.appendChild(missingCredentialsInfo2);
   }
@@ -217,7 +225,11 @@ export async function createOrbitDetailsElement(
   function insertContentWhenIsLoading() {
     const detailsMenuLoadingIndicator = window.document.createElement("span");
     detailsMenuLoadingIndicator.setAttribute("role", "menuitem");
-    detailsMenuLoadingIndicator.classList.add("dropdown-item", "no-hover");
+    detailsMenuLoadingIndicator.classList.add(
+      "dropdown-item",
+      "dropdown-item-orbit",
+      "no-hover"
+    );
     detailsMenuLoadingIndicator.textContent = `Loading Orbit data…`;
     $detailsMenuElement.appendChild(detailsMenuLoadingIndicator);
   }
@@ -247,6 +259,7 @@ export async function createOrbitDetailsElement(
     detailsMenuRepositoryContributions.setAttribute("role", "menuitem");
     detailsMenuRepositoryContributions.classList.add(
       "dropdown-item",
+      "dropdown-item-orbit",
       "no-hover"
     );
     detailsMenuRepositoryContributions.textContent = `There was an error fetching Orbit data`;
@@ -266,6 +279,7 @@ export async function createOrbitDetailsElement(
     detailsMenuRepositoryContributions.setAttribute("role", "menuitem");
     detailsMenuRepositoryContributions.classList.add(
       "dropdown-item",
+      "dropdown-item-orbit",
       "no-hover"
     );
     detailsMenuRepositoryContributions.textContent =
@@ -281,11 +295,23 @@ export async function createOrbitDetailsElement(
      */
     const detailsMenuTotalContributions = window.document.createElement("span");
     detailsMenuTotalContributions.setAttribute("role", "menuitem");
-    detailsMenuTotalContributions.classList.add("dropdown-item", "no-hover");
+    detailsMenuTotalContributions.classList.add(
+      "dropdown-item",
+      "dropdown-item-orbit",
+      "no-hover"
+    );
     detailsMenuTotalContributions.textContent = `Contributed ${getThreshold(
       $contributions_total
     )} times on GitHub`;
     $detailsMenuElement.appendChild(detailsMenuTotalContributions);
+
+    /**
+     * <span class="dropdown-divider"></span>
+     */
+    const dropdownDivider = window.document.createElement("span");
+    dropdownDivider.setAttribute("role", "none");
+    dropdownDivider.classList.add("dropdown-divider");
+    $detailsMenuElement.appendChild(dropdownDivider);
 
     /**
      * <a href="…">See X’s profile on Orbit</a>
@@ -299,7 +325,11 @@ export async function createOrbitDetailsElement(
     );
     detailsMenuLink.setAttribute("target", "_blank");
     detailsMenuLink.setAttribute("rel", "noopener");
-    detailsMenuLink.classList.add("dropdown-item", "btn-link");
+    detailsMenuLink.classList.add(
+      "dropdown-item",
+      "dropdown-item-orbit",
+      "btn-link"
+    );
     detailsMenuLink.textContent = `See ${gitHubUsername}’s profile on Orbit`;
     $detailsMenuElement.appendChild(detailsMenuLink);
   }
@@ -315,6 +345,7 @@ export async function createOrbitDetailsElement(
     detailsMenuRepositoryContributions.setAttribute("role", "menuitem");
     detailsMenuRepositoryContributions.classList.add(
       "dropdown-item",
+      "dropdown-item-orbit",
       "no-hover"
     );
     detailsMenuRepositoryContributions.textContent = `Contributed ${getThreshold(
