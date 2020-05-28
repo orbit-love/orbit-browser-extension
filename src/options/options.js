@@ -96,7 +96,7 @@ window.orbit = () => ({
     chrome.storage.sync.set(
       {
         token: this.token,
-        workspace: this.selectedWorkspaceSlug.slug,
+        workspace: this.selectedWorkspaceSlug,
         repositories: repositoriesFullNameForWorkspace,
       },
       function () {
