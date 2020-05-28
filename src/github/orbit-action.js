@@ -1,4 +1,4 @@
-import { isRepoInOrbitWorkspace, orbitAPI } from "./orbit-helpers";
+import { orbitAPI } from "./orbit-helpers";
 import { ORBIT_API_ROOT_URL } from "../constants";
 
 /**
@@ -24,7 +24,8 @@ import { ORBIT_API_ROOT_URL } from "../constants";
  */
 export async function createOrbitDetailsElement(
   ORBIT_CREDENTIALS,
-  gitHubUsername
+  gitHubUsername,
+  isRepoInWorkspace
 ) {
   /**
    * As a convention, $variables are “state variables” which can be updated in any
@@ -37,8 +38,7 @@ export async function createOrbitDetailsElement(
     $contributions_total,
     $contributions_on_this_repo_total,
     $success,
-    $detailsMenuElement,
-    $is_repo_in_workspace;
+    $detailsMenuElement;
 
   const normalizedGitHubUsername = gitHubUsername.toLowerCase();
   const normalizedWorkspace = ORBIT_CREDENTIALS.WORKSPACE.toLowerCase();
@@ -132,9 +132,7 @@ export async function createOrbitDetailsElement(
       $isLoading = true;
       insertContentWhenIsLoading();
 
-      $is_repo_in_workspace = await isRepoInOrbitWorkspace();
-
-      if ($is_repo_in_workspace) {
+      if (isRepoInWorkspace) {
         /**
          * `await Promise.all[]` allows us to trigger both request (member info +
          * member activities) at the same time, resulting in better performance.
@@ -142,6 +140,7 @@ export async function createOrbitDetailsElement(
         const [
           {
             success: successContributions,
+            status,
             contributions_collection,
             contributions_total,
           },
@@ -157,10 +156,31 @@ export async function createOrbitDetailsElement(
           ),
         ]);
 
-        $success = successContributions && successActivities;
-        $contributions_collection = contributions_collection;
-        $contributions_total = contributions_total;
-        $contributions_on_this_repo_total = contributions_on_this_repo_total;
+        /**
+         * TODO: clean that up once comment-only users on that issue/repo
+         * will have been integrated as full workspace members.
+         *
+         * In the meantime, we fallback (not very gracefully) to the same
+         * behavior as when the repository is not in the workspace.
+         */
+        if (status === 404) {
+          isRepoInWorkspace = false;
+          const {
+            contributions_total,
+            success,
+          } = await orbitAPI.getGitHubUserContributions(
+            ORBIT_CREDENTIALS,
+            gitHubUsername
+          );
+
+          $contributions_total = contributions_total;
+          $success = success;
+        } else {
+          $success = successContributions && successActivities;
+          $contributions_collection = contributions_collection;
+          $contributions_total = contributions_total;
+          $contributions_on_this_repo_total = contributions_on_this_repo_total;
+        }
       } else {
         const {
           contributions_total,
@@ -216,7 +236,7 @@ export async function createOrbitDetailsElement(
     $detailsMenuElement.innerHTML = "";
     if (!$success) {
       insertContentForError();
-    } else if ($is_repo_in_workspace) {
+    } else if (isRepoInWorkspace) {
       insertContentForMember();
     } else {
       insertContentForNonMember();

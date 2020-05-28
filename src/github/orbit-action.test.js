@@ -7,7 +7,8 @@ let orbitDetailsElement;
 beforeEach(async () => {
   orbitDetailsElement = await createOrbitDetailsElement(
     { API_TOKEN: "token", WORKSPACE: "workspace" },
-    "phacks"
+    "phacks",
+    true
   );
 
   global.fetch = jest
@@ -67,6 +68,7 @@ test("createOrbitDetailsElement should trigger 2 fetch requests on mouseover, no
 });
 
 test("createOrbitDetailsElement should display an error message if there was an error fetching data", async () => {
+  global.fetch.mockClear();
   const mockJsonPromise = Promise.resolve({});
   const mockFetchPromise = Promise.resolve({
     json: () => mockJsonPromise,
@@ -118,14 +120,37 @@ test("createOrbitDetailsElement should display a loading indicator", async () =>
   });
 });
 
-test("createOrbitDetailsElement should display an error message when the user is not a member", async () => {
-  const mockJsonPromise = Promise.resolve({});
-  const mockFetchPromise = Promise.resolve({
-    json: () => mockJsonPromise,
-    ok: false,
-    status: 404,
-  });
-  global.fetch = jest.fn().mockImplementation(() => mockFetchPromise);
+test("createOrbitDetailsElement should trigger 3 requests when the user is in a workspace repo, but not a member", async () => {
+  global.fetch.mockClear();
+  global.fetch = jest
+    .fn()
+    .mockImplementationOnce(() =>
+      Promise.resolve({
+        json: () => Promise.resolve({}),
+        ok: false,
+        status: 404,
+      })
+    )
+    .mockImplementationOnce(() =>
+      Promise.resolve({
+        json: () => Promise.resolve({}),
+        ok: false,
+        status: 404,
+      })
+    )
+    .mockImplementationOnce(() =>
+      Promise.resolve({
+        json: () =>
+          Promise.resolve({
+            data: {
+              attributes: {
+                contributions_total: 50,
+              },
+            },
+          }),
+        ok: true,
+      })
+    );
   fireEvent(
     getByRole(orbitDetailsElement, "button"),
     new MouseEvent("mouseover", {
@@ -133,9 +158,10 @@ test("createOrbitDetailsElement should display an error message when the user is
       cancelable: true,
     })
   );
+  expect(global.fetch).toHaveBeenCalledTimes(3);
   await waitFor(() => {
     expect(
-      getByText(orbitDetailsElement, "phacks is not in your Orbit workspace")
+      getByText(orbitDetailsElement, "phacks contributed 50 times on GitHub")
     );
   });
 });

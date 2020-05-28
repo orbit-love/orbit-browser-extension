@@ -1,7 +1,7 @@
 import "chrome-extension-async";
 import gitHubInjection from "github-injection";
 
-import { getOrbitCredentials } from "./orbit-helpers";
+import { getOrbitCredentials, isRepoInOrbitWorkspace } from "./orbit-helpers";
 import { createOrbitDetailsElement } from "./orbit-action";
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -13,6 +13,8 @@ document.addEventListener("DOMContentLoaded", async () => {
    * been set.
    */
   const ORBIT_CREDENTIALS = await getOrbitCredentials();
+
+  const isRepoInWorkspace = await isRepoInOrbitWorkspace();
 
   /**
    * GitHub uses pjax (https://github.com/MoOx/pjax) to speed its
@@ -40,7 +42,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       const gitHubUsername = commentHeader.querySelector(".author").innerText;
       const orbitActionElement = await createOrbitDetailsElement(
         ORBIT_CREDENTIALS,
-        gitHubUsername
+        gitHubUsername,
+        isRepoInWorkspace
       );
       commentActionsElement.insertBefore(
         orbitActionElement,

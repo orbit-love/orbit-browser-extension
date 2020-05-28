@@ -48,20 +48,15 @@ export const orbitAPI = {
         }
       );
       if (!response.ok) {
-        switch (response.status) {
-          case 404:
-            return {
-              success: true,
-            };
-          default:
-            return {
-              success: false,
-            };
-        }
+        return {
+          success: false,
+          status: response.status,
+        };
       }
       const { data } = await response.json();
       return {
         success: true,
+        status: response.status,
         contributions_collection: data.attributes.contributions_collection,
         contributions_total: data.attributes.contributions_total,
       };
@@ -92,16 +87,10 @@ export const orbitAPI = {
         }
       );
       if (!response.ok) {
-        switch (response.status) {
-          case 404:
-            return {
-              success: true,
-            };
-          default:
-            return {
-              success: false,
-            };
-        }
+        return {
+          success: false,
+          status: response.status,
+        };
       }
       const { data, included } = await response.json();
       const repositoryFullName = _getRepositoryFullName();
@@ -112,6 +101,7 @@ export const orbitAPI = {
       );
       return {
         success: true,
+        status: response.status,
         contributions_on_this_repo_total: filteredActivities.length,
       };
     } catch (err) {
@@ -140,21 +130,15 @@ export const orbitAPI = {
         }
       );
       if (!response.ok) {
-        switch (response.status) {
-          // TODO: improve error handling (e.g. 401: wrong token, 500: error on our side…)
-          case 404:
-            return {
-              success: false,
-            };
-          default:
-            return {
-              success: false,
-            };
-        }
+        return {
+          success: false,
+          status: response.status,
+        };
       }
       const { data } = await response.json();
       return {
         success: true,
+        status: response.status,
         contributions_total: data.attributes.contributions_total,
       };
     } catch (err) {
