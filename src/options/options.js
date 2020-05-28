@@ -5,7 +5,8 @@ import { ORBIT_API_ROOT_URL, ORBIT_HEADERS } from "../constants";
 window.orbit = () => ({
   token: "",
   workspaces: [],
-  selectedWorkspace: undefined,
+  repositories: [],
+  selectedWorkspaceSlug: undefined,
   tokenCheckStatus: {
     success: undefined,
     message: "",
@@ -16,14 +17,15 @@ window.orbit = () => ({
   },
   async init() {
     let tokenFromStorage;
-    let selectedWorkspaceFromStorage;
+    let selectedWorkspaceSlugFromStorage;
     let workspaces = [];
+    let repositories = [];
     const items = await chrome.storage.sync.get({
       token: "",
       workspace: "",
     });
     tokenFromStorage = items.token;
-    selectedWorkspaceFromStorage = items.workspace;
+    selectedWorkspaceSlugFromStorage = items.workspace;
     if (tokenFromStorage) {
       try {
         const response = await fetch(
@@ -32,16 +34,18 @@ window.orbit = () => ({
             headers: { ...ORBIT_HEADERS },
           }
         );
-        const { data } = await response.json();
+        const { data, included } = await response.json();
         workspaces = data;
+        repositories = included.filter((item) => item.type === "repository");
       } catch (err) {
         console.error(err);
       }
     }
     this.tokenCheckStatus.success = true;
     this.token = tokenFromStorage;
-    this.selectedWorkspace = selectedWorkspaceFromStorage;
+    this.selectedWorkspaceSlug = selectedWorkspaceSlugFromStorage;
     this.workspaces = workspaces;
+    this.repositories = repositories;
   },
   async fetchWorkspaces() {
     try {
@@ -56,8 +60,9 @@ window.orbit = () => ({
         this.tokenCheckStatus.message = "The token is invalid.";
         return;
       }
-      const { data } = await response.json();
+      const { data, included } = await response.json();
       this.workspaces = data;
+      this.repositories = included.filter((item) => item.type === "repository");
       this.tokenCheckStatus.success = true;
       this.tokenCheckStatus.message =
         "The token is valid, please select a workspace.";
@@ -68,12 +73,31 @@ window.orbit = () => ({
         "There was an unexpected error while validating the token.";
     }
   },
+  _findAllReposFullNameByWorkspaceSlug() {
+    const currentWorkspace = this.workspaces.filter(
+      (item) => item.attributes.slug === this.selectedWorkspaceSlug
+    )[0];
+    const allRepoIdsForCurrentWorkspace = currentWorkspace.relationships.repositories.data.reduce(
+      (repoIdsAccumulator, repositoryData) =>
+        (repoIdsAccumulator = repoIdsAccumulator.concat([repositoryData.id])),
+      []
+    );
+    const result = allRepoIdsForCurrentWorkspace.map(
+      (repositoryId) =>
+        this.repositories.filter(
+          (repository) => repository.id === repositoryId
+        )[0].attributes.full_name
+    );
+    return result;
+  },
   save() {
     let that = this;
+    let repositoriesFullNameForWorkspace = this._findAllReposFullNameByWorkspaceSlug();
     chrome.storage.sync.set(
       {
         token: this.token,
-        workspace: this.selectedWorkspace,
+        workspace: this.selectedWorkspaceSlug.slug,
+        repositories: repositoriesFullNameForWorkspace,
       },
       function () {
         that.saveStatus.success = true;
