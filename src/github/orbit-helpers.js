@@ -22,6 +22,27 @@ export async function isRepoInOrbitWorkspace() {
   return repositories.includes(_getRepositoryFullName());
 }
 
+export function getThreshold(number) {
+  switch (true) {
+    case number <= 10:
+      return number;
+    case number <= 20:
+      return "10+";
+    case number <= 50:
+      return "20+";
+    case number <= 100:
+      return "50+";
+    case number <= 200:
+      return "100+";
+    case number <= 500:
+      return "200+";
+    case number <= 1000:
+      return "5000+";
+    default:
+      return "1000+";
+  }
+}
+
 /**
  * Helper object containing methods to call specific API endpoints:
  * - `orbitAPI#getMemberContributions`
@@ -57,7 +78,6 @@ export const orbitAPI = {
       return {
         success: true,
         status: response.status,
-        contributions_collection: data.attributes.contributions_collection,
         contributions_total: data.attributes.contributions_total,
       };
     } catch (err) {

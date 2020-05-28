@@ -19,10 +19,7 @@ beforeEach(async () => {
           Promise.resolve({
             data: {
               attributes: {
-                contributions_collection: {
-                  total_repository_contributions: 10,
-                },
-                contributions_total: 50,
+                contributions_total: 62,
               },
             },
           }),
@@ -143,7 +140,7 @@ test("createOrbitDetailsElement should trigger 3 requests when the user is in a 
           Promise.resolve({
             data: {
               attributes: {
-                contributions_total: 50,
+                contributions_total: 12,
               },
             },
           }),
@@ -158,7 +155,7 @@ test("createOrbitDetailsElement should trigger 3 requests when the user is in a 
     })
   );
   await waitFor(() => {
-    expect(getByText(orbitDetailsElement, "Contributed 50 times on GitHub"));
+    expect(getByText(orbitDetailsElement, "Contributed 10+ times on GitHub"));
   });
   expect(global.fetch).toHaveBeenCalledTimes(3);
 });
@@ -172,9 +169,7 @@ test("createOrbitDetailsElement should display Orbit info if the github user is 
     })
   );
   await waitFor(() => {
-    expect(
-      getByText(orbitDetailsElement, "Contributed 50 times to 10 repositories")
-    );
+    expect(getByText(orbitDetailsElement, "Contributed 50+ times on GitHub"));
     expect(getByText(orbitDetailsElement, "See phacks’s profile on Orbit"));
   });
 });

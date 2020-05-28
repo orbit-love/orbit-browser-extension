@@ -1,4 +1,4 @@
-import { orbitAPI } from "./orbit-helpers";
+import { getThreshold, orbitAPI } from "./orbit-helpers";
 import { ORBIT_API_ROOT_URL } from "../constants";
 
 /**
@@ -34,7 +34,6 @@ export async function createOrbitDetailsElement(
    */
   let $isLoading,
     $hasLoaded,
-    $contributions_collection,
     $contributions_total,
     $contributions_on_this_repo_total,
     $success,
@@ -138,12 +137,7 @@ export async function createOrbitDetailsElement(
          * member activities) at the same time, resulting in better performance.
          */
         const [
-          {
-            success: successContributions,
-            status,
-            contributions_collection,
-            contributions_total,
-          },
+          { success: successContributions, status, contributions_total },
           { success: successActivities, contributions_on_this_repo_total },
         ] = await Promise.all([
           orbitAPI.getMemberContributions(
@@ -177,7 +171,6 @@ export async function createOrbitDetailsElement(
           $success = success;
         } else {
           $success = successContributions && successActivities;
-          $contributions_collection = contributions_collection;
           $contributions_total = contributions_total;
           $contributions_on_this_repo_total = contributions_on_this_repo_total;
         }
@@ -277,7 +270,9 @@ export async function createOrbitDetailsElement(
     detailsMenuRepositoryContributions.textContent =
       $contributions_on_this_repo_total === 1
         ? "First contribution to this repository"
-        : `Contributed ${$contributions_on_this_repo_total} times to this repository`;
+        : `Contributed ${getThreshold(
+            $contributions_on_this_repo_total
+          )} times to this repository`;
     $detailsMenuElement.appendChild(detailsMenuRepositoryContributions);
 
     /**
@@ -286,13 +281,9 @@ export async function createOrbitDetailsElement(
     const detailsMenuTotalContributions = window.document.createElement("span");
     detailsMenuTotalContributions.setAttribute("role", "menuitem");
     detailsMenuTotalContributions.classList.add("dropdown-item", "no-hover");
-    detailsMenuTotalContributions.textContent = `Contributed ${$contributions_total} times to ${
-      $contributions_collection.total_repository_contributions
-    } repositor${
-      $contributions_collection.total_repository_contributions === 1
-        ? "y"
-        : "ies"
-    }`;
+    detailsMenuTotalContributions.textContent = `Contributed ${getThreshold(
+      $contributions_total
+    )} times on GitHub`;
     $detailsMenuElement.appendChild(detailsMenuTotalContributions);
 
     /**
@@ -325,7 +316,9 @@ export async function createOrbitDetailsElement(
       "dropdown-item",
       "no-hover"
     );
-    detailsMenuRepositoryContributions.textContent = `Contributed ${$contributions_total} times on GitHub`;
+    detailsMenuRepositoryContributions.textContent = `Contributed ${getThreshold(
+      $contributions_total
+    )} times on GitHub`;
     $detailsMenuElement.appendChild(detailsMenuRepositoryContributions);
   }
 }
