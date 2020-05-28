@@ -4,6 +4,18 @@
   fill: currentColor;
 }
 
+/** .timeline-comment-action already has a color !important, so
+ *  we need to increase the specificity here.
+ */
+.timeline-comment-action.orbit-icon-container:hover {
+  color: #6c4df6 !important;
+}
+
+/* Allows to keep the color while the popup is open */
+details[open] > .timeline-comment-action.orbit-icon-container {
+  color: #6c4df6 !important;
+}
+
 .no-hover,
 .no-hover:hover {
   color: rgb(88, 96, 105) !important;

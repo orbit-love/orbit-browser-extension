@@ -60,7 +60,8 @@ export async function createOrbitDetailsElement(
   summaryElement.classList.add(
     "btn-link",
     "link-gray",
-    "timeline-comment-action"
+    "timeline-comment-action",
+    "orbit-icon-container"
   );
   summaryElement.setAttribute(
     "aria-label",
