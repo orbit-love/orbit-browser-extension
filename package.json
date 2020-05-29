@@ -27,7 +27,6 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.10.0",
-    "alpinejs": "^2.3.5",
     "chrome-extension-async": "^3.4.1",
     "github-injection": "^1.0.1",
     "tailwindcss": "^1.4.6"
