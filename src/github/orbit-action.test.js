@@ -1,6 +1,7 @@
 import { fireEvent, getByRole, getByText, waitFor } from "@testing-library/dom";
 
 import { createOrbitDetailsElement } from "./orbit-action";
+import { mockOrbitAPICall } from "../test-helpers.js";
 
 let orbitDetailsElement;
 
@@ -13,22 +14,27 @@ beforeEach(async () => {
 
   global.fetch = jest
     .fn()
-    .mockImplementationOnce(() =>
-      Promise.resolve({
-        json: () =>
-          Promise.resolve({
-            data: {
-              attributes: {
-                orbit_level: 1,
-                reach: 5,
-                points: 9,
-                contributions_total: 62,
-              },
-            },
-          }),
-        ok: true,
+    // mocks /:workspace/members/:member
+    .mockImplementationOnce(
+      mockOrbitAPICall({
+        data: {
+          attributes: {
+            orbit_level: 1,
+            reach: 5,
+            points: 9,
+            contributions_total: 62,
+          },
+        },
       })
     )
+    // mocks /:workspace/members/:member/activities
+    .mockImplementationOnce(
+      mockOrbitAPICall({
+        data: [],
+        included: [],
+      })
+    )
+    // mocks /:workspace/github_user/:username
     .mockImplementationOnce(() =>
       Promise.resolve({
         json: () => Promise.resolve({ data: [], included: [] }),
@@ -75,13 +81,7 @@ test("createOrbitDetailsElement should trigger 2 fetch requests on mouseover, no
 
 test("createOrbitDetailsElement should display an error message if there was an error fetching data", async () => {
   global.fetch.mockClear();
-  const mockJsonPromise = Promise.resolve({});
-  const mockFetchPromise = Promise.resolve({
-    json: () => mockJsonPromise,
-    ok: false,
-    status: 500,
-  });
-  global.fetch = jest.fn().mockImplementation(() => mockFetchPromise);
+  global.fetch = jest.fn().mockImplementation(mockOrbitAPICall({}, false, 500));
   fireEvent(
     getByRole(orbitDetailsElement, "button"),
     new MouseEvent("mouseover", {
@@ -129,25 +129,9 @@ test("createOrbitDetailsElement should display a loading indicator", async () =>
 test("createOrbitDetailsElement should trigger 2 requests when the user is not a member", async () => {
   global.fetch = jest
     .fn()
-    .mockImplementationOnce(() =>
-      Promise.resolve({
-        json: () => Promise.resolve({}),
-        ok: false,
-        status: 404,
-      })
-    )
-    .mockImplementationOnce(() =>
-      Promise.resolve({
-        json: () =>
-          Promise.resolve({
-            data: {
-              attributes: {
-                contributions_total: 12,
-              },
-            },
-          }),
-        ok: true,
-      })
+    .mockImplementationOnce(mockOrbitAPICall({}, false, 404))
+    .mockImplementationOnce(
+      mockOrbitAPICall({ data: { attributes: { contributions_total: 12 } } })
     );
   fireEvent(
     getByRole(orbitDetailsElement, "button"),
