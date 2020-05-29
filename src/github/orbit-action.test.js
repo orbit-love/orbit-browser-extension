@@ -56,10 +56,7 @@ test("createOrbitDetailsElement should return a button and a menu", () => {
 test("createOrbitDetailsElement should trigger 2 fetch requests on mouseover, no fetch requests on repeat mouseover", async () => {
   fireEvent(
     getByRole(orbitDetailsElement, "button"),
-    new MouseEvent("mouseover", {
-      bubbles: true,
-      cancelable: true,
-    })
+    new MouseEvent("mouseover")
   );
   await waitFor(() => {
     expect(getByText(orbitDetailsElement, "See phacks’s profile on Orbit"));
@@ -68,10 +65,7 @@ test("createOrbitDetailsElement should trigger 2 fetch requests on mouseover, no
   global.fetch.mockClear();
   fireEvent(
     getByRole(orbitDetailsElement, "button"),
-    new MouseEvent("mouseover", {
-      bubbles: true,
-      cancelable: true,
-    })
+    new MouseEvent("mouseover")
   );
   await waitFor(() => {
     expect(getByText(orbitDetailsElement, "See phacks’s profile on Orbit"));
@@ -81,13 +75,11 @@ test("createOrbitDetailsElement should trigger 2 fetch requests on mouseover, no
 
 test("createOrbitDetailsElement should display an error message if there was an error fetching data", async () => {
   global.fetch.mockClear();
+  // mocks /:workspace/members/:member
   global.fetch = jest.fn().mockImplementation(mockOrbitAPICall({}, false, 500));
   fireEvent(
     getByRole(orbitDetailsElement, "button"),
-    new MouseEvent("mouseover", {
-      bubbles: true,
-      cancelable: true,
-    })
+    new MouseEvent("mouseover")
   );
   await waitFor(() => {
     expect(
@@ -103,10 +95,7 @@ test("createOrbitDetailsElement should display an error message if credentials a
   );
   fireEvent(
     getByRole(orbitDetailsElement, "button"),
-    new MouseEvent("mouseover", {
-      bubbles: true,
-      cancelable: true,
-    })
+    new MouseEvent("mouseover")
   );
   await waitFor(() => {
     expect(getByText(orbitDetailsElement, "API token or workspace is missing"));
@@ -116,10 +105,7 @@ test("createOrbitDetailsElement should display an error message if credentials a
 test("createOrbitDetailsElement should display a loading indicator", async () => {
   fireEvent(
     getByRole(orbitDetailsElement, "button"),
-    new MouseEvent("mouseover", {
-      bubbles: true,
-      cancelable: true,
-    })
+    new MouseEvent("mouseover")
   );
   await waitFor(() => {
     expect(getByText(orbitDetailsElement, "Loading Orbit data…"));
@@ -129,16 +115,15 @@ test("createOrbitDetailsElement should display a loading indicator", async () =>
 test("createOrbitDetailsElement should trigger 2 requests when the user is not a member", async () => {
   global.fetch = jest
     .fn()
+    // mocks /:workspace/members/:member
     .mockImplementationOnce(mockOrbitAPICall({}, false, 404))
+    // mocks /:workspace/github_user/:username
     .mockImplementationOnce(
       mockOrbitAPICall({ data: { attributes: { contributions_total: 12 } } })
     );
   fireEvent(
     getByRole(orbitDetailsElement, "button"),
-    new MouseEvent("mouseover", {
-      bubbles: true,
-      cancelable: true,
-    })
+    new MouseEvent("mouseover")
   );
   await waitFor(() => {
     expect(getByText(orbitDetailsElement, "Contributed 10+ times on GitHub"));
@@ -149,10 +134,7 @@ test("createOrbitDetailsElement should trigger 2 requests when the user is not a
 test("createOrbitDetailsElement should display Orbit info if the github user is a member", async () => {
   fireEvent(
     getByRole(orbitDetailsElement, "button"),
-    new MouseEvent("mouseover", {
-      bubbles: true,
-      cancelable: true,
-    })
+    new MouseEvent("mouseover")
   );
   await waitFor(() => {
     expect(getByText(orbitDetailsElement, "Contributed 50+ times on GitHub"));
