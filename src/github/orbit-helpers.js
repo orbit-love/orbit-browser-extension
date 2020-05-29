@@ -81,6 +81,9 @@ export const orbitAPI = {
       return {
         success: true,
         status: response.status,
+        orbit_level: data.attributes.orbit_level,
+        reach: data.attributes.reach,
+        points: data.attributes.points,
         contributions_total: data.attributes.contributions_total,
       };
     } catch (err) {

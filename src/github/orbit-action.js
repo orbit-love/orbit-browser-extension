@@ -36,6 +36,9 @@ export async function createOrbitDetailsElement(
     $hasLoaded,
     $contributions_total,
     $contributions_on_this_repo_total,
+    $orbit_level,
+    $reach,
+    $points,
     $success,
     $detailsMenuElement,
     $is_a_member;
@@ -133,7 +136,7 @@ export async function createOrbitDetailsElement(
       $isLoading = true;
       insertContentWhenIsLoading();
 
-      let success, status, contributions_total;
+      let success, status, contributions_total, orbit_level, reach, points;
 
       /**
        * `await Promise.all[]` allows us to trigger both request (member info +
@@ -143,6 +146,9 @@ export async function createOrbitDetailsElement(
         success,
         status,
         contributions_total,
+        orbit_level,
+        reach,
+        points,
       } = await orbitAPI.getMemberContributions(
         ORBIT_CREDENTIALS,
         normalizedGitHubUsername
@@ -166,6 +172,10 @@ export async function createOrbitDetailsElement(
           ORBIT_CREDENTIALS,
           gitHubUsername
         ));
+      } else {
+        $orbit_level = orbit_level;
+        $reach = reach;
+        $points = points;
       }
       $success = success;
       $contributions_total = contributions_total;
@@ -265,6 +275,70 @@ export async function createOrbitDetailsElement(
    */
   function insertContentForMember() {
     /**
+     * <div>Orbit Metrics</div>
+     */
+    const detailsMenuOrbitMetrics = window.document.createElement("div");
+    detailsMenuOrbitMetrics.setAttribute("role", "menuitem");
+    detailsMenuOrbitMetrics.classList.add(
+      "dropdown-item",
+      "dropdown-item-orbit",
+      "no-hover",
+      "orbit-metrics-container",
+      "d-flex"
+    );
+    const orbitLevelMetricContainer = window.document.createElement("div");
+    orbitLevelMetricContainer.classList.add("orbit-metric-container");
+    const orbitLevelMetricIcon = window.document.createElement("img");
+    orbitLevelMetricIcon.setAttribute(
+      "src",
+      chrome.runtime.getURL("icons/icon-orbit-level.png")
+    );
+    orbitLevelMetricContainer.appendChild(orbitLevelMetricIcon);
+    const orbitLevelMetricText = window.document.createElement("span");
+    orbitLevelMetricText.innerHTML = `Orbit <strong>${$orbit_level}</strong>`;
+    orbitLevelMetricContainer.appendChild(orbitLevelMetricText);
+
+    detailsMenuOrbitMetrics.appendChild(orbitLevelMetricContainer);
+
+    const reachMetricContainer = window.document.createElement("div");
+    reachMetricContainer.classList.add("orbit-metric-container");
+    const reachMetricIcon = window.document.createElement("img");
+    reachMetricIcon.setAttribute(
+      "src",
+      chrome.runtime.getURL("icons/icon-reach.png")
+    );
+    reachMetricContainer.appendChild(reachMetricIcon);
+    const reachMetricText = window.document.createElement("span");
+    reachMetricText.innerHTML = `Reach <strong>${$reach}</strong>`;
+    reachMetricContainer.appendChild(reachMetricText);
+
+    detailsMenuOrbitMetrics.appendChild(reachMetricContainer);
+
+    const pointsMetricContainer = window.document.createElement("div");
+    pointsMetricContainer.classList.add("orbit-metric-container");
+    const pointsMetricIcon = window.document.createElement("img");
+    pointsMetricIcon.setAttribute(
+      "src",
+      chrome.runtime.getURL("icons/icon-points.png")
+    );
+    pointsMetricContainer.appendChild(pointsMetricIcon);
+    const pointsMetricText = window.document.createElement("span");
+    pointsMetricText.innerHTML = `Points <strong>${$points}</strong>`;
+    pointsMetricContainer.appendChild(pointsMetricText);
+
+    detailsMenuOrbitMetrics.appendChild(pointsMetricContainer);
+
+    $detailsMenuElement.appendChild(detailsMenuOrbitMetrics);
+
+    /**
+     * <span class="dropdown-divider"></span>
+     */
+    const dropdownDivider1 = window.document.createElement("span");
+    dropdownDivider1.setAttribute("role", "none");
+    dropdownDivider1.classList.add("dropdown-divider");
+    $detailsMenuElement.appendChild(dropdownDivider1);
+
+    /**
      * <span>Contributed X times to this repository</span>
      */
     if (isRepoInWorkspace) {
@@ -304,10 +378,10 @@ export async function createOrbitDetailsElement(
     /**
      * <span class="dropdown-divider"></span>
      */
-    const dropdownDivider = window.document.createElement("span");
-    dropdownDivider.setAttribute("role", "none");
-    dropdownDivider.classList.add("dropdown-divider");
-    $detailsMenuElement.appendChild(dropdownDivider);
+    const dropdownDivider2 = window.document.createElement("span");
+    dropdownDivider2.setAttribute("role", "none");
+    dropdownDivider2.classList.add("dropdown-divider");
+    $detailsMenuElement.appendChild(dropdownDivider2);
 
     /**
      * <a href="…">See X’s profile on Orbit</a>

@@ -29,3 +29,20 @@ details[open] > .timeline-comment-action.orbit-icon-container {
   color: rgb(88, 96, 105) !important;
   background-color: inherit !important;
 }
+
+.orbit-metrics-container {
+  justify-content: space-between;
+}
+
+.orbit-metric-container {
+  align-items: center;
+  display: flex;
+}
+
+.orbit-metrics-container img {
+  width: 16px;
+  height: 16px;
+  position: relative;
+  top: 1px;
+  margin-right: 5px;
+}
