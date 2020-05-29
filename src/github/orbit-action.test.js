@@ -19,6 +19,9 @@ beforeEach(async () => {
           Promise.resolve({
             data: {
               attributes: {
+                orbit_level: 1,
+                reach: 5,
+                points: 9,
                 contributions_total: 62,
               },
             },
@@ -44,7 +47,7 @@ test("createOrbitDetailsElement should return a button and a menu", () => {
   expect(getByRole(orbitDetailsElement, "menu"));
 });
 
-test("createOrbitDetailsElement should trigger 2 fetch requests on mouseover, no fetch requests on repeat mouseover", () => {
+test("createOrbitDetailsElement should trigger 2 fetch requests on mouseover, no fetch requests on repeat mouseover", async () => {
   fireEvent(
     getByRole(orbitDetailsElement, "button"),
     new MouseEvent("mouseover", {
@@ -52,6 +55,9 @@ test("createOrbitDetailsElement should trigger 2 fetch requests on mouseover, no
       cancelable: true,
     })
   );
+  await waitFor(() => {
+    expect(getByText(orbitDetailsElement, "See phacks’s profile on Orbit"));
+  });
   expect(global.fetch).toHaveBeenCalledTimes(2);
   global.fetch.mockClear();
   fireEvent(
@@ -61,6 +67,9 @@ test("createOrbitDetailsElement should trigger 2 fetch requests on mouseover, no
       cancelable: true,
     })
   );
+  await waitFor(() => {
+    expect(getByText(orbitDetailsElement, "See phacks’s profile on Orbit"));
+  });
   expect(global.fetch).toHaveBeenCalledTimes(0);
 });
 
@@ -117,16 +126,9 @@ test("createOrbitDetailsElement should display a loading indicator", async () =>
   });
 });
 
-test("createOrbitDetailsElement should trigger 3 requests when the user is in a workspace repo, but not a member", async () => {
+test("createOrbitDetailsElement should trigger 2 requests when the user is not a member", async () => {
   global.fetch = jest
     .fn()
-    .mockImplementationOnce(() =>
-      Promise.resolve({
-        json: () => Promise.resolve({}),
-        ok: false,
-        status: 404,
-      })
-    )
     .mockImplementationOnce(() =>
       Promise.resolve({
         json: () => Promise.resolve({}),
@@ -157,7 +159,7 @@ test("createOrbitDetailsElement should trigger 3 requests when the user is in a 
   await waitFor(() => {
     expect(getByText(orbitDetailsElement, "Contributed 10+ times on GitHub"));
   });
-  expect(global.fetch).toHaveBeenCalledTimes(3);
+  expect(global.fetch).toHaveBeenCalledTimes(2);
 });
 
 test("createOrbitDetailsElement should display Orbit info if the github user is a member", async () => {
