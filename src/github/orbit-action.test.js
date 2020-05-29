@@ -7,7 +7,7 @@ let orbitDetailsElement;
 
 beforeEach(async () => {
   orbitDetailsElement = await createOrbitDetailsElement(
-    { API_TOKEN: "token", WORKSPACE: "workspace" },
+    { API_TOKEN: "token", WORKSPACE: "my-workspace" },
     "phacks",
     true
   );
@@ -139,5 +139,46 @@ test("createOrbitDetailsElement should display Orbit info if the github user is 
   await waitFor(() => {
     expect(getByText(orbitDetailsElement, "Contributed 50+ times on GitHub"));
     expect(getByText(orbitDetailsElement, "See phacks’s profile on Orbit"));
+  });
+});
+
+test("should create new members for non-members", async () => {
+  global.fetch = jest
+    .fn()
+    // mocks /:workspace/members/:member
+    .mockImplementationOnce(mockOrbitAPICall({}, false, 404))
+    // mocks /:workspace/github_user/:username
+    .mockImplementationOnce(
+      mockOrbitAPICall({ data: { attributes: { contributions_total: 12 } } })
+    )
+    // mocks POST /:workspace/members/
+    .mockImplementationOnce(mockOrbitAPICall({ data: {} }, true, 201));
+  fireEvent(
+    getByRole(orbitDetailsElement, "button"),
+    new MouseEvent("mouseover")
+  );
+  await waitFor(() => {
+    expect(
+      getByText(orbitDetailsElement, "Add phacks to my-workspace on Orbit")
+    );
+  });
+  global.fetch.mockClear();
+  fireEvent(
+    getByText(orbitDetailsElement, "Add phacks to my-workspace on Orbit"),
+    new MouseEvent("click")
+  );
+  await waitFor(() => {
+    expect(getByText(orbitDetailsElement, "Creating the member…"));
+  });
+  expect(global.fetch).toHaveBeenCalledWith(
+    expect.stringContaining("/my-workspace/members"),
+    expect.objectContaining({
+      body: JSON.stringify({ member: { github: "phacks" } }),
+    })
+  );
+  await waitFor(() => {
+    expect(
+      getByText(orbitDetailsElement, "Added! See phacks’s profile on Orbit")
+    );
   });
 });
