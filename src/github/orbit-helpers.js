@@ -218,6 +218,54 @@ export const orbitAPI = {
       };
     }
   },
+  /**
+   * Adds the current comment as an Orbit content to the member
+   *
+   * @param {*} ORBIT_CREDENTIALS the Orbit credentials
+   * @param {*} member the member slug to add the content to
+   *
+   * @returns {success, status}
+   */
+  async addCommentAsContentToMember(
+    ORBIT_CREDENTIALS,
+    member,
+    commentUrl,
+    commentPublishedAt
+  ) {
+    try {
+      const response = await fetch(
+        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/${member}/posts?api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            url: commentUrl,
+            published_at: commentPublishedAt,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+            ...ORBIT_HEADERS,
+          },
+        }
+      );
+      if (!response.ok) {
+        return {
+          success: false,
+          status: response.status,
+        };
+      }
+      const { data } = await response.json();
+      return {
+        success: true,
+        id: data.id,
+        status: response.status,
+      };
+    } catch (err) {
+      console.error(err);
+      return {
+        success: false,
+      };
+    }
+  },
 };
 
 /**

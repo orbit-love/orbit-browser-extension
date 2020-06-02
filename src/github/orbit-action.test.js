@@ -9,7 +9,9 @@ beforeEach(async () => {
   orbitDetailsElement = await createOrbitDetailsElement(
     { API_TOKEN: "token", WORKSPACE: "my-workspace" },
     "phacks",
-    true
+    true,
+    "https://github.com/orbit-love/orbit-model/issues/10#issuecomment-590037251",
+    "2020-02-23T07:55:28Z"
   );
 
   global.fetch = jest
@@ -32,13 +34,6 @@ beforeEach(async () => {
       mockOrbitAPICall({
         data: [],
         included: [],
-      })
-    )
-    // mocks /:workspace/github_user/:username
-    .mockImplementationOnce(() =>
-      Promise.resolve({
-        json: () => Promise.resolve({ data: [], included: [] }),
-        ok: true,
       })
     );
 });
@@ -179,6 +174,42 @@ test("should create new members for non-members", async () => {
   await waitFor(() => {
     expect(
       getByText(orbitDetailsElement, "Added! See phacks’s profile on Orbit")
+    );
+  });
+});
+
+test("should create content for existing members", async () => {
+  global.fetch.mockImplementationOnce(
+    mockOrbitAPICall({ data: { id: 12 } }, true, 201)
+  );
+  fireEvent(
+    getByRole(orbitDetailsElement, "button"),
+    new MouseEvent("mouseover")
+  );
+  await waitFor(() => {
+    expect(getByText(orbitDetailsElement, "Add to phacks’s content"));
+  });
+  global.fetch.mockClear();
+  fireEvent(
+    getByText(orbitDetailsElement, "Add to phacks’s content"),
+    new MouseEvent("click")
+  );
+  await waitFor(() => {
+    expect(getByText(orbitDetailsElement, "Adding the content…"));
+  });
+  expect(global.fetch).toHaveBeenCalledWith(
+    expect.stringContaining("/my-workspace/members/phacks/posts"),
+    expect.objectContaining({
+      body: JSON.stringify({
+        url:
+          "https://github.com/orbit-love/orbit-model/issues/10#issuecomment-590037251",
+        published_at: "2020-02-23T07:55:28Z",
+      }),
+    })
+  );
+  await waitFor(() => {
+    expect(
+      getByText(orbitDetailsElement, "Added! See phacks’s content on Orbit")
     );
   });
 });
