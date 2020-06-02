@@ -1,4 +1,5 @@
 import { getThreshold, orbitAPI } from "./orbit-helpers";
+import { createDropdownItem, createOrbitMetrics } from "./dom-helpers";
 import { ORBIT_API_ROOT_URL } from "../constants";
 
 /**
@@ -204,24 +205,14 @@ export async function createOrbitDetailsElement(
   }
 
   function insertContentWhenNoCredentials() {
-    const missingCredentialsInfo1 = window.document.createElement("span");
-    missingCredentialsInfo1.setAttribute("role", "menuitem");
-    missingCredentialsInfo1.classList.add(
-      "dropdown-item",
-      "dropdown-item-orbit",
-      "no-hover"
+    const missingCredentialsInfo1 = createDropdownItem(
+      "API token or workspace is missing"
     );
-    missingCredentialsInfo1.textContent = `API token or workspace is missing`;
     $detailsMenuElement.appendChild(missingCredentialsInfo1);
 
-    const missingCredentialsInfo2 = window.document.createElement("span");
-    missingCredentialsInfo2.setAttribute("role", "menuitem");
-    missingCredentialsInfo2.classList.add(
-      "dropdown-item",
-      "dropdown-item-orbit",
-      "no-hover"
+    const missingCredentialsInfo2 = createDropdownItem(
+      "Right click the extension icon to access Options"
     );
-    missingCredentialsInfo2.textContent = `Right click the extension icon to access Options`;
     $detailsMenuElement.appendChild(missingCredentialsInfo2);
   }
 
@@ -229,14 +220,9 @@ export async function createOrbitDetailsElement(
    * Create a <span> element to indicate loading and add it to <details-menu> children
    */
   function insertContentWhenIsLoading() {
-    const detailsMenuLoadingIndicator = window.document.createElement("span");
-    detailsMenuLoadingIndicator.setAttribute("role", "menuitem");
-    detailsMenuLoadingIndicator.classList.add(
-      "dropdown-item",
-      "dropdown-item-orbit",
-      "no-hover"
+    const detailsMenuLoadingIndicator = createDropdownItem(
+      "Loading Orbit data…"
     );
-    detailsMenuLoadingIndicator.textContent = `Loading Orbit data…`;
     $detailsMenuElement.appendChild(detailsMenuLoadingIndicator);
   }
 
@@ -259,16 +245,9 @@ export async function createOrbitDetailsElement(
    * Create a <span> indicating there was an error fetching Orbit data.
    */
   function insertContentForError() {
-    const detailsMenuRepositoryContributions = window.document.createElement(
-      "span"
+    const detailsMenuRepositoryContributions = createDropdownItem(
+      "There was an error fetching Orbit data"
     );
-    detailsMenuRepositoryContributions.setAttribute("role", "menuitem");
-    detailsMenuRepositoryContributions.classList.add(
-      "dropdown-item",
-      "dropdown-item-orbit",
-      "no-hover"
-    );
-    detailsMenuRepositoryContributions.textContent = `There was an error fetching Orbit data`;
     $detailsMenuElement.appendChild(detailsMenuRepositoryContributions);
   }
 
@@ -277,58 +256,13 @@ export async function createOrbitDetailsElement(
    */
   function insertContentForMember() {
     /**
-     * <div>Orbit Metrics</div>
+     * <div>Orbit Metrics (orbit level, reach, points)</div>
      */
-    const detailsMenuOrbitMetrics = window.document.createElement("div");
-    detailsMenuOrbitMetrics.setAttribute("role", "menuitem");
-    detailsMenuOrbitMetrics.classList.add(
-      "dropdown-item",
-      "dropdown-item-orbit",
-      "no-hover",
-      "orbit-metrics-container",
-      "d-flex"
+    const detailsMenuOrbitMetrics = createOrbitMetrics(
+      $orbit_level,
+      $reach,
+      $points
     );
-    const orbitLevelMetricContainer = window.document.createElement("div");
-    orbitLevelMetricContainer.classList.add("orbit-metric-container");
-    const orbitLevelMetricIcon = window.document.createElement("img");
-    orbitLevelMetricIcon.setAttribute(
-      "src",
-      chrome.runtime.getURL("icons/icon-orbit-level.png")
-    );
-    orbitLevelMetricContainer.appendChild(orbitLevelMetricIcon);
-    const orbitLevelMetricText = window.document.createElement("span");
-    orbitLevelMetricText.innerHTML = `Orbit <strong>${$orbit_level}</strong>`;
-    orbitLevelMetricContainer.appendChild(orbitLevelMetricText);
-
-    detailsMenuOrbitMetrics.appendChild(orbitLevelMetricContainer);
-
-    const reachMetricContainer = window.document.createElement("div");
-    reachMetricContainer.classList.add("orbit-metric-container");
-    const reachMetricIcon = window.document.createElement("img");
-    reachMetricIcon.setAttribute(
-      "src",
-      chrome.runtime.getURL("icons/icon-reach.png")
-    );
-    reachMetricContainer.appendChild(reachMetricIcon);
-    const reachMetricText = window.document.createElement("span");
-    reachMetricText.innerHTML = `Reach <strong>${$reach}</strong>`;
-    reachMetricContainer.appendChild(reachMetricText);
-
-    detailsMenuOrbitMetrics.appendChild(reachMetricContainer);
-
-    const pointsMetricContainer = window.document.createElement("div");
-    pointsMetricContainer.classList.add("orbit-metric-container");
-    const pointsMetricIcon = window.document.createElement("img");
-    pointsMetricIcon.setAttribute(
-      "src",
-      chrome.runtime.getURL("icons/icon-points.png")
-    );
-    pointsMetricContainer.appendChild(pointsMetricIcon);
-    const pointsMetricText = window.document.createElement("span");
-    pointsMetricText.innerHTML = `Points <strong>${$points}</strong>`;
-    pointsMetricContainer.appendChild(pointsMetricText);
-
-    detailsMenuOrbitMetrics.appendChild(pointsMetricContainer);
 
     $detailsMenuElement.appendChild(detailsMenuOrbitMetrics);
 
@@ -344,37 +278,22 @@ export async function createOrbitDetailsElement(
      * <span>Contributed X times to this repository</span>
      */
     if (isRepoInWorkspace) {
-      const detailsMenuRepositoryContributions = window.document.createElement(
-        "span"
-      );
-      detailsMenuRepositoryContributions.setAttribute("role", "menuitem");
-      detailsMenuRepositoryContributions.classList.add(
-        "dropdown-item",
-        "dropdown-item-orbit",
-        "no-hover"
-      );
-      detailsMenuRepositoryContributions.textContent =
+      const detailsMenuRepositoryContributions = createDropdownItem(
         $contributions_on_this_repo_total === 1
           ? "First contribution to this repository"
           : `Contributed ${getThreshold(
               $contributions_on_this_repo_total
-            )} times to this repository`;
+            )} times to this repository`
+      );
       $detailsMenuElement.appendChild(detailsMenuRepositoryContributions);
     }
 
     /**
      * <span>Contributed Y times to Z repository</span>
      */
-    const detailsMenuTotalContributions = window.document.createElement("span");
-    detailsMenuTotalContributions.setAttribute("role", "menuitem");
-    detailsMenuTotalContributions.classList.add(
-      "dropdown-item",
-      "dropdown-item-orbit",
-      "no-hover"
+    const detailsMenuTotalContributions = createDropdownItem(
+      `Contributed ${getThreshold($contributions_total)} times on GitHub`
     );
-    detailsMenuTotalContributions.textContent = `Contributed ${getThreshold(
-      $contributions_total
-    )} times on GitHub`;
     $detailsMenuElement.appendChild(detailsMenuTotalContributions);
 
     /**
@@ -451,18 +370,9 @@ export async function createOrbitDetailsElement(
    * to the current Orbit workspace.
    */
   function insertContentForNonMember() {
-    const detailsMenuRepositoryContributions = window.document.createElement(
-      "span"
+    const detailsMenuRepositoryContributions = createDropdownItem(
+      `Contributed ${getThreshold($contributions_total)} times on GitHub`
     );
-    detailsMenuRepositoryContributions.setAttribute("role", "menuitem");
-    detailsMenuRepositoryContributions.classList.add(
-      "dropdown-item",
-      "dropdown-item-orbit",
-      "no-hover"
-    );
-    detailsMenuRepositoryContributions.textContent = `Contributed ${getThreshold(
-      $contributions_total
-    )} times on GitHub`;
     $detailsMenuElement.appendChild(detailsMenuRepositoryContributions);
 
     /**
