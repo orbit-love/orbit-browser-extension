@@ -441,6 +441,8 @@ export async function createOrbitDetailsElement(
       event.target.setAttribute("target", "_blank");
       event.target.setAttribute("rel", "noopener");
       event.target.textContent = `Added! See ${gitHubUsername}’s content on Orbit`;
+    } else {
+      event.target.textContent = `There was a problem with the request.`;
     }
   }
 
@@ -508,6 +510,8 @@ export async function createOrbitDetailsElement(
       event.target.setAttribute("target", "_blank");
       event.target.setAttribute("rel", "noopener");
       event.target.textContent = `Added! See ${gitHubUsername}’s profile on Orbit`;
+    } else {
+      event.target.textContent = `There was a problem with the request.`;
     }
   }
 }
