@@ -40,10 +40,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         ".timeline-comment-actions"
       );
       const gitHubUsername = commentHeader.querySelector(".author").innerText;
+      const commentUrl =
+        window.location.href +
+        commentHeader
+          .querySelector("relative-time")
+          .parentElement.getAttribute("href");
+      const commentPublishedAt = commentHeader
+        .querySelector("relative-time")
+        .getAttribute("datetime");
       const orbitActionElement = await createOrbitDetailsElement(
         ORBIT_CREDENTIALS,
         gitHubUsername,
-        isRepoInWorkspace
+        isRepoInWorkspace,
+        commentUrl,
+        commentPublishedAt
       );
       commentActionsElement.insertBefore(
         orbitActionElement,
