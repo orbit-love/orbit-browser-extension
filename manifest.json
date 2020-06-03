@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Orbit",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Get Orbit insights on your community members, directly on GitHub issues and Pull Requests.",
   "short_name": "Orbit",
   "homepage_url": "https://orbit.love",
@@ -31,5 +31,6 @@
   },
   "web_accessible_resources": ["icons/*.png"],
   "options_page": "src/options/options.html",
-  "content_security_policy": "script-src 'self' https://cdn.jsdelivr.net 'unsafe-eval'; object-src 'self'"
+  "content_security_policy": "script-src 'self' https://cdn.jsdelivr.net 'unsafe-eval'; object-src 'self'",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjhINKsJLOLT7AkGSNZrD/3TG96SLKOFgik5v7k/Mu4Erkmvead50nzdQkUZaJYx1EUVzlKFebFkCqvFw6RfrPkzUmiaOJVBQOo2BIvlrIIHpXsUctRp7nfeOrhO3OKCQugUrHivBYWcgqabJCXJjvhAKY9LKBjyZMyzoaipNoNGk15O2NGRAm2uDQntnJupf4m7lH1ot2NHtb/4rU02FRVWpb8AxC6FFSJ7JzDob6Y8CmmD9oIFt2DrN2i4b0v5KH0XbveKLiNICQs1KNZYYsn2kckwjV2HOP9x0tRrQK6RIwRGOWTYi6jgPv0S3pQkqTa6Vd0OWWvRozlDdZhU2WwIDAQAB"
 }
