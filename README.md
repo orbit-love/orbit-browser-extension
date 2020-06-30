@@ -8,7 +8,7 @@
 </h1>
 
 <div align="center">
-  <a href="https://orbit.love">
+  <a href="https://chrome.google.com/webstore/detail/orbit/ibgahekkldapaohbpmpbckmeljidicmn">
     <img alt="screenshot" src="https://user-images.githubusercontent.com/2587348/86142392-6d317b00-baf3-11ea-9c77-8a832bba1ba3.png" width="600"/>
   </a>
 </div>
@@ -16,10 +16,10 @@
 <br />
 
 <p align="center">
-    Add useful developer information right into GitHub issues and PRs.
+    Add useful developer information right into GitHub issues and PRs. <a href="https://chrome.google.com/webstore/detail/orbit/ibgahekkldapaohbpmpbckmeljidicmn">Get it on the Chrome web store</a>.
 </p>
 
-## Installation
+## Local installation
 
 Clone the repository and install the dependencies:
 
