@@ -1,6 +1,6 @@
 # Orbit Chrome extension
 
-![screenshot](https://user-images.githubusercontent.com/2587348/82913428-926c2000-9f6e-11ea-9407-877f5e6bba31.png)
+![screenshot](https://user-images.githubusercontent.com/2587348/86142392-6d317b00-baf3-11ea-9c77-8a832bba1ba3.png)
 
 ## Installation
 
@@ -42,3 +42,7 @@ To deploy a new version of the browser extension:
 - Run `yarn build`;
 - Zip the `extension` folder;
 - On the [Google Webstore Developer Dashboard](https://chrome.google.com/webstore/developer/dashboard) (requires authentication), upload the zip file and submit a new version.
+
+## About Orbit
+
+[Orbit](https://orbit.love) is the Community CRM for developers, helping organizations grow their communities and accelerate technology adoption.
