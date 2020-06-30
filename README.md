@@ -1,6 +1,23 @@
-# Orbit Chrome extension
+<p align="center">
+  <a href="orbit.love">
+    <img alt="Orbit" src="https://app.orbit.love/orbit-logo-color-3x.png" width="120" />
+  </a>
+</p>
+<h1 align="center">
+  Orbit Chrome Extension
+</h1>
 
-![screenshot](https://user-images.githubusercontent.com/2587348/86142392-6d317b00-baf3-11ea-9c77-8a832bba1ba3.png)
+<div align="center">
+  <a href="https://orbit.love">
+    <img alt="screenshot" src="https://user-images.githubusercontent.com/2587348/86142392-6d317b00-baf3-11ea-9c77-8a832bba1ba3.png" width="600"/>
+  </a>
+</div>
+
+<br />
+
+<p align="center">
+    Add useful developer information right into GitHub issues and PRs.
+</p>
 
 ## Installation
 
