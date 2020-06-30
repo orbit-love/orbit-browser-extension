@@ -36,5 +36,9 @@ To use the local API instead of the prod one, change `ORBIT_API_ROOT_URL` in `or
 
 ## Deployment
 
-TBD
+To deploy a new version of the browser extension:
 
+- Update the `manifest.json` version number;
+- Run `yarn build`;
+- Zip the `extension` folder;
+- On the [Google Webstore Developer Dashboard](https://chrome.google.com/webstore/developer/dashboard) (requires authentication), upload the zip file and submit a new version.
