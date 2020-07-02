@@ -16,7 +16,9 @@
 <br />
 
 <p align="center">
-    Add useful developer information right into GitHub issues and PRs. <a href="https://chrome.google.com/webstore/detail/orbit/ibgahekkldapaohbpmpbckmeljidicmn">Get it on the Chrome web store</a> (requires an Orbit account).
+    Add useful developer information right into GitHub issues and PRs.
+    <br />
+    <a href="https://chrome.google.com/webstore/detail/orbit/ibgahekkldapaohbpmpbckmeljidicmn">Get it on the Chrome web store</a> (requires an Orbit account).
 </p>
 
 ## Local installation
