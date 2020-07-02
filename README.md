@@ -9,14 +9,14 @@
 
 <div align="center">
   <a href="https://chrome.google.com/webstore/detail/orbit/ibgahekkldapaohbpmpbckmeljidicmn">
-    <img alt="screenshot" src="https://user-images.githubusercontent.com/2587348/86142392-6d317b00-baf3-11ea-9c77-8a832bba1ba3.png" width="600"/>
+    <img alt="screenshot" src="https://cdn.sanity.io/images/cad8jutx/production/29bbc3dd073bc1b8e027dc56f4064ce157e85d15-800x351.gif" width="600"/>
   </a>
 </div>
 
 <br />
 
 <p align="center">
-    Add useful developer information right into GitHub issues and PRs. <a href="https://chrome.google.com/webstore/detail/orbit/ibgahekkldapaohbpmpbckmeljidicmn">Get it on the Chrome web store</a>.
+    Add useful developer information right into GitHub issues and PRs. <a href="https://chrome.google.com/webstore/detail/orbit/ibgahekkldapaohbpmpbckmeljidicmn">Get it on the Chrome web store</a> (requires an Orbit account).
 </p>
 
 ## Local installation
