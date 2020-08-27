@@ -19,14 +19,16 @@ beforeEach(async () => {
     // mocks /:workspace/members/:member
     .mockImplementationOnce(
       mockOrbitAPICall({
-        data: {
-          attributes: {
-            orbit_level: 1,
-            reach: 5,
-            love: 9,
-            contributions_total: 62,
+        data: [
+          {
+            attributes: {
+              orbit_level: 1,
+              reach: 5,
+              love: 9,
+              contributions_total: 62,
+            },
           },
-        },
+        ],
       })
     )
     // mocks /:workspace/members/:member/activities
@@ -111,7 +113,7 @@ test("createOrbitDetailsElement should trigger 2 requests when the user is not a
   global.fetch = jest
     .fn()
     // mocks /:workspace/members/:member
-    .mockImplementationOnce(mockOrbitAPICall({}, false, 404))
+    .mockImplementationOnce(mockOrbitAPICall({ data: [] }, true, 200))
     // mocks /:workspace/github_user/:username
     .mockImplementationOnce(
       mockOrbitAPICall({ data: { attributes: { contributions_total: 12 } } })
