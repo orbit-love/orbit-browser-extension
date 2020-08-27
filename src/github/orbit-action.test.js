@@ -114,7 +114,7 @@ test("createOrbitDetailsElement should trigger 2 requests when the user is not a
     .mockImplementationOnce(mockOrbitAPICall({}, false, 404))
     // mocks /:workspace/github_user/:username
     .mockImplementationOnce(
-      mockOrbitAPICall({ data: { attributes: { g_contributions_total: 12 } } })
+      mockOrbitAPICall({ data: { attributes: { contributions_total: 12 } } })
     );
   fireEvent(
     getByRole(orbitDetailsElement, "button"),
@@ -144,7 +144,7 @@ test("should create new members for non-members", async () => {
     .mockImplementationOnce(mockOrbitAPICall({}, false, 404))
     // mocks /:workspace/github_user/:username
     .mockImplementationOnce(
-      mockOrbitAPICall({ data: { attributes: { g_contributions_total: 12 } } })
+      mockOrbitAPICall({ data: { attributes: { contributions_total: 12 } } })
     )
     // mocks POST /:workspace/members/
     .mockImplementationOnce(mockOrbitAPICall({ data: {} }, true, 201));

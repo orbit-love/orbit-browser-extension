@@ -166,7 +166,7 @@ export const orbitAPI = {
       return {
         success: true,
         status: response.status,
-        contributions_total: data.attributes.g_contributions_total,
+        contributions_total: data.attributes.contributions_total,
       };
     } catch (err) {
       console.error(err);
