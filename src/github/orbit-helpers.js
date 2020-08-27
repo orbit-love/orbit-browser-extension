@@ -57,14 +57,14 @@ export const orbitAPI = {
    * independently of the repo and return relevant metrics
    *
    * @param {*} ORBIT_CREDENTIALS the Orbit credentials
-   * @param {*} member the member slug to use (the lowercased GitHub username)
+   * @param {*} username the GitHub username
    *
    * @returns {is_a_member, contributions_collection, contributions_total}
    */
-  async getMemberContributions(ORBIT_CREDENTIALS, member) {
+  async getMemberContributions(ORBIT_CREDENTIALS, username) {
     try {
       const response = await fetch(
-        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/${member}?api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
+        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/find?github=${username}&api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
         {
           headers: {
             ...ORBIT_HEADERS,
@@ -78,13 +78,21 @@ export const orbitAPI = {
         };
       }
       const { data } = await response.json();
+      if (data.length == 0) {
+        return {
+          success: false,
+          status: 404,
+        };
+      }
+      const member = data[0];
       return {
         success: true,
         status: response.status,
-        orbit_level: data.attributes.orbit_level,
-        reach: data.attributes.reach,
-        love: data.attributes.love,
-        contributions_total: data.attributes.contributions_total,
+        slug: member.attributes.slug,
+        orbit_level: member.attributes.orbit_level,
+        reach: member.attributes.reach,
+        love: member.attributes.love,
+        contributions_total: member.attributes.contributions_total,
       };
     } catch (err) {
       console.error(err);
@@ -166,7 +174,9 @@ export const orbitAPI = {
       return {
         success: true,
         status: response.status,
-        contributions_total: data.attributes.contributions_total,
+        contributions_total:
+          data.attributes.contributions_total ||
+          data.attributes.g_contributions_total,
       };
     } catch (err) {
       console.error(err);

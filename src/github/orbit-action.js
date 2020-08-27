@@ -43,10 +43,10 @@ export async function createOrbitDetailsElement(
     $reach,
     $love,
     $success,
+    $slug,
     $detailsMenuElement,
     $is_a_member;
 
-  const normalizedGitHubUsername = gitHubUsername.toLowerCase();
   const normalizedWorkspace = ORBIT_CREDENTIALS.WORKSPACE.toLowerCase();
 
   /**
@@ -139,7 +139,7 @@ export async function createOrbitDetailsElement(
       $isLoading = true;
       insertContentWhenIsLoading();
 
-      let success, status, contributions_total, orbit_level, reach, love;
+      let success, status, slug, contributions_total, orbit_level, reach, love;
 
       /**
        * `await Promise.all[]` allows us to trigger both request (member info +
@@ -148,15 +148,17 @@ export async function createOrbitDetailsElement(
       ({
         success,
         status,
+        slug,
         contributions_total,
         orbit_level,
         reach,
         love,
       } = await orbitAPI.getMemberContributions(
         ORBIT_CREDENTIALS,
-        normalizedGitHubUsername
+        gitHubUsername
       ));
       $is_a_member = true;
+      $slug = slug;
 
       /**
        * TODO: clean that up once comment-only users on that issue/repo
@@ -188,7 +190,7 @@ export async function createOrbitDetailsElement(
           contributions_on_this_repo_total,
         } = await orbitAPI.getMemberActivitiesOnThisRepo(
           ORBIT_CREDENTIALS,
-          normalizedGitHubUsername
+          $slug
         );
 
         $contributions_on_this_repo_total = contributions_on_this_repo_total;
@@ -327,7 +329,7 @@ export async function createOrbitDetailsElement(
     detailsMenuLinkProfile.setAttribute("role", "menuitem");
     detailsMenuLinkProfile.setAttribute(
       "href",
-      `${ORBIT_API_ROOT_URL}/${normalizedWorkspace}/members/${normalizedGitHubUsername}`
+      `${ORBIT_API_ROOT_URL}/${normalizedWorkspace}/members/${gitHubUsername}`
     );
     detailsMenuLinkProfile.setAttribute("target", "_blank");
     detailsMenuLinkProfile.setAttribute("rel", "noopener");
@@ -348,14 +350,14 @@ export async function createOrbitDetailsElement(
 
     const { success, id } = await orbitAPI.addCommentAsContentToMember(
       ORBIT_CREDENTIALS,
-      normalizedGitHubUsername,
+      gitHubUsername,
       commentUrl,
       commentPublishedAt
     );
     if (success) {
       event.target.setAttribute(
         "href",
-        `${ORBIT_API_ROOT_URL}/${normalizedWorkspace}/members/${normalizedGitHubUsername}/posts/${id}`
+        `${ORBIT_API_ROOT_URL}/${normalizedWorkspace}/members/${gitHubUsername}/posts/${id}`
       );
       event.target.setAttribute("target", "_blank");
       event.target.setAttribute("rel", "noopener");
@@ -415,7 +417,7 @@ export async function createOrbitDetailsElement(
     if (success) {
       event.target.setAttribute(
         "href",
-        `${ORBIT_API_ROOT_URL}/${normalizedWorkspace}/members/${normalizedGitHubUsername}`
+        `${ORBIT_API_ROOT_URL}/${normalizedWorkspace}/members/${gitHubUsername}`
       );
       event.target.setAttribute("target", "_blank");
       event.target.setAttribute("rel", "noopener");
