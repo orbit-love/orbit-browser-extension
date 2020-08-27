@@ -47,7 +47,7 @@ export function getThreshold(number) {
 }
 
 /**
- * Helper object containing methods to call specific API endpoints:
+ * Helper object containing methods to call specific API endlove:
  * - `orbitAPI#getMemberContributions`
  * - `orbitAPI#getMemberActivitiesOnThisRepo`
  */
@@ -83,7 +83,7 @@ export const orbitAPI = {
         status: response.status,
         orbit_level: data.attributes.orbit_level,
         reach: data.attributes.reach,
-        points: data.attributes.points,
+        love: data.attributes.love,
         contributions_total: data.attributes.contributions_total,
       };
     } catch (err) {

@@ -6,7 +6,7 @@ export const createDropdownItem = (text) => {
   return spanElement;
 };
 
-export const createOrbitMetrics = (orbitLevel, reach, points) => {
+export const createOrbitMetrics = (orbitLevel, reach, love) => {
   const detailsMenuOrbitMetrics = window.document.createElement("div");
   detailsMenuOrbitMetrics.setAttribute("role", "menuitem");
   detailsMenuOrbitMetrics.classList.add(
@@ -31,12 +31,12 @@ export const createOrbitMetrics = (orbitLevel, reach, points) => {
   );
   detailsMenuOrbitMetrics.appendChild(reachMetricContainer);
 
-  const pointsMetricContainer = createOrbitMetric(
-    "Points",
-    points,
-    "icons/icon-points.png"
+  const loveMetricContainer = createOrbitMetric(
+    "Love",
+    love.toFixed(1),
+    "icons/icon-love.png"
   );
-  detailsMenuOrbitMetrics.appendChild(pointsMetricContainer);
+  detailsMenuOrbitMetrics.appendChild(loveMetricContainer);
 
   return detailsMenuOrbitMetrics;
 };

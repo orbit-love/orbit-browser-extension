@@ -10,7 +10,7 @@
         "occurred_at": "2020-01-05T15:27:02.000Z",
         "updated_at": "2020-03-21T02:31:16.447Z",
         "type": "PullRequestActivity",
-        "points": 6,
+        "love": 6,
         "g_merged": true,
         "g_merged_at": "2020-01-05T15:27:02.000Z",
         "g_title": "fix typo"
@@ -46,7 +46,7 @@
         "occurred_at": "2020-01-04T23:54:48.000Z",
         "updated_at": "2020-03-21T02:40:34.590Z",
         "type": "StarActivity",
-        "points": 2,
+        "love": 2,
         "g_starred_at": "2020-01-04T23:54:48.000Z"
       },
       "relationships": {
@@ -80,7 +80,7 @@
         "occurred_at": "2020-01-04T23:54:48.000Z",
         "updated_at": "2020-04-21T08:32:15.526Z",
         "type": "StarActivity",
-        "points": 2,
+        "love": 2,
         "g_starred_at": "2020-01-04T23:54:48.000Z"
       },
       "relationships": {

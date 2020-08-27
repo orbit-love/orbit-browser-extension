@@ -41,7 +41,7 @@ export async function createOrbitDetailsElement(
     $contributions_on_this_repo_total,
     $orbit_level,
     $reach,
-    $points,
+    $love,
     $success,
     $detailsMenuElement,
     $is_a_member;
@@ -139,7 +139,7 @@ export async function createOrbitDetailsElement(
       $isLoading = true;
       insertContentWhenIsLoading();
 
-      let success, status, contributions_total, orbit_level, reach, points;
+      let success, status, contributions_total, orbit_level, reach, love;
 
       /**
        * `await Promise.all[]` allows us to trigger both request (member info +
@@ -151,7 +151,7 @@ export async function createOrbitDetailsElement(
         contributions_total,
         orbit_level,
         reach,
-        points,
+        love,
       } = await orbitAPI.getMemberContributions(
         ORBIT_CREDENTIALS,
         normalizedGitHubUsername
@@ -178,7 +178,7 @@ export async function createOrbitDetailsElement(
       } else {
         $orbit_level = orbit_level;
         $reach = reach;
-        $points = points;
+        $love = love;
       }
       $success = success;
       $contributions_total = contributions_total;
@@ -256,12 +256,12 @@ export async function createOrbitDetailsElement(
    */
   function insertContentForMember() {
     /**
-     * <div>Orbit Metrics (orbit level, reach, points)</div>
+     * <div>Orbit Metrics (orbit level, reach, love)</div>
      */
     const detailsMenuOrbitMetrics = createOrbitMetrics(
       $orbit_level,
       $reach,
-      $points
+      $love
     );
 
     $detailsMenuElement.appendChild(detailsMenuOrbitMetrics);

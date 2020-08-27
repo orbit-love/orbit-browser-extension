@@ -23,7 +23,7 @@ beforeEach(async () => {
           attributes: {
             orbit_level: 1,
             reach: 5,
-            points: 9,
+            love: 9,
             contributions_total: 62,
           },
         },
