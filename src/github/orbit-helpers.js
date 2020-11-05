@@ -78,13 +78,13 @@ export const orbitAPI = {
         };
       }
       const { data } = await response.json();
-      if (data.length == 0) {
+      if (!data) {
         return {
           success: false,
           status: 404,
         };
       }
-      const member = data[0];
+      const member = data;
       return {
         success: true,
         status: response.status,
