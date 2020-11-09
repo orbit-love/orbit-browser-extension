@@ -156,7 +156,7 @@ export const orbitAPI = {
   async getGitHubUserContributions(ORBIT_CREDENTIALS, username) {
     try {
       const response = await fetch(
-        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/github_user/${username}?api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
+        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/identities/github/${username}?api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
         {
           headers: {
             ...ORBIT_HEADERS,
@@ -174,9 +174,7 @@ export const orbitAPI = {
       return {
         success: true,
         status: response.status,
-        contributions_total:
-          data.attributes.contributions_total ||
-          data.attributes.g_contributions_total,
+        contributions_total: data.attributes.g_contributions_total,
       };
     } catch (err) {
       console.error(err);

@@ -160,6 +160,14 @@ export async function createOrbitDetailsElement(
       $is_a_member = true;
       $slug = slug;
 
+      ({
+        contributions_total,
+        success,
+      } = await orbitAPI.getGitHubUserContributions(
+        ORBIT_CREDENTIALS,
+        gitHubUsername
+      ));
+
       /**
        * TODO: clean that up once comment-only users on that issue/repo
        * will have been integrated as full workspace members.
@@ -170,13 +178,6 @@ export async function createOrbitDetailsElement(
       if (status === 404) {
         isRepoInWorkspace = false;
         $is_a_member = false;
-        ({
-          contributions_total,
-          success,
-        } = await orbitAPI.getGitHubUserContributions(
-          ORBIT_CREDENTIALS,
-          gitHubUsername
-        ));
       } else {
         $orbit_level = orbit_level;
         $reach = reach;
