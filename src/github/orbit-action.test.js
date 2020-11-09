@@ -19,17 +19,18 @@ beforeEach(async () => {
     // mocks /:workspace/members/:member
     .mockImplementationOnce(
       mockOrbitAPICall({
-        data: [
-          {
-            attributes: {
-              orbit_level: 1,
-              reach: 5,
-              love: 9,
-              contributions_total: 62,
-            },
+        data: {
+          attributes: {
+            orbit_level: 1,
+            reach: 5,
+            love: 9,
           },
-        ],
+        },
       })
+    )
+    // mocks /:workspace/identities/github/:username
+    .mockImplementationOnce(
+      mockOrbitAPICall({ data: { attributes: { g_contributions_total: 12 } } })
     )
     // mocks /:workspace/members/:member/activities
     .mockImplementationOnce(
@@ -50,7 +51,7 @@ test("createOrbitDetailsElement should return a button and a menu", () => {
   expect(getByRole(orbitDetailsElement, "menu"));
 });
 
-test("createOrbitDetailsElement should trigger 2 fetch requests on mouseover, no fetch requests on repeat mouseover", async () => {
+test("createOrbitDetailsElement should trigger 3 fetch requests on mouseover, no fetch requests on repeat mouseover", async () => {
   fireEvent(
     getByRole(orbitDetailsElement, "button"),
     new MouseEvent("mouseover")
@@ -58,7 +59,7 @@ test("createOrbitDetailsElement should trigger 2 fetch requests on mouseover, no
   await waitFor(() => {
     expect(getByText(orbitDetailsElement, "See phacks’s profile on Orbit"));
   });
-  expect(global.fetch).toHaveBeenCalledTimes(2);
+  expect(global.fetch).toHaveBeenCalledTimes(3);
   global.fetch.mockClear();
   fireEvent(
     getByRole(orbitDetailsElement, "button"),
@@ -107,16 +108,21 @@ test("createOrbitDetailsElement should display a loading indicator", async () =>
   await waitFor(() => {
     expect(getByText(orbitDetailsElement, "Loading Orbit data…"));
   });
+  await waitFor(() => {
+    expect(getByText(orbitDetailsElement, "See phacks’s profile on Orbit"));
+  });
 });
 
 test("createOrbitDetailsElement should trigger 2 requests when the user is not a member", async () => {
   global.fetch = jest
     .fn()
     // mocks /:workspace/members/:member
-    .mockImplementationOnce(mockOrbitAPICall({ data: [] }, true, 200))
-    // mocks /:workspace/github_user/:username
     .mockImplementationOnce(
-      mockOrbitAPICall({ data: { attributes: { contributions_total: 12 } } })
+      mockOrbitAPICall({ error: "not found" }, false, 404)
+    )
+    // mocks /:workspace/identities/github/:username
+    .mockImplementationOnce(
+      mockOrbitAPICall({ data: { attributes: { g_contributions_total: 12 } } })
     );
   fireEvent(
     getByRole(orbitDetailsElement, "button"),
@@ -134,7 +140,7 @@ test("createOrbitDetailsElement should display Orbit info if the github user is 
     new MouseEvent("mouseover")
   );
   await waitFor(() => {
-    expect(getByText(orbitDetailsElement, "Contributed 50+ times on GitHub"));
+    expect(getByText(orbitDetailsElement, "Contributed 10+ times on GitHub"));
     expect(getByText(orbitDetailsElement, "See phacks’s profile on Orbit"));
   });
 });
@@ -144,9 +150,9 @@ test("should create new members for non-members", async () => {
     .fn()
     // mocks /:workspace/members/:member
     .mockImplementationOnce(mockOrbitAPICall({}, false, 404))
-    // mocks /:workspace/github_user/:username
+    // mocks /:workspace/identities/github/:username
     .mockImplementationOnce(
-      mockOrbitAPICall({ data: { attributes: { contributions_total: 12 } } })
+      mockOrbitAPICall({ data: { attributes: { g_contributions_total: 12 } } })
     )
     // mocks POST /:workspace/members/
     .mockImplementationOnce(mockOrbitAPICall({ data: {} }, true, 201));
