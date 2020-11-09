@@ -139,42 +139,20 @@ export async function createOrbitDetailsElement(
       $isLoading = true;
       insertContentWhenIsLoading();
 
-      let success, status, slug, contributions_total, orbit_level, reach, love;
-
       /**
        * `await Promise.all[]` allows us to trigger both request (member info +
-       * member activities) at the same time, resulting in better performance.
+       * github user info) at the same time, resulting in better performance.
        */
-      ({
-        success,
-        status,
-        slug,
-        contributions_total,
-        orbit_level,
-        reach,
-        love,
-      } = await orbitAPI.getMemberContributions(
-        ORBIT_CREDENTIALS,
-        gitHubUsername
-      ));
+      const [
+        { status, slug, orbit_level, reach, love },
+        { contributions_total, success: successGithubUserRequest },
+      ] = await Promise.all([
+        orbitAPI.getMemberContributions(ORBIT_CREDENTIALS, gitHubUsername),
+        orbitAPI.getGitHubUserContributions(ORBIT_CREDENTIALS, gitHubUsername),
+      ]);
       $is_a_member = true;
       $slug = slug;
 
-      ({
-        contributions_total,
-        success,
-      } = await orbitAPI.getGitHubUserContributions(
-        ORBIT_CREDENTIALS,
-        gitHubUsername
-      ));
-
-      /**
-       * TODO: clean that up once comment-only users on that issue/repo
-       * will have been integrated as full workspace members.
-       *
-       * In the meantime, we fallback (not very gracefully) to the same
-       * behavior as when the repository is not in the workspace.
-       */
       if (status === 404) {
         isRepoInWorkspace = false;
         $is_a_member = false;
@@ -183,7 +161,7 @@ export async function createOrbitDetailsElement(
         $reach = reach;
         $love = love;
       }
-      $success = success;
+      $success = successGithubUserRequest;
       $contributions_total = contributions_total;
       if (isRepoInWorkspace) {
         const {

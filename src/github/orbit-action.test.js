@@ -117,7 +117,9 @@ test("createOrbitDetailsElement should trigger 2 requests when the user is not a
   global.fetch = jest
     .fn()
     // mocks /:workspace/members/:member
-    .mockImplementationOnce(mockOrbitAPICall({ error: "not found" }, true, 404))
+    .mockImplementationOnce(
+      mockOrbitAPICall({ error: "not found" }, false, 404)
+    )
     // mocks /:workspace/identities/github/:username
     .mockImplementationOnce(
       mockOrbitAPICall({ data: { attributes: { g_contributions_total: 12 } } })
