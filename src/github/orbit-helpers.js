@@ -306,7 +306,7 @@ export function _filterActivitiesByRepo(
    * Then filter the activities by that repositoryId
    */
   return activities.filter(
-    (data) => data.relationships.repository.data?.id === repositoryId
+    (data) => data.relationships.repository?.data?.id === repositoryId
   );
 }
 
