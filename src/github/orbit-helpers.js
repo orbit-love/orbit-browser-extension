@@ -92,6 +92,7 @@ export const orbitAPI = {
         orbit_level: member.attributes.orbit_level,
         reach: member.attributes.reach,
         love: member.attributes.love,
+        tag_list: member.attributes.tag_list,
         contributions_total: member.attributes.contributions_total,
       };
     } catch (err) {

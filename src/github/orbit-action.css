@@ -46,3 +46,19 @@ details[open] > .timeline-comment-action.orbit-icon-container {
   top: 1px;
   margin-right: 5px;
 }
+
+.orbit-tags-container {
+  flex-wrap: wrap;
+  max-width: 250px;
+}
+
+.orbit-tag {
+  background-color: #ebe7fe;
+  margin: 3px 4px 3px 0px;
+  border-radius: 4px;
+  display: inline-block;
+  padding: 2px 8px 3px;
+  color: #5b41cf;
+  font-family: Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+  font-size: 12px;
+}
