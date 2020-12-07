@@ -55,3 +55,24 @@ const createOrbitMetric = (label, value, iconPath) => {
 
   return orbitMetricContainer;
 };
+
+export const createTagList = (tagList) => {
+  const detailsMenuTagList = window.document.createElement("div");
+  detailsMenuTagList.setAttribute("role", "menuitem");
+  detailsMenuTagList.classList.add(
+    "dropdown-item",
+    "dropdown-item-orbit",
+    "no-hover",
+    "orbit-tags-container",
+    "d-flex"
+  );
+
+  tagList.forEach((tag) => {
+    let tagText = window.document.createElement("span");
+    tagText.classList.add("orbit-tag");
+    tagText.innerHTML = `${tag}`;
+    detailsMenuTagList.appendChild(tagText);
+  });
+
+  return detailsMenuTagList;
+};

@@ -24,6 +24,7 @@ beforeEach(async () => {
             orbit_level: 1,
             reach: 5,
             love: 9,
+            tag_list: ["Speaker"],
           },
         },
       })
@@ -140,6 +141,7 @@ test("createOrbitDetailsElement should display Orbit info if the github user is 
     new MouseEvent("mouseover")
   );
   await waitFor(() => {
+    expect(getByText(orbitDetailsElement, "Speaker"));
     expect(getByText(orbitDetailsElement, "Contributed 10+ times on GitHub"));
     expect(getByText(orbitDetailsElement, "See phacks’s profile on Orbit"));
   });

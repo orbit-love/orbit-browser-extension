@@ -1,5 +1,9 @@
 import { getThreshold, orbitAPI } from "./orbit-helpers";
-import { createDropdownItem, createOrbitMetrics } from "./dom-helpers";
+import {
+  createDropdownItem,
+  createOrbitMetrics,
+  createTagList,
+} from "./dom-helpers";
 import { ORBIT_API_ROOT_URL } from "../constants";
 
 /**
@@ -42,6 +46,7 @@ export async function createOrbitDetailsElement(
     $orbit_level,
     $reach,
     $love,
+    $tag_list,
     $success,
     $slug,
     $detailsMenuElement,
@@ -144,7 +149,7 @@ export async function createOrbitDetailsElement(
        * github user info) at the same time, resulting in better performance.
        */
       const [
-        { status, slug, orbit_level, reach, love },
+        { status, slug, orbit_level, reach, love, tag_list },
         { contributions_total, success: successGithubUserRequest },
       ] = await Promise.all([
         orbitAPI.getMemberContributions(ORBIT_CREDENTIALS, gitHubUsername),
@@ -160,6 +165,7 @@ export async function createOrbitDetailsElement(
         $orbit_level = orbit_level;
         $reach = reach;
         $love = love;
+        $tag_list = tag_list;
       }
       $success = successGithubUserRequest;
       $contributions_total = contributions_total;
@@ -246,6 +252,16 @@ export async function createOrbitDetailsElement(
     );
 
     $detailsMenuElement.appendChild(detailsMenuOrbitMetrics);
+
+    /**
+     * <div>Tag list</div>
+     */
+
+    if ($tag_list.length > 0) {
+      const detailsMenuTagList = createTagList($tag_list);
+
+      $detailsMenuElement.appendChild(detailsMenuTagList);
+    }
 
     /**
      * <span class="dropdown-divider"></span>
