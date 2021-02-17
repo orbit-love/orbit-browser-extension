@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Orbit",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Get Orbit insights on your community members, directly on GitHub issues and Pull Requests.",
   "short_name": "Orbit",
   "homepage_url": "https://orbit.love",
