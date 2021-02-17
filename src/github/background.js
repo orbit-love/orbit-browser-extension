@@ -36,6 +36,20 @@ document.addEventListener("DOMContentLoaded", async () => {
      * the “comment action” section of the DOM.
      */
     for (const commentHeader of commentHeaders) {
+      /**
+       * GitHub pjax sometimes triggers the `githubInjection` multiple times on a single page,
+       * which resulted in multiple Orbit icons being visible side by side. I was able to reproduce this
+       * on a Pull Request, by switching back and forth from the Conversation to the Files Changes tabs.
+       *
+       * We thus check if Orbit is already instanciated; if that’s the case, we bail out.
+       */
+      let isOrbitActionElementAlreadyInstantiated = commentHeader.querySelector(
+        ".orbit-icon-container"
+      );
+      if (isOrbitActionElementAlreadyInstantiated) {
+        break;
+      }
+
       const commentActionsElement = commentHeader.querySelector(
         ".timeline-comment-actions"
       );
@@ -48,6 +62,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const commentPublishedAt = commentHeader
         .querySelector("relative-time")
         .getAttribute("datetime");
+
       const orbitActionElement = await createOrbitDetailsElement(
         ORBIT_CREDENTIALS,
         gitHubUsername,
