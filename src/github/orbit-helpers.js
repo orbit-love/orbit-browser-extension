@@ -64,7 +64,7 @@ export const orbitAPI = {
   async getMemberContributions(ORBIT_CREDENTIALS, username) {
     try {
       const response = await fetch(
-        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/find?github=${username}&api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
+        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/find?source=github&username=${username}&api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
         {
           headers: {
             ...ORBIT_HEADERS,
@@ -93,7 +93,7 @@ export const orbitAPI = {
         reach: member.attributes.reach,
         love: member.attributes.love,
         tag_list: member.attributes.tag_list,
-        contributions_total: member.attributes.contributions_total,
+        contributions_total: member.attributes.contributions_total
       };
     } catch (err) {
       console.error(err);
