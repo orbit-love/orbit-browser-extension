@@ -324,7 +324,7 @@ export async function createOrbitDetailsElement(
     detailsMenuLinkProfile.setAttribute("role", "menuitem");
     detailsMenuLinkProfile.setAttribute(
       "href",
-      `${ORBIT_API_ROOT_URL}/${normalizedWorkspace}/members/${gitHubUsername}`
+      `${ORBIT_API_ROOT_URL}/${normalizedWorkspace}/members/${$slug}`
     );
     detailsMenuLinkProfile.setAttribute("target", "_blank");
     detailsMenuLinkProfile.setAttribute("rel", "noopener");
@@ -352,7 +352,7 @@ export async function createOrbitDetailsElement(
     if (success) {
       event.target.setAttribute(
         "href",
-        `${ORBIT_API_ROOT_URL}/${normalizedWorkspace}/members/${gitHubUsername}/posts/${id}`
+        `${ORBIT_API_ROOT_URL}/${normalizedWorkspace}/members/${$slug}/posts/${id}`
       );
       event.target.setAttribute("target", "_blank");
       event.target.setAttribute("rel", "noopener");
@@ -412,7 +412,7 @@ export async function createOrbitDetailsElement(
     if (success) {
       event.target.setAttribute(
         "href",
-        `${ORBIT_API_ROOT_URL}/${normalizedWorkspace}/members/${gitHubUsername}`
+        `${ORBIT_API_ROOT_URL}/${normalizedWorkspace}/members/${$slug}`
       );
       event.target.setAttribute("target", "_blank");
       event.target.setAttribute("rel", "noopener");
