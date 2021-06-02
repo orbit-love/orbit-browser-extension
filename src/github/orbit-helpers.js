@@ -243,12 +243,15 @@ export const orbitAPI = {
   ) {
     try {
       const response = await fetch(
-        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/${member}/posts?api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
+        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/${member}/activities?api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
         {
           method: "POST",
           body: JSON.stringify({
-            url: commentUrl,
-            published_at: commentPublishedAt,
+            link: commentUrl,
+            title: "Commented on a GitHub issue",
+            description: "Commented on a GitHub issue",
+            key: "issue_comment:created", 
+            occurred_at: commentPublishedAt,
           }),
           headers: {
             "Content-Type": "application/json",
