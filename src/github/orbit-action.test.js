@@ -208,12 +208,14 @@ test("should create content for existing members", async () => {
     expect(getByText(orbitDetailsElement, "Adding the content…"));
   });
   expect(global.fetch).toHaveBeenCalledWith(
-    expect.stringContaining("/my-workspace/members/phacks/posts"),
+    expect.stringContaining("/my-workspace/members/phacks/activities"),
     expect.objectContaining({
       body: JSON.stringify({
-        url:
-          "https://github.com/orbit-love/orbit-model/issues/10#issuecomment-590037251",
-        published_at: "2020-02-23T07:55:28Z",
+        link: "https://github.com/orbit-love/orbit-model/issues/10#issuecomment-590037251",
+        title: "Commented on a GitHub issue",
+        description: "Commented on a GitHub issue",
+        key: "issue_comment:created", 
+        occurred_at: "2020-02-23T07:55:28Z"
       }),
     })
   );
