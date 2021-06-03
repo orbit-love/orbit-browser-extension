@@ -247,11 +247,11 @@ export const orbitAPI = {
         {
           method: "POST",
           body: JSON.stringify({
+            activity_type: "post",
             link: commentUrl,
-            title: "Commented on a GitHub issue",
-            description: "Commented on a GitHub issue",
-            key: "issue_comment:created", 
-            occurred_at: commentPublishedAt,
+            title: "Commented on GitHub",
+            description: "Commented on GitHub",
+            occurred_at: commentPublishedAt
           }),
           headers: {
             "Content-Type": "application/json",
