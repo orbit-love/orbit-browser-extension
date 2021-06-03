@@ -412,7 +412,7 @@ export async function createOrbitDetailsElement(
     if (success) {
       event.target.setAttribute(
         "href",
-        `${ORBIT_API_ROOT_URL}/${normalizedWorkspace}/members/${$slug}`
+        `${ORBIT_API_ROOT_URL}/${normalizedWorkspace}/members/${gitHubUsername}`
       );
       event.target.setAttribute("target", "_blank");
       event.target.setAttribute("rel", "noopener");
