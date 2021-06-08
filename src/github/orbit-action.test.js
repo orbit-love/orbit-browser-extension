@@ -213,8 +213,6 @@ test("should create content for existing members", async () => {
       body: JSON.stringify({
         activity_type: "content",
         url: "https://github.com/orbit-love/orbit-model/issues/10#issuecomment-590037251",
-        title: "Commented on GitHub",
-        description: "Commented on GitHub",
         occurred_at: "2020-02-23T07:55:28Z"
       }),
     })
