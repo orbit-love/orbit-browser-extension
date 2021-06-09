@@ -24,6 +24,7 @@ beforeEach(async () => {
             orbit_level: 1,
             reach: 5,
             love: 9,
+            slug: "phacks",
             tag_list: ["Speaker"],
           },
         },
@@ -214,7 +215,7 @@ test("should create content for existing members", async () => {
         activity_type: "content",
         url: "https://github.com/orbit-love/orbit-model/issues/10#issuecomment-590037251",
         occurred_at: "2020-02-23T07:55:28Z"
-      }),
+      })
     })
   );
   await waitFor(() => {
