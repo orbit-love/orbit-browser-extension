@@ -345,7 +345,7 @@ export async function createOrbitDetailsElement(
 
     const { success, id } = await orbitAPI.addCommentAsContentToMember(
       ORBIT_CREDENTIALS,
-      gitHubUsername,
+      $slug,
       commentUrl,
       commentPublishedAt
     );
