@@ -324,7 +324,7 @@ export async function createOrbitDetailsElement(
     detailsMenuLinkProfile.setAttribute("role", "menuitem");
     detailsMenuLinkProfile.setAttribute(
       "href",
-      `${ORBIT_API_ROOT_URL}/${normalizedWorkspace}/members/${gitHubUsername}`
+      `${ORBIT_API_ROOT_URL}/${normalizedWorkspace}/members/${$slug}`
     );
     detailsMenuLinkProfile.setAttribute("target", "_blank");
     detailsMenuLinkProfile.setAttribute("rel", "noopener");
@@ -345,14 +345,14 @@ export async function createOrbitDetailsElement(
 
     const { success, id } = await orbitAPI.addCommentAsContentToMember(
       ORBIT_CREDENTIALS,
-      gitHubUsername,
+      $slug,
       commentUrl,
       commentPublishedAt
     );
     if (success) {
       event.target.setAttribute(
         "href",
-        `${ORBIT_API_ROOT_URL}/${normalizedWorkspace}/members/${gitHubUsername}/posts/${id}`
+        `${ORBIT_API_ROOT_URL}/${normalizedWorkspace}/activities/${id}`
       );
       event.target.setAttribute("target", "_blank");
       event.target.setAttribute("rel", "noopener");

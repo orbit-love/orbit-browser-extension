@@ -24,6 +24,7 @@ beforeEach(async () => {
             orbit_level: 1,
             reach: 5,
             love: 9,
+            slug: "phacks",
             tag_list: ["Speaker"],
           },
         },
@@ -208,13 +209,13 @@ test("should create content for existing members", async () => {
     expect(getByText(orbitDetailsElement, "Adding the content…"));
   });
   expect(global.fetch).toHaveBeenCalledWith(
-    expect.stringContaining("/my-workspace/members/phacks/posts"),
+    expect.stringContaining("/my-workspace/members/phacks/activities"),
     expect.objectContaining({
       body: JSON.stringify({
-        url:
-          "https://github.com/orbit-love/orbit-model/issues/10#issuecomment-590037251",
-        published_at: "2020-02-23T07:55:28Z",
-      }),
+        activity_type: "content",
+        url: "https://github.com/orbit-love/orbit-model/issues/10#issuecomment-590037251",
+        occurred_at: "2020-02-23T07:55:28Z"
+      })
     })
   );
   await waitFor(() => {
