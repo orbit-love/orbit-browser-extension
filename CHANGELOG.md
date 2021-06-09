@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [0.3.3] - 2020-06-09
+
+### Fixed
+
+- Fixed an issue where a merged Orbit user would have a different URL slug to their GitHub username
+- Fixed API requests for adding content to a member profile
+- Changed the format of requests to update some endpoints
 ## [0.3.2] - 2020-02-17
 
 ### Fixed
