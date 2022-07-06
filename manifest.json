@@ -12,7 +12,8 @@
       "run_at": "document_start",
       "matches": [
         "https://github.com/*/*/pull/*",
-        "https://github.com/*/*/issues/*"
+        "https://github.com/*/*/issues/*",
+        "https://github.com/*/*/discussions/*"
       ],
       "css": ["src/github/orbit-action.css"],
       "js": ["src/github/background.js"]
