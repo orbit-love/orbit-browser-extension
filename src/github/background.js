@@ -17,12 +17,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const isRepoInWorkspace = await isRepoInOrbitWorkspace();
 
-  const pageType = getPageType();
-
-  if (pageType === null) {
-    return;
-  }
-
   /**
    * GitHub uses pjax (https://github.com/MoOx/pjax) to speed its
    * navigation, a bit like Turbolinks does.
@@ -31,6 +25,12 @@ document.addEventListener("DOMContentLoaded", async () => {
    * to make the extension work even after a page navigation.
    */
   gitHubInjection(async () => {
+    const pageType = getPageType();
+
+    if (pageType === null) {
+      return;
+    }
+
     /**
      * Find all the “comment headers” on the page (this extension is only
      * active on /pull/* and /issues/* URLs).
