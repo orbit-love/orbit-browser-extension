@@ -170,18 +170,20 @@ export async function createOrbitDetailsElement(
       $success = successGithubUserRequest;
       $contributions_total = contributions_total;
       if (isRepoInWorkspace) {
-        const {
-          success,
-          contributions_on_this_repo_total,
-        } = await orbitAPI.getMemberActivitiesOnThisRepo(
-          ORBIT_CREDENTIALS,
-          $slug
-        );
+        const { success, contributions_on_this_repo_total } =
+          await orbitAPI.getMemberActivitiesOnThisRepo(
+            ORBIT_CREDENTIALS,
+            $slug
+          );
 
         $contributions_on_this_repo_total = contributions_on_this_repo_total;
         $success = success;
       }
       $hasLoaded = true;
+
+      if ($orbit_level === null) {
+        $orbit_level = "None";
+      }
 
       /**
        * Clean up the event listener and display the actual content.

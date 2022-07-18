@@ -28,7 +28,7 @@
   "dependencies": {
     "@babel/runtime": "^7.10.0",
     "chrome-extension-async": "^3.4.1",
-    "github-injection": "^1.0.1",
+    "github-injection": "^1.1.0",
     "tailwindcss": "^1.4.6"
   }
 }

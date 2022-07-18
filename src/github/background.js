@@ -3,6 +3,7 @@ import gitHubInjection from "github-injection";
 
 import { getOrbitCredentials, isRepoInOrbitWorkspace } from "./orbit-helpers";
 import { createOrbitDetailsElement } from "./orbit-action";
+import { getPageType } from "./page-helpers";
 
 document.addEventListener("DOMContentLoaded", async () => {
   /**
@@ -24,18 +25,25 @@ document.addEventListener("DOMContentLoaded", async () => {
    * to make the extension work even after a page navigation.
    */
   gitHubInjection(async () => {
+    const pageType = getPageType();
+
+    if (pageType === null) {
+      return;
+    }
+
     /**
      * Find all the “comment headers” on the page (this extension is only
      * active on /pull/* and /issues/* URLs).
      */
-    const commentHeaders = window.document.getElementsByClassName(
-      "timeline-comment-header"
-    );
+    const comments = window.document.getElementsByClassName("timeline-comment");
     /**
      * For each comment header, create and add the Orbit action to
      * the “comment action” section of the DOM.
      */
-    for (const commentHeader of commentHeaders) {
+    for (const comment of comments) {
+      if (!comment.querySelector(".timeline-comment-actions")) {
+        break;
+      }
       /**
        * GitHub pjax sometimes triggers the `githubInjection` multiple times on a single page,
        * which resulted in multiple Orbit icons being visible side by side. I was able to reproduce this
@@ -43,25 +51,40 @@ document.addEventListener("DOMContentLoaded", async () => {
        *
        * We thus check if Orbit is already instanciated; if that’s the case, we bail out.
        */
-      let isOrbitActionElementAlreadyInstantiated = commentHeader.querySelector(
+      let isOrbitActionElementAlreadyInstantiated = comment.querySelector(
         ".orbit-icon-container"
       );
       if (isOrbitActionElementAlreadyInstantiated) {
         break;
       }
 
-      const commentActionsElement = commentHeader.querySelector(
+      const commentActionsElement = comment.querySelector(
         ".timeline-comment-actions"
       );
-      const gitHubUsername = commentHeader.querySelector(".author").innerText;
+
+      // For discussions, some messages do not have the .author class, so we target the span right close to the avatar img.
+      // For issues + PRs (and some discussion messages), the author element has the .author classs.
+      const authorElement =
+        comment.querySelector('a > img[class~="avatar"] + div > span') ||
+        comment.querySelector(".author");
+
+      const gitHubUsername = authorElement.innerText;
+
+      const relativeTimeElement = comment.querySelector("relative-time");
+
+      if (!relativeTimeElement) {
+        break;
+      }
+
       const commentUrl =
         window.location.href +
-        commentHeader
-          .querySelector("relative-time")
-          .parentElement.getAttribute("href");
-      const commentPublishedAt = commentHeader
-        .querySelector("relative-time")
-        .getAttribute("datetime");
+        relativeTimeElement.parentElement.getAttribute("href");
+
+      const commentPublishedAt = relativeTimeElement.getAttribute("datetime");
+
+      if (!commentPublishedAt) {
+        break;
+      }
 
       const orbitActionElement = await createOrbitDetailsElement(
         ORBIT_CREDENTIALS,
@@ -70,10 +93,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         commentUrl,
         commentPublishedAt
       );
-      commentActionsElement.insertBefore(
-        orbitActionElement,
-        commentActionsElement.firstChild
-      );
+
+      // The element must be inserted at different places if it's in a Discussions message
+      if (pageType === "ISSUE" || pageType === "PULL_REQUEST") {
+        commentActionsElement.insertBefore(
+          orbitActionElement,
+          commentActionsElement.children[0]
+        );
+      } else {
+        commentActionsElement.children[0].insertBefore(
+          orbitActionElement,
+          commentActionsElement.children[0].children[0]
+        );
+      }
     }
   });
 });
