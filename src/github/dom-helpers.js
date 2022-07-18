@@ -33,7 +33,7 @@ export const createOrbitMetrics = (orbitLevel, reach, love) => {
 
   const loveMetricContainer = createOrbitMetric(
     "Love",
-    parseFloat(love).toFixed(1),
+    love === null ? "N/A" : parseFloat(love).toFixed(1),
     "icons/icon-love.png"
   );
   detailsMenuOrbitMetrics.appendChild(loveMetricContainer);

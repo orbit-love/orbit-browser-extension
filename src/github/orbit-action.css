@@ -37,6 +37,8 @@ details[open] > .timeline-comment-action.orbit-icon-container {
 .orbit-metric-container {
   align-items: center;
   display: flex;
+  padding-left: 3px;
+  padding-right: 3px;
 }
 
 .orbit-metrics-container img {
@@ -44,7 +46,7 @@ details[open] > .timeline-comment-action.orbit-icon-container {
   height: 16px;
   position: relative;
   top: 1px;
-  margin-right: 5px;
+  margin-right: 3px;
 }
 
 .orbit-tags-container {
