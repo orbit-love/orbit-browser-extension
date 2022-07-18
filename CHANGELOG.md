@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [0.4.0] - 2022-07-18
+
+### Added
+
+- Added support for GitHub Discussions (#24)
+
+### Fixed
+
+- Fixed an issue with the widget not displaying on page transitions(4e040d5)
+
+### Improved
+
+- Better display of Orbit metrics (d5d6c45)
+
 ## [0.3.4] - 2021-11-17
 
 ### Fixed
