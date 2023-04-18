@@ -55,6 +55,12 @@ h1 {
   font-size: 23px;
 }
 
+select,
+textarea,
+input[type="text"] {
+  padding: 7px 12px;
+}
+
 input,
 select,
 textarea {
@@ -69,8 +75,6 @@ textarea {
   border-color: transparent;
   font-weight: 400;
   outline: 0;
-  padding-left: 12px;
-  padding-right: 12px;
   border-radius: 5px;
   --text-opacity: 1;
   color: #4f565f;
@@ -78,8 +82,6 @@ textarea {
   transition-duration: 100ms;
   transition-property: background-color, border-color, color, fill, stroke,
     opacity, box-shadow, transform;
-  padding-bottom: 7px;
-  padding-top: 7px;
 }
 
 label,
