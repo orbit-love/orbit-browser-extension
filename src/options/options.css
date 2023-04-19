@@ -55,12 +55,6 @@ h1 {
   font-size: 23px;
 }
 
-select,
-textarea,
-input[type="text"] {
-  padding: 7px 12px;
-}
-
 input,
 select,
 textarea {
