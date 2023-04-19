@@ -115,7 +115,7 @@ export const orbitAPI = {
     const repositoryFullName = _getRepositoryFullName();
     try {
       const response = await fetch(
-        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/activities?member_id=${member}&properties=github_repository:${repositoryFullName}&items=100&api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
+        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/activities?member_id=${member}&properties=github_repository:${repositoryFullName}&items=25&api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
         {
           headers: {
             ...ORBIT_HEADERS,
