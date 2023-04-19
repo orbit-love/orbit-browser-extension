@@ -93,7 +93,7 @@ export const orbitAPI = {
         reach: member.attributes.reach,
         love: member.attributes.love,
         tag_list: member.attributes.tag_list,
-        contributions_total: member.attributes.contributions_total
+        contributions_total: member.attributes.contributions_total,
       };
     } catch (err) {
       console.error(err);
@@ -112,9 +112,14 @@ export const orbitAPI = {
    * @returns {is_a_member, contributions_on_this_repo_total}
    */
   async getMemberActivitiesOnThisRepo(ORBIT_CREDENTIALS, member) {
+    const repositoryFullName = _getRepositoryFullName();
     try {
       const response = await fetch(
-        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/${member}/activities?api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
+        `${ORBIT_API_ROOT_URL}/${
+          ORBIT_CREDENTIALS.WORKSPACE
+        }/activities?member_id=${member}&properties=${encodeURIComponent(
+          `github_repository:${repositoryFullName}`
+        )}&api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
         {
           headers: {
             ...ORBIT_HEADERS,
@@ -128,7 +133,6 @@ export const orbitAPI = {
         };
       }
       const { data, included } = await response.json();
-      const repositoryFullName = _getRepositoryFullName();
       const filteredActivities = _filterActivitiesByRepo(
         data,
         included,
@@ -249,7 +253,7 @@ export const orbitAPI = {
           body: JSON.stringify({
             activity_type: "content",
             url: commentUrl,
-            occurred_at: commentPublishedAt
+            occurred_at: commentPublishedAt,
           }),
           headers: {
             "Content-Type": "application/json",
