@@ -23,7 +23,7 @@
     </header>
     <div class="pt-6 mx-auto w-full max-w-screen-sm">
       <h1 class="mb-6">Orbit Extension Settings</h1>
-      <div x-data="orbit()" x-init="init()">
+      <div x-data="orbit()">
         <div class="field">
           <div class="mb-2 text-lg">
             <label for="token">API Token</label>
@@ -44,7 +44,7 @@
               <div class="mb-2 text-lg">
                 <span class="label-like">Select a workspace</span>
               </div>
-              <template x-if="workspaces" x-for="workspace in workspaces" :key="workspace">
+              <template x-for="workspace in workspaces" :key="workspace.id">
                 <label class="inline-flex items-center mr-2">
                   <input type="radio" class="form-radio" name="workspace" x-bind:value="workspace.attributes.slug"
                     x-model="selectedWorkspaceSlug" />
