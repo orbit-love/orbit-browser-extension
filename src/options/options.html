@@ -23,7 +23,7 @@
     </header>
     <div class="pt-6 mx-auto w-full max-w-screen-sm">
       <h1 class="mb-6">Orbit Extension Settings</h1>
-      <div x-data="orbit()">
+      <div x-data="orbit">
         <div class="field">
           <div class="mb-2 text-lg">
             <label for="token">API Token</label>
@@ -32,7 +32,7 @@
             autocomplete="off" />
         </div>
 
-        <button id="save" @click="fetchWorkspaces()" class="mr-2">
+        <button id="save" @click="fetchWorkspaces" class="mr-2">
           Check token
         </button>
         <span x-show="tokenCheckStatus.success !== undefined" x-text="tokenCheckStatus.message"
@@ -54,7 +54,7 @@
             </div>
           </div>
 
-          <button id="save" @click="save()" class="mr-2">
+          <button id="save" @click="save" class="mr-2">
             Save
           </button>
           <span x-show="saveStatus.success !== undefined" x-text="saveStatus.message"
