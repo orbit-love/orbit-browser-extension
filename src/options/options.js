@@ -92,32 +92,49 @@ window.orbit = () => ({
     );
     return result;
   },
+  /**
+   * Break array of repositories into chunks of 100, and
+   * store them independently in Chrome storage
+   *
+   * @param {String} workspaceSlug the slug of the Orbit workspace, used to generate a key for the repositories
+   * @param {Array<String>} repositories the un-chunked array of repository names
+   *
+   * @returns Array<String> the addresses of the chunked repositories
+   */
   _persistRepositories(workspaceSlug, repositories) {
     // Addresses of the chunked repositories so we can retrieve them later
     let repository_keys = [];
+    let counter = 1;
 
-    // Used to number the chunked repository keys
-    let j = 1;
-
-    // Break repositories down into chunks of 100 &
-    // store them separately
-    // IE if there are 240 repositories, they will be saved as:
+    // If there are 240 repositories for workspace "sally", they will be saved as:
     //
     // sally:repositories:1 // Repositories 0-100
     // sally:repositories:2 // Repositories 101-200
     // sally:repositories:3 // Repositories 201-240
     while (repositories.length > 0) {
-      let key = `${workspaceSlug}:repositories:${j}`;
+      let key = `${workspaceSlug}:repositories:${counter}`;
 
       repository_keys.push(key);
       chrome.storage.sync.set({
         [key]: repositories.splice(0, 100),
       });
-      j++;
+      counter++;
     }
 
     return repository_keys;
   },
+  /**
+   * Build the object of data to persist, including:
+   * - token: the users API token
+   * - workspace: slug of the selected workspace
+   * - repository_keys: addresses of the chunked repositories
+   *
+   * @param {String} token the users API token
+   * @param {String} workspaceSlug the slug of the Orbit workspace, used to generate a key for the repositories
+   * @param {Array<String>} repositories the un-chunked array of repository names
+   *
+   * @returns {token, workspace, repository_keys}
+   */
   _buildStorageObject(token, workspaceSlug, repositories) {
     const storageObject = {};
 
