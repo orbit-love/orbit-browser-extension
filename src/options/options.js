@@ -1,4 +1,5 @@
 import "chrome-extension-async";
+import Alpine from "alpinejs";
 
 import { ORBIT_API_ROOT_URL, ORBIT_HEADERS } from "../constants";
 
@@ -77,11 +78,12 @@ window.orbit = () => ({
     const currentWorkspace = this.workspaces.filter(
       (item) => item.attributes.slug === this.selectedWorkspaceSlug
     )[0];
-    const allRepoIdsForCurrentWorkspace = currentWorkspace.relationships.repositories.data.reduce(
-      (repoIdsAccumulator, repositoryData) =>
-        (repoIdsAccumulator = repoIdsAccumulator.concat([repositoryData.id])),
-      []
-    );
+    const allRepoIdsForCurrentWorkspace =
+      currentWorkspace.relationships.repositories.data.reduce(
+        (repoIdsAccumulator, repositoryData) =>
+          (repoIdsAccumulator = repoIdsAccumulator.concat([repositoryData.id])),
+        []
+      );
     const result = allRepoIdsForCurrentWorkspace.map(
       (repositoryId) =>
         this.repositories.filter(
@@ -92,7 +94,8 @@ window.orbit = () => ({
   },
   save() {
     let that = this;
-    let repositoriesFullNameForWorkspace = this._findAllReposFullNameByWorkspaceSlug();
+    let repositoriesFullNameForWorkspace =
+      this._findAllReposFullNameByWorkspaceSlug();
     chrome.storage.sync.set(
       {
         token: this.token,
@@ -107,3 +110,7 @@ window.orbit = () => ({
     );
   },
 });
+
+// Initialise Alpine
+window.Alpine = Alpine;
+Alpine.start();
