@@ -37,7 +37,6 @@ window.orbit = () => ({
         const { data, included } = await response.json();
         workspaces = data;
         repositories = included.filter((item) => item.type === "repository");
-        console.log(repositories);
       } catch (err) {
         console.error(err);
       }
@@ -162,13 +161,6 @@ window.orbit = () => ({
     chrome.storage.sync.set(storageData, function () {
       that.saveStatus.success = true;
       that.saveStatus.message = "Saved successfully, you can close this page.";
-    });
-
-    // TESTING: Retrieving & logging the stored data
-    chrome.storage.sync.get("repository_keys", ({ repository_keys }) => {
-      chrome.storage.sync.get(repository_keys[0], (repositories) => {
-        console.log("Repositories", repositories);
-      });
     });
   },
 });
