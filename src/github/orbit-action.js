@@ -307,7 +307,10 @@ export async function createOrbitDetailsElement(
      * <a href="…">Add to to X’s content</a>
      */
     const detailsMenuLinkContent = window.document.createElement("a");
-    detailsMenuLinkContent.setAttribute("aria-label", "See profile on Orbit");
+    detailsMenuLinkContent.setAttribute(
+      "aria-label",
+      `Add to ${gitHubUsername}’s content`
+    );
     detailsMenuLinkContent.setAttribute("role", "menuitem");
     detailsMenuLinkContent.classList.add(
       "dropdown-item",
