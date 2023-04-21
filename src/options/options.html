@@ -35,6 +35,11 @@
         <button id="save" @click="fetchWorkspaces" class="mr-2">
           Check token
         </button>
+
+        <button id="save" @click="startOAuthFlow(getOAuthToken)" class="mr-2">
+          Start OAuth
+        </button>
+
         <span x-show="tokenCheckStatus.success !== undefined" x-text="tokenCheckStatus.message"
           x-bind:class="tokenCheckStatus.success ? 'text-green-500' : 'text-red-500'"></span>
 
