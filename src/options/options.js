@@ -142,14 +142,15 @@ document.addEventListener("alpine:init", () => {
      */
     _buildStorageObject(token, workspaceSlug, repositories) {
       const storageObject = {};
+      const repository_keys = this._persistRepositories(
+        workspaceSlug,
+        repositories
+      );
 
       // Set common variables
       storageObject["token"] = token;
       storageObject["workspace"] = workspaceSlug;
-      storageObject["repository_keys"] = this._persistRepositories(
-        workspaceSlug,
-        repositories
-      );
+      storageObject["repository_keys"] = repository_keys;
 
       return storageObject;
     },
