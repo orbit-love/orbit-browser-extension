@@ -8,10 +8,12 @@ export async function getOrbitCredentials() {
   const items = await chrome.storage.sync.get({
     token: "",
     workspace: "",
+    accessToken: "",
   });
   return {
     API_TOKEN: items.token,
     WORKSPACE: items.workspace.toLowerCase(),
+    ACCESS_TOKEN: items.accessToken,
   };
 }
 
@@ -64,10 +66,11 @@ export const orbitAPI = {
   async getMemberContributions(ORBIT_CREDENTIALS, username) {
     try {
       const response = await fetch(
-        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/find?source=github&username=${username}&api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
+        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/find?source=github&username=${username}`,
         {
           headers: {
             ...ORBIT_HEADERS,
+            Authorization: `Bearer ${ORBIT_CREDENTIALS.ACCESS_TOKEN}`,
           },
         }
       );
@@ -93,7 +96,7 @@ export const orbitAPI = {
         reach: member.attributes.reach,
         love: member.attributes.love,
         tag_list: member.attributes.tag_list,
-        contributions_total: member.attributes.contributions_total
+        contributions_total: member.attributes.contributions_total,
       };
     } catch (err) {
       console.error(err);
@@ -249,7 +252,7 @@ export const orbitAPI = {
           body: JSON.stringify({
             activity_type: "content",
             url: commentUrl,
-            occurred_at: commentPublishedAt
+            occurred_at: commentPublishedAt,
           }),
           headers: {
             "Content-Type": "application/json",
