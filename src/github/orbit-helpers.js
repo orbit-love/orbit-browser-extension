@@ -110,9 +110,10 @@ export const orbitAPI = {
    * @returns {is_a_member, contributions_on_this_repo_total}
    */
   async getMemberActivitiesOnThisRepo(ORBIT_CREDENTIALS, member) {
+    const repositoryFullName = _getRepositoryFullName();
     try {
       const response = await fetch(
-        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/${member}/activities?api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
+        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/activities?member_id=${member}&properties=github_repository:${repositoryFullName}&items=25&api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
         {
           headers: {
             ...ORBIT_HEADERS,
@@ -125,17 +126,11 @@ export const orbitAPI = {
           status: response.status,
         };
       }
-      const { data, included } = await response.json();
-      const repositoryFullName = _getRepositoryFullName();
-      const filteredActivities = _filterActivitiesByRepo(
-        data,
-        included,
-        repositoryFullName
-      );
+      const { data } = await response.json();
       return {
         success: true,
         status: response.status,
-        contributions_on_this_repo_total: filteredActivities.length,
+        contributions_on_this_repo_total: data.length,
       };
     } catch (err) {
       console.error(err);
@@ -275,40 +270,6 @@ export const orbitAPI = {
     }
   },
 };
-
-/**
- * Filters all activities from a member and returns only those
- * that are attached to the given repositoryFullName.
- *
- * @param {*} activities as returned by Orbit API
- * @param {*} included as returned by Orbit API
- * @param {*} repositoryFullName the full name of the current repository
- *
- * @returns a filtered list of activities.
- */
-export function _filterActivitiesByRepo(
-  activities,
-  included,
-  repositoryFullName
-) {
-  /**
-   * First, find out the internal repositoryId by filtering the `included`
-   * data by type === repository and full_name === repositoryFullName
-   */
-  const filterIncludedByTypeRepository = (data) => data.type === "repository";
-  const filterIncludedByRepositoryFullName = (data) =>
-    data.attributes.full_name === repositoryFullName;
-  const repositoryId = included
-    .filter(filterIncludedByTypeRepository)
-    .filter(filterIncludedByRepositoryFullName)[0]?.id;
-
-  /**
-   * Then filter the activities by that repositoryId
-   */
-  return activities.filter(
-    (data) => data.relationships.repository?.data?.id === repositoryId
-  );
-}
 
 /**
  * Returns the current repository full name based on the current URL.
