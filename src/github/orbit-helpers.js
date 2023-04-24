@@ -117,10 +117,11 @@ export const orbitAPI = {
   async getMemberActivitiesOnThisRepo(ORBIT_CREDENTIALS, member) {
     try {
       const response = await fetch(
-        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/${member}/activities?api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
+        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/${member}/activities`,
         {
           headers: {
             ...ORBIT_HEADERS,
+            Authorization: `Bearer ${ORBIT_CREDENTIALS.ACCESS_TOKEN}`,
           },
         }
       );
@@ -160,10 +161,12 @@ export const orbitAPI = {
   async getGitHubUserContributions(ORBIT_CREDENTIALS, username) {
     try {
       const response = await fetch(
-        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/identities/github/${username}?api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
+        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/identities/github/${username}`,
         {
+          method: "GET",
           headers: {
             ...ORBIT_HEADERS,
+            Authorization: `Bearer ${ORBIT_CREDENTIALS.ACCESS_TOKEN}`,
           },
         }
       );
@@ -198,7 +201,7 @@ export const orbitAPI = {
   async addMemberToWorkspace(ORBIT_CREDENTIALS, username) {
     try {
       const response = await fetch(
-        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members?api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
+        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members`,
         {
           method: "POST",
           body: JSON.stringify({
@@ -209,6 +212,7 @@ export const orbitAPI = {
           headers: {
             "Content-Type": "application/json",
             ...ORBIT_HEADERS,
+            Authorization: `Bearer ${ORBIT_CREDENTIALS.ACCESS_TOKEN}`,
           },
         }
       );
@@ -246,7 +250,7 @@ export const orbitAPI = {
   ) {
     try {
       const response = await fetch(
-        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/${member}/activities?api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
+        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/${member}/activities`,
         {
           method: "POST",
           body: JSON.stringify({
@@ -257,6 +261,7 @@ export const orbitAPI = {
           headers: {
             "Content-Type": "application/json",
             ...ORBIT_HEADERS,
+            Authorization: `Bearer ${ORBIT_CREDENTIALS.ACCESS_TOKEN}`,
           },
         }
       );
