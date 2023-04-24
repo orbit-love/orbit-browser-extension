@@ -333,9 +333,7 @@ export async function _fetchRepositories() {
   // Backwards compatibility - if we do not have repository keys,
   //  default to how we used to store them
   if (repository_keys === undefined) {
-    const { repositories } = await chrome.storage.sync.get({
-      repositories: "",
-    });
+    const { repositories } = await chrome.storage.sync.get("repositories");
 
     return repositories;
   }
