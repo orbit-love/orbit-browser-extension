@@ -330,6 +330,16 @@ export function _getRepositoryFullName() {
 export async function _fetchRepositories() {
   const { repository_keys } = await chrome.storage.sync.get("repository_keys");
 
+  // Backwards compatibility - if we do not have repository keys,
+  //  default to how we used to store them
+  if (repository_keys === undefined) {
+    const { repositories } = await chrome.storage.sync.get({
+      repositories: "",
+    });
+
+    return repositories;
+  }
+
   // Map the repositories to an array of "fetch from storage" promises
   const promises = repository_keys.map((key) => chrome.storage.sync.get(key));
 
