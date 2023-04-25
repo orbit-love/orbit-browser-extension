@@ -152,7 +152,7 @@ document.addEventListener("alpine:init", () => {
         implicitGrantUrl: "http://localhost:3000/oauth/authorize",
         clientId: OAUTH_CLIENT_ID,
         responseType: "code",
-        scopes: "",
+        scopes: "read write",
         codeChallengeMethod: "S256",
       };
 
