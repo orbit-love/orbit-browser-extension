@@ -125,8 +125,8 @@ export const orbitAPI = {
     );
 
     const { params, headers } = _configureRequest(ORBIT_CREDENTIALS);
-
     url.search = params.toString();
+
     try {
       const response = await fetch(url, {
         headers: headers,
@@ -165,17 +165,17 @@ export const orbitAPI = {
    * @returns {total_issue_contributions, total_pull_request_contributions}
    */
   async getGitHubUserContributions(ORBIT_CREDENTIALS, username) {
+    const url = new URL(
+      `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/identities/github/${username}`
+    );
+
+    const { params, headers } = _configureRequest(ORBIT_CREDENTIALS);
+    url.search = params.toString();
+
     try {
-      const response = await fetch(
-        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/identities/github/${username}`,
-        {
-          method: "GET",
-          headers: {
-            ...ORBIT_HEADERS,
-            Authorization: `Bearer ${ORBIT_CREDENTIALS.ACCESS_TOKEN}`,
-          },
-        }
-      );
+      const response = await fetch(url, {
+        headers: headers,
+      });
 
       if (!response.ok) {
         return {
@@ -205,23 +205,28 @@ export const orbitAPI = {
    * @returns {success, status}
    */
   async addMemberToWorkspace(ORBIT_CREDENTIALS, username) {
+    const url = new URL(
+      `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members`
+    );
+
+    const { params, headers } = _configureRequest(
+      ORBIT_CREDENTIALS,
+      {},
+      { "Content-Type": "application/json" }
+    );
+
+    url.search = params.toString();
+
     try {
-      const response = await fetch(
-        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members`,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            member: {
-              github: username,
-            },
-          }),
-          headers: {
-            "Content-Type": "application/json",
-            ...ORBIT_HEADERS,
-            Authorization: `Bearer ${ORBIT_CREDENTIALS.ACCESS_TOKEN}`,
+      const response = await fetch(url, {
+        headers: headers,
+        method: "POST",
+        body: JSON.stringify({
+          member: {
+            github: username,
           },
-        }
-      );
+        }),
+      });
 
       if (!response.ok) {
         return {
@@ -254,23 +259,28 @@ export const orbitAPI = {
     commentUrl,
     commentPublishedAt
   ) {
+    const url = new URL(
+      `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/${member}/activities`
+    );
+
+    const { params, headers } = _configureRequest(
+      ORBIT_CREDENTIALS,
+      {},
+      { "Content-Type": "application/json" }
+    );
+
+    url.search = params.toString();
+
     try {
-      const response = await fetch(
-        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/${member}/activities`,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            activity_type: "content",
-            url: commentUrl,
-            occurred_at: commentPublishedAt,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-            ...ORBIT_HEADERS,
-            Authorization: `Bearer ${ORBIT_CREDENTIALS.ACCESS_TOKEN}`,
-          },
-        }
-      );
+      const response = await fetch(url, {
+        headers: headers,
+        method: "POST",
+        body: JSON.stringify({
+          activity_type: "content",
+          url: commentUrl,
+          occurred_at: commentPublishedAt,
+        }),
+      });
       if (!response.ok) {
         return {
           success: false,
