@@ -64,16 +64,25 @@ export const orbitAPI = {
    * @returns {is_a_member, contributions_collection, contributions_total}
    */
   async getMemberContributions(ORBIT_CREDENTIALS, username) {
+    const url = new URL(
+      `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/find`
+    );
+
+    const requestParams = new URLSearchParams();
+    requestParams.append("source", "github");
+    requestParams.append("username", username);
+
+    const { params, headers } = _configureRequest(
+      ORBIT_CREDENTIALS,
+      requestParams
+    );
+
+    url.search = params.toString();
+
     try {
-      const response = await fetch(
-        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/find?source=github&username=${username}`,
-        {
-          headers: {
-            ...ORBIT_HEADERS,
-            Authorization: `Bearer ${ORBIT_CREDENTIALS.ACCESS_TOKEN}`,
-          },
-        }
-      );
+      const response = await fetch(url, {
+        headers: headers,
+      });
       if (!response.ok) {
         return {
           success: false,
@@ -115,16 +124,20 @@ export const orbitAPI = {
    * @returns {is_a_member, contributions_on_this_repo_total}
    */
   async getMemberActivitiesOnThisRepo(ORBIT_CREDENTIALS, member) {
+    const url = new URL(
+      `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/${member}/activities`
+    );
+
+    const { params, headers } = _configureRequest(
+      ORBIT_CREDENTIALS,
+      new URLSearchParams()
+    );
+
+    url.search = params.toString();
     try {
-      const response = await fetch(
-        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/${member}/activities`,
-        {
-          headers: {
-            ...ORBIT_HEADERS,
-            Authorization: `Bearer ${ORBIT_CREDENTIALS.ACCESS_TOKEN}`,
-          },
-        }
-      );
+      const response = await fetch(url, {
+        headers: headers,
+      });
       if (!response.ok) {
         return {
           success: false,
@@ -340,4 +353,27 @@ export function _getRepositoryFullName() {
   return `${window.location.pathname.split("/")[1]}/${
     window.location.pathname.split("/")[2]
   }`;
+}
+
+function _configureRequest(ORBIT_CREDENTIALS, params, headers = {}) {
+  // If the OAuth token is present, do not include the API key as a param
+  if (!!ORBIT_CREDENTIALS.ACCESS_TOKEN) {
+    return {
+      headers: {
+        ...headers,
+        ...ORBIT_HEADERS,
+        Authorization: `Bearer ${ORBIT_CREDENTIALS.ACCESS_TOKEN}`,
+      },
+      params: params,
+    };
+  }
+
+  // Otherwise, fall back to the API key
+  params.append("api_key", ORBIT_CREDENTIALS.API_TOKEN);
+  return {
+    headers: {
+      ...ORBIT_HEADERS,
+    },
+    params: params,
+  };
 }
