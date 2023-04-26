@@ -68,14 +68,10 @@ export const orbitAPI = {
       `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/find`
     );
 
-    const requestParams = new URLSearchParams();
-    requestParams.append("source", "github");
-    requestParams.append("username", username);
-
-    const { params, headers } = _configureRequest(
-      ORBIT_CREDENTIALS,
-      requestParams
-    );
+    const { params, headers } = _configureRequest(ORBIT_CREDENTIALS, {
+      source: "github",
+      username: username,
+    });
 
     url.search = params.toString();
 
@@ -128,10 +124,7 @@ export const orbitAPI = {
       `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/${member}/activities`
     );
 
-    const { params, headers } = _configureRequest(
-      ORBIT_CREDENTIALS,
-      new URLSearchParams()
-    );
+    const { params, headers } = _configureRequest(ORBIT_CREDENTIALS);
 
     url.search = params.toString();
     try {
@@ -355,6 +348,17 @@ export function _getRepositoryFullName() {
   }`;
 }
 
+/**
+ * Sets authentication for a request
+ * If OAuth is present, prefers that
+ *
+ * @param {Object} ORBIT_CREDENTIALS the Orbit credentials
+ * @param {Object} params any additional params to include in the request
+ * @param {Object} headers any additional headers to include in the request
+ *
+ * @returns {Object}
+ * @returns {URLSearchParams}
+ */
 function _configureRequest(ORBIT_CREDENTIALS, params, headers = {}) {
   // If the OAuth token is present, do not include the API key as a param
   if (!!ORBIT_CREDENTIALS.ACCESS_TOKEN) {
@@ -364,16 +368,19 @@ function _configureRequest(ORBIT_CREDENTIALS, params, headers = {}) {
         ...ORBIT_HEADERS,
         Authorization: `Bearer ${ORBIT_CREDENTIALS.ACCESS_TOKEN}`,
       },
-      params: params,
+      params: new URLSearchParams(params),
     };
   }
 
   // Otherwise, fall back to the API key
-  params.append("api_key", ORBIT_CREDENTIALS.API_TOKEN);
   return {
     headers: {
+      ...headers,
       ...ORBIT_HEADERS,
     },
-    params: params,
+    params: new URLSearchParams({
+      ...params,
+      api_key: ORBIT_CREDENTIALS.API_TOKEN,
+    }),
   };
 }
