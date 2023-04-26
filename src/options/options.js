@@ -4,7 +4,7 @@ import Alpine from "alpinejs";
 import {
   ORBIT_API_ROOT_URL,
   OAUTH_CLIENT_ID,
-  ORBIT_HEADERS,
+  configureRequest,
 } from "../constants";
 
 document.addEventListener("alpine:init", () => {
@@ -22,24 +22,35 @@ document.addEventListener("alpine:init", () => {
       message: "",
     },
     async init() {
-      let tokenFromStorage;
-      let selectedWorkspaceSlugFromStorage;
+      let apiKeyFromStorage,
+        selectedWorkspaceSlugFromStorage,
+        accessTokenFromStorage;
       let workspaces = [];
       let repositories = [];
       const items = await chrome.storage.sync.get({
         token: "",
         workspace: "",
+        accessToken: "",
       });
-      tokenFromStorage = items.token;
+
+      apiKeyFromStorage = items.token;
       selectedWorkspaceSlugFromStorage = items.workspace;
-      if (tokenFromStorage) {
+      accessTokenFromStorage = items.accessToken;
+
+      if (!!apiKeyFromStorage || !!accessTokenFromStorage) {
+        const url = new URL(`${ORBIT_API_ROOT_URL}/workspaces`);
+
+        const { params, headers } = configureRequest({
+          ACCESS_TOKEN: accessTokenFromStorage,
+          API_TOKEN: apiKeyFromStorage,
+        });
+
+        url.search = params.toString();
+
         try {
-          const response = await fetch(
-            `${ORBIT_API_ROOT_URL}/workspaces?api_key=${tokenFromStorage}`,
-            {
-              headers: { ...ORBIT_HEADERS },
-            }
-          );
+          const response = await fetch(url, {
+            headers: headers,
+          });
           const { data, included } = await response.json();
           workspaces = data;
           repositories = included.filter((item) => item.type === "repository");
@@ -48,19 +59,25 @@ document.addEventListener("alpine:init", () => {
         }
       }
       this.tokenCheckStatus.success = true;
-      this.token = tokenFromStorage;
+      this.token = apiKeyFromStorage;
+      this.accessToken = accessTokenFromStorage;
       this.selectedWorkspaceSlug = selectedWorkspaceSlugFromStorage;
       this.workspaces = workspaces;
       this.repositories = repositories;
     },
     async fetchWorkspaces() {
+      const url = new URL(`${ORBIT_API_ROOT_URL}/workspaces`);
+
+      const { params, headers } = configureRequest({
+        ACCESS_TOKEN: this.accessToken,
+        API_TOKEN: this.token,
+      });
+
+      url.search = params.toString();
       try {
-        const response = await fetch(
-          `${ORBIT_API_ROOT_URL}/workspaces?api_key=${this.token}`,
-          {
-            headers: { ...ORBIT_HEADERS },
-          }
-        );
+        const response = await fetch(url, {
+          headers: headers,
+        });
         if (!response.ok) {
           this.tokenCheckStatus.success = false;
           this.tokenCheckStatus.message = "The token is invalid.";
@@ -74,6 +91,7 @@ document.addEventListener("alpine:init", () => {
         this.tokenCheckStatus.success = true;
         this.tokenCheckStatus.message =
           "The token is valid, please select a workspace.";
+        console.log("HERE!");
       } catch (err) {
         console.error(err);
         this.tokenCheckStatus.success = false;
@@ -256,6 +274,8 @@ document.addEventListener("alpine:init", () => {
           refreshToken: "",
         });
         console.log(items);
+
+        await this.fetchWorkspaces();
       } catch (err) {
         console.error(err);
       }

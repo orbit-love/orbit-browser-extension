@@ -1,4 +1,4 @@
-import { ORBIT_API_ROOT_URL, ORBIT_HEADERS } from "../constants";
+import { ORBIT_API_ROOT_URL, configureRequest } from "../constants";
 
 /**
  * Returns an object with values retrieved from Chrome sync storage.
@@ -68,7 +68,7 @@ export const orbitAPI = {
       `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/find`
     );
 
-    const { params, headers } = _configureRequest(ORBIT_CREDENTIALS, {
+    const { params, headers } = configureRequest(ORBIT_CREDENTIALS, {
       source: "github",
       username: username,
     });
@@ -124,7 +124,7 @@ export const orbitAPI = {
       `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/${member}/activities`
     );
 
-    const { params, headers } = _configureRequest(ORBIT_CREDENTIALS);
+    const { params, headers } = configureRequest(ORBIT_CREDENTIALS);
     url.search = params.toString();
 
     try {
@@ -169,7 +169,7 @@ export const orbitAPI = {
       `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/identities/github/${username}`
     );
 
-    const { params, headers } = _configureRequest(ORBIT_CREDENTIALS);
+    const { params, headers } = configureRequest(ORBIT_CREDENTIALS);
     url.search = params.toString();
 
     try {
@@ -209,7 +209,7 @@ export const orbitAPI = {
       `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members`
     );
 
-    const { params, headers } = _configureRequest(
+    const { params, headers } = configureRequest(
       ORBIT_CREDENTIALS,
       {},
       { "Content-Type": "application/json" }
@@ -263,7 +263,7 @@ export const orbitAPI = {
       `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/${member}/activities`
     );
 
-    const { params, headers } = _configureRequest(
+    const { params, headers } = configureRequest(
       ORBIT_CREDENTIALS,
       {},
       { "Content-Type": "application/json" }
@@ -356,41 +356,4 @@ export function _getRepositoryFullName() {
   return `${window.location.pathname.split("/")[1]}/${
     window.location.pathname.split("/")[2]
   }`;
-}
-
-/**
- * Sets authentication for a request
- * If OAuth is present, prefers that
- *
- * @param {Object} ORBIT_CREDENTIALS the Orbit credentials
- * @param {Object} params any additional params to include in the request
- * @param {Object} headers any additional headers to include in the request
- *
- * @returns {Object}
- * @returns {URLSearchParams}
- */
-function _configureRequest(ORBIT_CREDENTIALS, params, headers = {}) {
-  // If the OAuth token is present, do not include the API key as a param
-  if (!!ORBIT_CREDENTIALS.ACCESS_TOKEN) {
-    return {
-      headers: {
-        ...headers,
-        ...ORBIT_HEADERS,
-        Authorization: `Bearer ${ORBIT_CREDENTIALS.ACCESS_TOKEN}`,
-      },
-      params: new URLSearchParams(params),
-    };
-  }
-
-  // Otherwise, fall back to the API key
-  return {
-    headers: {
-      ...headers,
-      ...ORBIT_HEADERS,
-    },
-    params: new URLSearchParams({
-      ...params,
-      api_key: ORBIT_CREDENTIALS.API_TOKEN,
-    }),
-  };
 }
