@@ -7,9 +7,50 @@ import {
   configureRequest,
 } from "../constants";
 
+async function fetchWorkspaces(alpineContext) {
+  const url = new URL(`${ORBIT_API_ROOT_URL}/workspaces`);
+
+  console.log(
+    "#fetchWorkspaces",
+    alpineContext.accessToken,
+    alpineContext.token
+  );
+
+  const { params, headers } = configureRequest({
+    ACCESS_TOKEN: alpineContext.accessToken,
+    API_TOKEN: alpineContext.token,
+  });
+
+  url.search = params.toString();
+  try {
+    const response = await fetch(url, {
+      headers: headers,
+    });
+    if (!response.ok) {
+      alpineContext.tokenCheckStatus.success = false;
+      alpineContext.tokenCheckStatus.message = "The token is invalid.";
+      return;
+    }
+    const { data, included } = await response.json();
+    alpineContext.workspaces = data;
+    alpineContext.repositories = included.filter(
+      (item) => item.type === "repository"
+    );
+    alpineContext.tokenCheckStatus.success = true;
+    alpineContext.tokenCheckStatus.message =
+      "The token is valid, please select a workspace.";
+  } catch (err) {
+    console.error(err);
+    alpineContext.tokenCheckStatus.success = false;
+    alpineContext.tokenCheckStatus.message =
+      "There was an unexpected error while validating the token.";
+  }
+}
+
 document.addEventListener("alpine:init", () => {
   Alpine.data("orbit", () => ({
     token: "",
+    accessToken: "",
     workspaces: [],
     repositories: [],
     selectedWorkspaceSlug: undefined,
@@ -66,38 +107,7 @@ document.addEventListener("alpine:init", () => {
       this.repositories = repositories;
     },
     async fetchWorkspaces() {
-      const url = new URL(`${ORBIT_API_ROOT_URL}/workspaces`);
-
-      const { params, headers } = configureRequest({
-        ACCESS_TOKEN: this.accessToken,
-        API_TOKEN: this.token,
-      });
-
-      url.search = params.toString();
-      try {
-        const response = await fetch(url, {
-          headers: headers,
-        });
-        if (!response.ok) {
-          this.tokenCheckStatus.success = false;
-          this.tokenCheckStatus.message = "The token is invalid.";
-          return;
-        }
-        const { data, included } = await response.json();
-        this.workspaces = data;
-        this.repositories = included.filter(
-          (item) => item.type === "repository"
-        );
-        this.tokenCheckStatus.success = true;
-        this.tokenCheckStatus.message =
-          "The token is valid, please select a workspace.";
-        console.log("HERE!");
-      } catch (err) {
-        console.error(err);
-        this.tokenCheckStatus.success = false;
-        this.tokenCheckStatus.message =
-          "There was an unexpected error while validating the token.";
-      }
+      await fetchWorkspaces(this);
     },
     _findAllReposFullNameByWorkspaceSlug() {
       const currentWorkspace = this.workspaces.filter(
@@ -211,6 +221,8 @@ document.addEventListener("alpine:init", () => {
 
       console.debug("launchWebAuthFlow:", authUrl);
 
+      const alpineContext = this;
+
       chrome.identity.launchWebAuthFlow(
         { url: authUrl, interactive: true },
         function (redirectUrl) {
@@ -224,7 +236,7 @@ document.addEventListener("alpine:init", () => {
             console.debug(parsed);
 
             console.debug("Background login complete");
-            return callback(parsed.code, codeVerifier); // call the original callback now that we've intercepted what we needed
+            return callback(parsed.code, codeVerifier, alpineContext); // call the original callback now that we've intercepted what we needed
           } else {
             console.debug(
               "launchWebAuthFlow login failed. Is your redirect URL (" +
@@ -233,10 +245,10 @@ document.addEventListener("alpine:init", () => {
             );
             return null;
           }
-        }
+        }.bind(alpineContext)
       );
     },
-    async getOAuthToken(oAuthCode, codeVerifier) {
+    async getOAuthToken(oAuthCode, codeVerifier, alpineContext) {
       console.log("in getOAuthToken");
       console.log({ codeVerifier });
       console.log({ oAuthCode });
@@ -275,7 +287,7 @@ document.addEventListener("alpine:init", () => {
         });
         console.log(items);
 
-        await this.fetchWorkspaces();
+        await fetchWorkspaces(alpineContext);
       } catch (err) {
         console.error(err);
       }
