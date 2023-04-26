@@ -10,12 +10,8 @@
   "content_scripts": [
     {
       "run_at": "document_start",
-      "matches": [
-        "https://github.com/*/*/pulls*",
-        "https://github.com/*/*/pull/*",
-        "https://github.com/*/*/issues*",
-        "https://github.com/*/*/discussions*"
-      ],
+      "matches": ["https://github.com/*"],
+      "exclude_matches": ["https://*/login/*"],
       "css": ["github/orbit-action.css"],
       "js": ["github/background.js"]
     }
