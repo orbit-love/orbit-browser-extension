@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [0.5.0] - 2023-04-26
+
+### Fixed
+
+- Fixed an issue with the repository contribution count being incorrect in some cases (#25)
+- Fixed an issue with large numbers of GitHub repositories in Orbit failing to save in Chrome storage (#26)
+
+### Improved
+
+- Upgraded out-of-date dependencies to latest versions (#30)
+
 ## [0.4.0] - 2022-07-18
 
 ### Added
