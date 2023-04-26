@@ -1,4 +1,9 @@
-import { getThreshold, orbitAPI } from "./orbit-helpers";
+import {
+  getThreshold,
+  orbitAPI,
+  areCredentialsPresent,
+  areCredentialsValid,
+} from "./orbit-helpers";
 import {
   createDropdownItem,
   createOrbitMetrics,
@@ -133,7 +138,7 @@ export async function createOrbitDetailsElement(
    * a simple caching mechanism which only triggers a single request.
    */
   async function mouseoverListener() {
-    if (Object.values(ORBIT_CREDENTIALS).some((value) => value === "")) {
+    if (areCredentialsValid(ORBIT_CREDENTIALS)) {
       detailsElement.removeEventListener("mouseover", mouseoverListener, true);
       insertContentWhenNoCredentials();
     } else if (!$isLoading && !$hasLoaded) {

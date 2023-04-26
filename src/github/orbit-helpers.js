@@ -286,6 +286,16 @@ export const orbitAPI = {
   },
 };
 
+export function areCredentialsValid(ORBIT_CREDENTIALS) {
+  // Workspace is required
+  if (ORBIT_CREDENTIALS.WORKSPACE === "") {
+    return false;
+  }
+
+  // Only one of the API token & the OAuth token is required for this to be "valid".
+  return !!ORBIT_CREDENTIALS.ACCESS_TOKEN || !!ORBIT_CREDENTIALS.TOKEN;
+}
+
 /**
  * Filters all activities from a member and returns only those
  * that are attached to the given repositoryFullName.
