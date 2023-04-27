@@ -18,9 +18,7 @@ export async function getOrbitCredentials() {
 }
 
 export async function isRepoInOrbitWorkspace() {
-  const { repositories } = await chrome.storage.sync.get({
-    repositories: "",
-  });
+  const repositories = await _fetchRepositories();
   return repositories.includes(_getRepositoryFullName());
 }
 
@@ -120,8 +118,9 @@ export const orbitAPI = {
    * @returns {is_a_member, contributions_on_this_repo_total}
    */
   async getMemberActivitiesOnThisRepo(ORBIT_CREDENTIALS, member) {
+    const repositoryFullName = _getRepositoryFullName();
     const url = new URL(
-      `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/${member}/activities`
+      `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/activities?member_id=${member}&properties=github_repository:${repositoryFullName}&items=25`
     );
 
     const { params, headers } = configureRequest(ORBIT_CREDENTIALS);
@@ -137,17 +136,11 @@ export const orbitAPI = {
           status: response.status,
         };
       }
-      const { data, included } = await response.json();
-      const repositoryFullName = _getRepositoryFullName();
-      const filteredActivities = _filterActivitiesByRepo(
-        data,
-        included,
-        repositoryFullName
-      );
+      const { data } = await response.json();
       return {
         success: true,
         status: response.status,
-        contributions_on_this_repo_total: filteredActivities.length,
+        contributions_on_this_repo_total: data.length,
       };
     } catch (err) {
       console.error(err);
@@ -313,40 +306,6 @@ export function areCredentialsValid(ORBIT_CREDENTIALS) {
 }
 
 /**
- * Filters all activities from a member and returns only those
- * that are attached to the given repositoryFullName.
- *
- * @param {*} activities as returned by Orbit API
- * @param {*} included as returned by Orbit API
- * @param {*} repositoryFullName the full name of the current repository
- *
- * @returns a filtered list of activities.
- */
-export function _filterActivitiesByRepo(
-  activities,
-  included,
-  repositoryFullName
-) {
-  /**
-   * First, find out the internal repositoryId by filtering the `included`
-   * data by type === repository and full_name === repositoryFullName
-   */
-  const filterIncludedByTypeRepository = (data) => data.type === "repository";
-  const filterIncludedByRepositoryFullName = (data) =>
-    data.attributes.full_name === repositoryFullName;
-  const repositoryId = included
-    .filter(filterIncludedByTypeRepository)
-    .filter(filterIncludedByRepositoryFullName)[0]?.id;
-
-  /**
-   * Then filter the activities by that repositoryId
-   */
-  return activities.filter(
-    (data) => data.relationships.repository?.data?.id === repositoryId
-  );
-}
-
-/**
  * Returns the current repository full name based on the current URL.
  *
  * window.location.pathname looks like “/orbit-love/orbit-model/pull/3”
@@ -356,4 +315,37 @@ export function _getRepositoryFullName() {
   return `${window.location.pathname.split("/")[1]}/${
     window.location.pathname.split("/")[2]
   }`;
+}
+
+/**
+ * Fetches chunked repositories from chrome storage
+ *
+ * @returns Array<String> a 1d array of all repsoitory names, ie ["repo-1", "repo-2"]
+ */
+export async function _fetchRepositories() {
+  const { repository_keys } = await chrome.storage.sync.get("repository_keys");
+
+  // Backwards compatibility - if we do not have repository keys,
+  //  default to how we used to store them
+  if (repository_keys === undefined) {
+    const { repositories } = await chrome.storage.sync.get("repositories");
+
+    return repositories;
+  }
+
+  // Map the repositories to an array of "fetch from storage" promises
+  const promises = repository_keys.map((key) => chrome.storage.sync.get(key));
+
+  // Wait for all promises to resolve
+  // This returns repositories in the following structure:
+  // [
+  //  { sally:repositories:1: ["repo-1", "repo-2", ...] },
+  //  { sally:repositories:2: ["repo-101", "repo-102",...] },
+  // ]
+  const repositoryObjects = await Promise.all(promises);
+
+  // Reduce repositories to 1d array, disregarding the keys
+  return repositoryObjects
+    .flatMap((repository_object) => Object.values(repository_object))
+    .flat();
 }
