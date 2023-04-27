@@ -1,7 +1,7 @@
 import { ORBIT_HEADERS } from "./constants";
 import { configureRequest } from "./oauth_helpers";
 
-test("configureRequest should use the OAuth token and not the API key if it is present", () => {
+test("configureRequest should use the OAuth token and not the API key if it is present", async () => {
   const ORBIT_CREDENTIALS = {
     ACCESS_TOKEN: "123",
   };
@@ -14,7 +14,7 @@ test("configureRequest should use the OAuth token and not the API key if it is p
     additionalHeader: "456",
   };
 
-  const { headers, params } = configureRequest(
+  const { headers, params } = await configureRequest(
     ORBIT_CREDENTIALS,
     testParams,
     testHeaders
@@ -29,7 +29,7 @@ test("configureRequest should use the OAuth token and not the API key if it is p
   expect(params.toString()).toMatch("additionalParam=789");
 });
 
-test("configureRequest should use the API key if OAuth token is not present", () => {
+test("configureRequest should use the API key if OAuth token is not present", async () => {
   const ORBIT_CREDENTIALS = {
     API_TOKEN: "123",
   };
@@ -42,7 +42,7 @@ test("configureRequest should use the API key if OAuth token is not present", ()
     additionalHeader: "456",
   };
 
-  const { headers, params } = configureRequest(
+  const { headers, params } = await configureRequest(
     ORBIT_CREDENTIALS,
     testParams,
     testHeaders

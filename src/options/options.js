@@ -38,7 +38,7 @@ document.addEventListener("alpine:init", () => {
       if (!!apiKeyFromStorage || !!accessTokenFromStorage) {
         const url = new URL(`${ORBIT_API_ROOT_URL}/workspaces`);
 
-        const { params, headers } = configureRequest({
+        const { params, headers } = await configureRequest({
           ACCESS_TOKEN: accessTokenFromStorage,
           API_TOKEN: apiKeyFromStorage,
         });
@@ -66,7 +66,7 @@ document.addEventListener("alpine:init", () => {
     async fetchWorkspaces() {
       const url = new URL(`${ORBIT_API_ROOT_URL}/workspaces`);
 
-      const { params, headers } = configureRequest({
+      const { params, headers } = await configureRequest({
         ACCESS_TOKEN: this.accessToken,
         API_TOKEN: this.token,
       });
@@ -319,23 +319,27 @@ document.addEventListener("alpine:init", () => {
         const response = await fetch(authUrl, {
           method: "POST",
         });
-        x = await response.json();
+
         const { access_token, refresh_token, expires_in } =
           await response.json();
+
+        // Calculate timestamp when OAuth token expires - current time + it's expires_in timestamp
+        const expiresAt = Math.floor(Date.now() / 1000) + expires_in;
+
         chrome.storage.sync.set({
           accessToken: access_token,
           refreshToken: refresh_token,
-          expires_in: expires_in,
+          expiresAt: expiresAt,
         });
 
         this.accessToken = access_token;
         this.refreshToken = refresh_token;
-        this.expiresIn = expires_in;
+        this.expiresAt = expiresAt;
 
         const items = await chrome.storage.sync.get({
           accessToken: "",
           refreshToken: "",
-          expiresIn: "",
+          expiresAt: "",
         });
         console.log(items);
 

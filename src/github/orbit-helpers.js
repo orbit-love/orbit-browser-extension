@@ -9,11 +9,15 @@ export async function getOrbitCredentials() {
     token: "",
     workspace: "",
     accessToken: "",
+    refreshToken: "",
+    expiresAt: 0,
   });
   return {
     API_TOKEN: items.token,
     WORKSPACE: items.workspace.toLowerCase(),
     ACCESS_TOKEN: items.accessToken,
+    REFRESH_TOKEN: items.refreshToken,
+    EXPIRES_AT: items.expiresAt,
   };
 }
 
@@ -66,7 +70,7 @@ export const orbitAPI = {
       `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/find`
     );
 
-    const { params, headers } = configureRequest(ORBIT_CREDENTIALS, {
+    const { params, headers } = await configureRequest(ORBIT_CREDENTIALS, {
       source: "github",
       username: username,
     });
@@ -123,7 +127,7 @@ export const orbitAPI = {
       `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/activities`
     );
 
-    const { params, headers } = configureRequest(ORBIT_CREDENTIALS, {
+    const { params, headers } = await configureRequest(ORBIT_CREDENTIALS, {
       member_id: member,
       properties: `github_repository:${repositoryFullName}`,
       items: 25,
@@ -167,7 +171,7 @@ export const orbitAPI = {
       `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/identities/github/${username}`
     );
 
-    const { params, headers } = configureRequest(ORBIT_CREDENTIALS);
+    const { params, headers } = await configureRequest(ORBIT_CREDENTIALS);
     url.search = params.toString();
 
     try {
@@ -207,7 +211,7 @@ export const orbitAPI = {
       `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members`
     );
 
-    const { params, headers } = configureRequest(
+    const { params, headers } = await configureRequest(
       ORBIT_CREDENTIALS,
       {},
       { "Content-Type": "application/json" }
@@ -261,7 +265,7 @@ export const orbitAPI = {
       `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/${member}/activities`
     );
 
-    const { params, headers } = configureRequest(
+    const { params, headers } = await configureRequest(
       ORBIT_CREDENTIALS,
       {},
       { "Content-Type": "application/json" }
