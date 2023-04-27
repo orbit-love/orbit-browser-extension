@@ -1,5 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+  <head>
+    <title>Orbit Extension Settings</title>
+    <link rel="stylesheet" href="./options.css" />
+    <script type="module" src="./options.js"></script>
+  </head>
+  <meta charset="utf-8">
 
 <head>
   <title>Orbit Extension Settings</title>
@@ -46,25 +52,20 @@
               <div class="mb-2 text-lg">
                 <span class="label-like">Select a workspace</span>
               </div>
-              <template x-for="workspace in workspaces" :key="workspace.id">
-                <label class="inline-flex items-center mr-2">
-                  <input type="radio" class="form-radio" name="workspace" x-bind:value="workspace.attributes.slug"
-                    x-model="selectedWorkspaceSlug" />
-                  <span class="ml-2" x-text="workspace.attributes.name"></span>
-                </label>
-              </template>
+              <p class="text-base text-gray-900">To proceed with the installation, please sign in to Orbit.</p>
+            </div>
+            <div class="py-4 flex justify-end">
+              <button type="button" class="inline-flex items-center gap-x-2 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                  <path fill-rule="evenodd" d="M2 10a.75.75 0 01.75-.75h12.59l-2.1-1.95a.75.75 0 111.02-1.1l3.5 3.25a.75.75 0 010 1.1l-3.5 3.25a.75.75 0 11-1.02-1.1l2.1-1.95H2.75A.75.75 0 012 10z" clip-rule="evenodd" />
+                </svg>
+                
+                Next: Sign in to Orbit
+              </button>
             </div>
           </div>
-
-          <button id="save" @click="save" class="mr-2">
-            Save
-          </button>
-          <span x-show="saveStatus.success !== undefined" x-text="saveStatus.message"
-            x-bind:class="saveStatus.success ? 'text-green-500' : 'text-red-500'"></span>
         </div>
       </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>
