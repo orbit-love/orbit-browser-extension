@@ -1,11 +1,8 @@
 import "chrome-extension-async";
 import Alpine from "alpinejs";
 
-import {
-  ORBIT_API_ROOT_URL,
-  OAUTH_CLIENT_ID,
-  configureRequest,
-} from "../constants";
+import { ORBIT_API_ROOT_URL, OAUTH_CLIENT_ID } from "../constants";
+import { configureRequest } from "../oauth_helpers";
 
 document.addEventListener("alpine:init", () => {
   Alpine.data("orbit", () => ({
@@ -322,18 +319,23 @@ document.addEventListener("alpine:init", () => {
         const response = await fetch(authUrl, {
           method: "POST",
         });
-        const { access_token, refresh_token } = await response.json();
+        x = await response.json();
+        const { access_token, refresh_token, expires_in } =
+          await response.json();
         chrome.storage.sync.set({
           accessToken: access_token,
           refreshToken: refresh_token,
+          expires_in: expires_in,
         });
 
         this.accessToken = access_token;
         this.refreshToken = refresh_token;
+        this.expiresIn = expires_in;
 
         const items = await chrome.storage.sync.get({
           accessToken: "",
           refreshToken: "",
+          expiresIn: "",
         });
         console.log(items);
 

@@ -1,4 +1,5 @@
-import { configureRequest, ORBIT_HEADERS } from "./constants";
+import { ORBIT_HEADERS } from "./constants";
+import { configureRequest } from "./oauth_helpers";
 
 test("configureRequest should use the OAuth token and not the API key if it is present", () => {
   const ORBIT_CREDENTIALS = {

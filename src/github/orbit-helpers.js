@@ -1,5 +1,5 @@
-import { ORBIT_API_ROOT_URL, configureRequest } from "../constants";
-
+import { ORBIT_API_ROOT_URL } from "../constants";
+import { configureRequest } from "../oauth_helpers";
 /**
  * Returns an object with values retrieved from Chrome sync storage.
  * Workspace is lowercased to match the API expectations.
