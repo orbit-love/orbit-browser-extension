@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Orbit",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Get Orbit insights on your community members, directly on GitHub issues and Pull Requests.",
   "short_name": "Orbit",
   "homepage_url": "https://orbit.love",
@@ -14,12 +14,8 @@
   "content_scripts": [
     {
       "run_at": "document_start",
-      "matches": [
-        "https://github.com/*/*/pulls*",
-        "https://github.com/*/*/pull/*",
-        "https://github.com/*/*/issues*",
-        "https://github.com/*/*/discussions*"
-      ],
+      "matches": ["https://github.com/*"],
+      "exclude_matches": ["https://*/login/*"],
       "css": ["github/orbit-action.css"],
       "js": ["github/github.js"]
     }

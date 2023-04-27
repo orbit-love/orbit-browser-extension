@@ -1,6 +1,6 @@
 {
   "name": "orbit-browser-extension",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Orbit browser extension",
   "repository": "git@github.com:orbit-love/orbit-browser-extension.git",
   "author": "Nicolas Goutay <nicolas.goutay@gmail.com>",
