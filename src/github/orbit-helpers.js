@@ -120,10 +120,15 @@ export const orbitAPI = {
   async getMemberActivitiesOnThisRepo(ORBIT_CREDENTIALS, member) {
     const repositoryFullName = _getRepositoryFullName();
     const url = new URL(
-      `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/activities?member_id=${member}&properties=github_repository:${repositoryFullName}&items=25`
+      `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/activities`
     );
 
-    const { params, headers } = configureRequest(ORBIT_CREDENTIALS);
+    const { params, headers } = configureRequest(ORBIT_CREDENTIALS, {
+      member_id: member,
+      properties: `github_repository:${repositoryFullName}`,
+      items: 25,
+    });
+
     url.search = params.toString();
 
     try {
