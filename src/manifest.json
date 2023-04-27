@@ -7,6 +7,12 @@
   "homepage_url": "https://orbit.love",
   "minimum_chrome_version": "42",
   "permissions": ["storage"],
+  "background": {
+		"persistent": false,
+		"scripts": [
+			"background.js"
+		]
+	},
   "content_scripts": [
     {
       "run_at": "document_start",
@@ -17,7 +23,7 @@
         "https://github.com/*/*/discussions*"
       ],
       "css": ["github/orbit-action.css"],
-      "js": ["github/background.js"]
+      "js": ["github/github.js"]
     }
   ],
   "browser_action": {
