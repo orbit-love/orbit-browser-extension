@@ -80,7 +80,7 @@ test("_fetchRepositories should support a single array", async () => {
 test("areCredentialValid returns false if no workspace present", async () => {
   const ORBIT_CREDENTIALS = {
     WORKSPACE: "",
-    TOKEN: "present",
+    API_TOKEN: "present",
     ACCESS_TOKEN: "present",
   };
 
@@ -90,7 +90,7 @@ test("areCredentialValid returns false if no workspace present", async () => {
 test("areCredentialValid returns true if workspace & API token is present", async () => {
   const ORBIT_CREDENTIALS = {
     WORKSPACE: "present",
-    TOKEN: "present",
+    API_TOKEN: "present",
     ACCESS_TOKEN: "",
   };
 
@@ -100,7 +100,7 @@ test("areCredentialValid returns true if workspace & API token is present", asyn
 test("areCredentialValid returns true if workspace & OAuth token is present", async () => {
   const ORBIT_CREDENTIALS = {
     WORKSPACE: "present",
-    TOKEN: "",
+    API_TOKEN: "",
     ACCESS_TOKEN: "present",
   };
 

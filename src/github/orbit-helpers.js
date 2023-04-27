@@ -307,7 +307,7 @@ export function areCredentialsValid(ORBIT_CREDENTIALS) {
   }
 
   // Only one of the API token & the OAuth token is required for this to be "valid".
-  return !!ORBIT_CREDENTIALS.ACCESS_TOKEN || !!ORBIT_CREDENTIALS.TOKEN;
+  return !!ORBIT_CREDENTIALS.ACCESS_TOKEN || !!ORBIT_CREDENTIALS.API_TOKEN;
 }
 
 /**
