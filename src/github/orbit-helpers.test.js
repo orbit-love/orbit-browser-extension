@@ -1,4 +1,8 @@
-import { _getRepositoryFullName, _fetchRepositories } from "./orbit-helpers";
+import {
+  _getRepositoryFullName,
+  _fetchRepositories,
+  areCredentialsValid,
+} from "./orbit-helpers";
 
 test("_getRepositoryFullName should return the full name of the repository based on window.location.pathname", () => {
   global.window = Object.create(window);
@@ -71,4 +75,34 @@ test("_fetchRepositories should support a single array", async () => {
   expect(repositories).toEqual(["repo-1", "repo-2", "repo-3", "repo-4"]);
 
   global.chrome = originalChrome;
+});
+
+test("areCredentialValid returns false if no workspace present", async () => {
+  const ORBIT_CREDENTIALS = {
+    WORKSPACE: "",
+    TOKEN: "present",
+    ACCESS_TOKEN: "present",
+  };
+
+  expect(areCredentialsValid(ORBIT_CREDENTIALS)).toBe(false);
+});
+
+test("areCredentialValid returns true if workspace & API token is present", async () => {
+  const ORBIT_CREDENTIALS = {
+    WORKSPACE: "present",
+    TOKEN: "present",
+    ACCESS_TOKEN: "",
+  };
+
+  expect(areCredentialsValid(ORBIT_CREDENTIALS)).toBe(true);
+});
+
+test("areCredentialValid returns true if workspace & OAuth token is present", async () => {
+  const ORBIT_CREDENTIALS = {
+    WORKSPACE: "present",
+    TOKEN: "",
+    ACCESS_TOKEN: "present",
+  };
+
+  expect(areCredentialsValid(ORBIT_CREDENTIALS)).toBe(true);
 });

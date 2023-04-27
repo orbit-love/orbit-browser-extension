@@ -138,7 +138,7 @@ export async function createOrbitDetailsElement(
    * a simple caching mechanism which only triggers a single request.
    */
   async function mouseoverListener() {
-    if (areCredentialsValid(ORBIT_CREDENTIALS)) {
+    if (!areCredentialsValid(ORBIT_CREDENTIALS)) {
       detailsElement.removeEventListener("mouseover", mouseoverListener, true);
       insertContentWhenNoCredentials();
     } else if (!$isLoading && !$hasLoaded) {

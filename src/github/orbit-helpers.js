@@ -295,6 +295,11 @@ export const orbitAPI = {
   },
 };
 
+/**
+ * Verifies credentials contain the required keys to connect to Orbit
+ *
+ * @returns Boolean
+ */
 export function areCredentialsValid(ORBIT_CREDENTIALS) {
   // Workspace is required
   if (ORBIT_CREDENTIALS.WORKSPACE === "") {
