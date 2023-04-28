@@ -38,7 +38,7 @@ document.addEventListener("alpine:init", () => {
       if (!!apiKeyFromStorage || !!accessTokenFromStorage) {
         const url = new URL(`${ORBIT_API_ROOT_URL}/workspaces`);
 
-        const { params, headers } = await configureRequest({
+        const { params, headers } = configureRequest({
           ACCESS_TOKEN: accessTokenFromStorage,
           API_TOKEN: apiKeyFromStorage,
         });
@@ -66,7 +66,7 @@ document.addEventListener("alpine:init", () => {
     async fetchWorkspaces() {
       const url = new URL(`${ORBIT_API_ROOT_URL}/workspaces`);
 
-      const { params, headers } = await configureRequest({
+      const { params, headers } = configureRequest({
         ACCESS_TOKEN: this.accessToken,
         API_TOKEN: this.token,
       });

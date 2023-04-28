@@ -11,11 +11,7 @@ import { ORBIT_HEADERS, OAUTH_CLIENT_ID } from "./constants";
  * @returns {Object}
  * @returns {URLSearchParams}
  */
-export async function configureRequest(
-  ORBIT_CREDENTIALS,
-  params,
-  headers = {}
-) {
+export function configureRequest(ORBIT_CREDENTIALS, params, headers = {}) {
   // If the OAuth token is present, do not include the API key as a param
   if (!!ORBIT_CREDENTIALS.ACCESS_TOKEN) {
     return {

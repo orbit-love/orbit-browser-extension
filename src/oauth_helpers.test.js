@@ -14,7 +14,7 @@ test("configureRequest should use the OAuth token and not the API key if it is p
     additionalHeader: "456",
   };
 
-  const { headers, params } = await configureRequest(
+  const { headers, params } = configureRequest(
     ORBIT_CREDENTIALS,
     testParams,
     testHeaders
@@ -42,7 +42,7 @@ test("configureRequest should use the API key if OAuth token is not present", as
     additionalHeader: "456",
   };
 
-  const { headers, params } = await configureRequest(
+  const { headers, params } = configureRequest(
     ORBIT_CREDENTIALS,
     testParams,
     testHeaders
