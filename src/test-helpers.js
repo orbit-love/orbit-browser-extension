@@ -34,7 +34,7 @@ export const mockOrbitAPICall = (data = {}, ok = true, status = 200) => {
  *
  * @returns {originalChrome} to restore behaviour to global.chrome
  */
-export const mockChromeStorage = (objectToStore) => {
+export const mockChromeStorage = (objectToStore = {}) => {
   const mockChromeStorage = {
     storage: objectToStore,
     get: function (keys) {
@@ -59,11 +59,11 @@ export const mockChromeStorage = (objectToStore) => {
 
       return result;
     },
-    set: jest.fn((items) => {
+    set: function (items) {
       Object.keys(items).forEach((key) => {
         this.storage[key] = items[key];
       });
-    }),
+    },
   };
 
   let originalChrome = global.chrome;
