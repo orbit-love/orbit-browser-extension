@@ -1,5 +1,5 @@
 import { ORBIT_HEADERS } from "./constants";
-import { configureRequest } from "./oauth_helpers";
+import { configureRequest, isOAuthTokenExpired } from "./oauth_helpers";
 
 test("configureRequest should use the OAuth token and not the API key if it is present", async () => {
   const ORBIT_CREDENTIALS = {
@@ -55,4 +55,13 @@ test("configureRequest should use the API key if OAuth token is not present", as
 
   expect(params.toString()).toMatch("additionalParam=789");
   expect(params.toString()).toMatch("api_key=123");
+});
+
+test("isOAuthTokenExpired returns true if token expired before current time", () => {
+  expect(isOAuthTokenExpired(1)).toEqual(true);
+});
+
+test("isOAuthTokenExpired returns false if token is still valid", () => {
+  const theFuture = Math.floor(Date.now() / 1000) + 10000;
+  expect(isOAuthTokenExpired(theFuture)).toEqual(false);
 });

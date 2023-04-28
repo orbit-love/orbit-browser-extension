@@ -37,6 +37,11 @@ export function configureRequest(ORBIT_CREDENTIALS, params, headers = {}) {
   };
 }
 
+/**
+ * @param {Object} expirationTime from chrome storage
+ *
+ * @returns {Boolean} true if token expired before the current time
+ */
 export function isOAuthTokenExpired(expirationTime) {
   // Get the current time in seconds
   const currentTime = Math.floor(Date.now() / 1000);
@@ -45,6 +50,14 @@ export function isOAuthTokenExpired(expirationTime) {
   return currentTime > expirationTime;
 }
 
+/**
+ * Sends a request to refresh authentication.
+ * Updates accessToken, refreshToken, and expiresAt in chrome storage.
+ *
+ * @param {Object} refreshToken from chrome storage
+ *
+ * @returns {Object} refreshed tokens for accessToken, refreshToken, expiresAt
+ */
 export async function refreshAuthTokens(refreshToken) {
   const url = new URL("http://localhost:3000/oauth/token");
   let params = new URLSearchParams({
