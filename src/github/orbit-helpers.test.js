@@ -1,9 +1,12 @@
+import { refreshAuthTokens, isOAuthTokenExpired } from "../oauth_helpers";
 import {
   _getRepositoryFullName,
   _fetchRepositories,
   areCredentialsValid,
   getOrbitCredentials,
 } from "./orbit-helpers";
+
+jest.mock("../oauth_helpers");
 
 /**
  * Mocks the chrome storage object & getter
@@ -23,23 +26,32 @@ const mockChromeStorage = (objectToStore) => {
   const mockChromeStorage = {
     storage: objectToStore,
     get: function (keys) {
+      // .get() should return all stored data
       if (!keys) {
         return this.storage;
       }
 
       const result = {};
 
+      // .get("repository_keys") should just return the stored data for "repository_keys"
       if (typeof keys === "string") {
         result[keys] = this.storage[keys];
         return result;
       }
 
+      // .get({ repository_keys: 123, repositories: 456) should fetch the data for repository_keys
+      // & repositories, and, if either is not found, return the default value given in the argument
       Object.keys(keys).forEach((key) => {
         result[key] = this.storage[key] || keys[key];
       });
 
       return result;
     },
+    set: jest.fn((items) => {
+      Object.keys(items).forEach((key) => {
+        this.storage[key] = items[key];
+      });
+    }),
   };
 
   let originalChrome = global.chrome;
@@ -72,7 +84,34 @@ test("getOrbitCredentials should correctly configure orbit credentials object", 
   global.chrome = originalChrome;
 });
 
-test("getOrbitCredentials should refresh auth token if it has expired", () => {});
+test("getOrbitCredentials should refresh auth token if it has expired", async () => {
+  const originalChrome = mockChromeStorage({
+    workspace: "workspace",
+    accessToken: "expired_access_token",
+    refreshToken: "valid_refresh_token",
+    expiresAt: -1000,
+  });
+
+  refreshAuthTokens.mockResolvedValue({
+    accessToken: "refreshed_access_token",
+    refreshToken: "refreshed_refresh_token",
+    expiresAt: 1234,
+  });
+
+  isOAuthTokenExpired.mockReturnValue(true);
+
+  const ORBIT_CREDENTIALS = await getOrbitCredentials();
+
+  expect(ORBIT_CREDENTIALS).toEqual({
+    API_TOKEN: "",
+    WORKSPACE: "workspace",
+    ACCESS_TOKEN: "refreshed_access_token",
+    REFRESH_TOKEN: "refreshed_refresh_token",
+    EXPIRES_AT: 1234,
+  });
+
+  global.chrome = originalChrome;
+});
 
 test("_getRepositoryFullName should return the full name of the repository based on window.location.pathname", () => {
   global.window = Object.create(window);

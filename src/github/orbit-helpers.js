@@ -18,7 +18,7 @@ export async function getOrbitCredentials() {
   });
 
   if (items.expiresAt != 0 && isOAuthTokenExpired(items.expiresAt)) {
-    refreshedCredentials = await refreshAuthTokens(items.refreshToken);
+    const refreshedCredentials = await refreshAuthTokens(items.refreshToken);
     return {
       API_TOKEN: items.token,
       WORKSPACE: items.workspace.toLowerCase(),
