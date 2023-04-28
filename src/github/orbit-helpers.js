@@ -327,7 +327,7 @@ export const orbitAPI = {
  */
 export function areCredentialsValid(ORBIT_CREDENTIALS) {
   // Workspace is required
-  if (ORBIT_CREDENTIALS.WORKSPACE === "") {
+  if (!ORBIT_CREDENTIALS.WORKSPACE) {
     return false;
   }
 

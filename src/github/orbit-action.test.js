@@ -98,7 +98,9 @@ test("createOrbitDetailsElement should display an error message if credentials a
     new MouseEvent("mouseover")
   );
   await waitFor(() => {
-    expect(getByText(orbitDetailsElement, "API token or workspace is missing"));
+    expect(
+      getByText(orbitDetailsElement, "Authentication is missing or expired.")
+    );
   });
 });
 

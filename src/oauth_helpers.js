@@ -89,5 +89,18 @@ export async function refreshAuthTokens(refreshToken) {
     return items;
   } catch (err) {
     console.error(err);
+
+    // If the request fails (for example if the refresh token has expired),
+    // remove the OAuth credentials from storage. This will let the user
+    // fall back on their API token if present, or ask them to reauthenticate.
+    const items = {
+      accessToken: "",
+      refreshToken: "",
+      expiresAt: -1,
+    };
+
+    chrome.storage.sync.set(items);
+
+    return items;
   }
 }

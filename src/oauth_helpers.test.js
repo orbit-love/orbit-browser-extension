@@ -114,3 +114,43 @@ test("refreshAuthTokens requests refreshed tokens, sets them in storage, and ret
 
   global.chrome = originalChrome;
 });
+
+test("refreshAuthTokens unsets tokens if the request fails, for example if the refresh token is expired", async () => {
+  const originalChrome = mockChromeStorage({
+    workspace: "workspace",
+    accessToken: "expired_access_token",
+    refreshToken: "expired_refresh_token",
+    expiresAt: 1,
+  });
+
+  global.fetch = jest
+    .fn()
+    // mocks /oauth/token
+    .mockRejectedValueOnce(
+      "Test error - if you see this in the test runs it's okay :D"
+    );
+
+  expect(chrome.storage.sync.get()).toEqual({
+    workspace: "workspace",
+    accessToken: "expired_access_token",
+    refreshToken: "expired_refresh_token",
+    expiresAt: 1,
+  });
+
+  const refreshed_tokens = await refreshAuthTokens("expired_refresh_token");
+
+  expect(refreshed_tokens).toEqual({
+    accessToken: "",
+    refreshToken: "",
+    expiresAt: -1,
+  });
+
+  expect(chrome.storage.sync.get()).toEqual({
+    workspace: "workspace",
+    accessToken: "",
+    refreshToken: "",
+    expiresAt: -1,
+  });
+
+  global.chrome = originalChrome;
+});

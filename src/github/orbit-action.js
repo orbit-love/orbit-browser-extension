@@ -200,12 +200,12 @@ export async function createOrbitDetailsElement(
 
   function insertContentWhenNoCredentials() {
     const missingCredentialsInfo1 = createDropdownItem(
-      "API token or workspace is missing"
+      "Authentication is missing or expired."
     );
     $detailsMenuElement.appendChild(missingCredentialsInfo1);
 
     const missingCredentialsInfo2 = createDropdownItem(
-      "Right click the extension icon to access Options"
+      "Right click the extension icon to access Options & reauthenticate"
     );
     $detailsMenuElement.appendChild(missingCredentialsInfo2);
   }
