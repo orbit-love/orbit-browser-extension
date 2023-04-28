@@ -2,6 +2,7 @@ import {
   _getRepositoryFullName,
   _fetchRepositories,
   areCredentialsValid,
+  getOrbitCredentials,
 } from "./orbit-helpers";
 
 /**
@@ -21,10 +22,21 @@ import {
 const mockChromeStorage = (objectToStore) => {
   const mockChromeStorage = {
     storage: objectToStore,
-    get: function (key) {
+    get: function (keys) {
+      if (!keys) {
+        return this.storage;
+      }
+
       const result = {};
 
-      result[key] = this.storage[key];
+      if (typeof keys === "string") {
+        result[keys] = this.storage[keys];
+        return result;
+      }
+
+      Object.keys(keys).forEach((key) => {
+        result[key] = this.storage[key] || keys[key];
+      });
 
       return result;
     },
@@ -41,10 +53,20 @@ const mockChromeStorage = (objectToStore) => {
   return originalChrome;
 };
 
-test("getOrbitCredentials should correctly configure orbit credentials", () => {
+test("getOrbitCredentials should correctly configure orbit credentials object", async () => {
   const originalChrome = mockChromeStorage({
     token: "123",
     workspace: "workspace",
+  });
+
+  const ORBIT_CREDENTIALS = await getOrbitCredentials();
+
+  expect(ORBIT_CREDENTIALS).toEqual({
+    API_TOKEN: "123",
+    WORKSPACE: "workspace",
+    ACCESS_TOKEN: "",
+    REFRESH_TOKEN: "",
+    EXPIRES_AT: 0,
   });
 
   global.chrome = originalChrome;
