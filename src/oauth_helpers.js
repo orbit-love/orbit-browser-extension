@@ -18,17 +18,11 @@ export async function configureRequest(
 ) {
   // If the OAuth token is present, do not include the API key as a param
   if (!!ORBIT_CREDENTIALS.ACCESS_TOKEN) {
-    let accessToken = ORBIT_CREDENTIALS.ACCESS_TOKEN;
-
-    if (_isOAuthTokenExpired(ORBIT_CREDENTIALS.EXPIRES_AT)) {
-      accessToken = await _refreshAuthTokens(ORBIT_CREDENTIALS.REFRESH_TOKEN);
-    }
-
     return {
       headers: {
         ...headers,
         ...ORBIT_HEADERS,
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${ORBIT_CREDENTIALS.ACCESS_TOKEN}`,
       },
       params: new URLSearchParams(params),
     };
@@ -47,7 +41,7 @@ export async function configureRequest(
   };
 }
 
-function _isOAuthTokenExpired(expirationTime) {
+export function isOAuthTokenExpired(expirationTime) {
   // Get the current time in seconds
   const currentTime = Math.floor(Date.now() / 1000);
 
@@ -55,7 +49,7 @@ function _isOAuthTokenExpired(expirationTime) {
   return currentTime > expirationTime;
 }
 
-async function _refreshAuthTokens(refreshToken) {
+export async function refreshAuthTokens(refreshToken) {
   const url = new URL("http://localhost:3000/oauth/token");
   let params = new URLSearchParams({
     grant_type: "refresh_token",
@@ -75,13 +69,15 @@ async function _refreshAuthTokens(refreshToken) {
     // Calculate timestamp when OAuth token expires - current time + it's expires_in timestamp
     const expiresAt = Math.floor(Date.now() / 1000) + expires_in;
 
-    chrome.storage.sync.set({
+    const items = {
       accessToken: access_token,
       refreshToken: refresh_token,
       expiresAt: expiresAt,
-    });
+    };
 
-    return access_token;
+    chrome.storage.sync.set(items);
+
+    return items;
   } catch (err) {
     console.error(err);
   }

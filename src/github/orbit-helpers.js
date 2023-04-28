@@ -1,5 +1,9 @@
 import { ORBIT_API_ROOT_URL } from "../constants";
-import { configureRequest } from "../oauth_helpers";
+import {
+  configureRequest,
+  isOAuthTokenExpired,
+  refreshAuthTokens,
+} from "../oauth_helpers";
 /**
  * Returns an object with values retrieved from Chrome sync storage.
  * Workspace is lowercased to match the API expectations.
@@ -12,6 +16,19 @@ export async function getOrbitCredentials() {
     refreshToken: "",
     expiresAt: 0,
   });
+
+  console.log("Fetching credentials");
+  if (isOAuthTokenExpired(items.expiresAt)) {
+    refreshedCredentials = await refreshAuthTokens(items.refreshToken);
+    return {
+      API_TOKEN: items.token,
+      WORKSPACE: items.workspace.toLowerCase(),
+      ACCESS_TOKEN: refreshedCredentials.accessToken,
+      REFRESH_TOKEN: refreshedCredentials.refreshToken,
+      EXPIRES_AT: refreshedCredentials.expiresAt,
+    };
+  }
+
   return {
     API_TOKEN: items.token,
     WORKSPACE: items.workspace.toLowerCase(),
