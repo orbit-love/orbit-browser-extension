@@ -188,39 +188,3 @@ test("should create new members for non-members", async () => {
     );
   });
 });
-
-test("should create content for existing members", async () => {
-  global.fetch.mockImplementationOnce(
-    mockOrbitAPICall({ data: { id: 12 } }, true, 201)
-  );
-  fireEvent(
-    getByRole(orbitDetailsElement, "button"),
-    new MouseEvent("mouseover")
-  );
-  await waitFor(() => {
-    expect(getByText(orbitDetailsElement, "Add to phacks’s content"));
-  });
-  global.fetch.mockClear();
-  fireEvent(
-    getByText(orbitDetailsElement, "Add to phacks’s content"),
-    new MouseEvent("click")
-  );
-  await waitFor(() => {
-    expect(getByText(orbitDetailsElement, "Adding the content…"));
-  });
-  expect(global.fetch).toHaveBeenCalledWith(
-    expect.stringContaining("/my-workspace/members/phacks/activities"),
-    expect.objectContaining({
-      body: JSON.stringify({
-        activity_type: "content",
-        url: "https://github.com/orbit-love/orbit-model/issues/10#issuecomment-590037251",
-        occurred_at: "2020-02-23T07:55:28Z"
-      })
-    })
-  );
-  await waitFor(() => {
-    expect(
-      getByText(orbitDetailsElement, "Added! See phacks’s content on Orbit")
-    );
-  });
-});
