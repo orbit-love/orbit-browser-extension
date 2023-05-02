@@ -289,12 +289,12 @@ export function _getRepositoryFullName() {
  * @returns Array<String> a 1d array of all repsoitory names, ie ["repo-1", "repo-2"]
  */
 export async function _fetchRepositories() {
-  const { repository_keys } = await chrome.storage.sync.get("repository_keys");
+  const { repository_keys } = await chrome.storage.sync.get({ repository_keys: [] });
 
   // Backwards compatibility - if we do not have repository keys,
   //  default to how we used to store them
   if (repository_keys === undefined) {
-    const { repositories } = await chrome.storage.sync.get("repositories");
+    const { repositories } = await chrome.storage.sync.get({ repositories: []});
 
     return repositories;
   }

@@ -195,13 +195,16 @@ export async function createOrbitDetailsElement(
 
   function insertContentWhenNoCredentials() {
     const missingCredentialsInfo1 = createDropdownItem(
-      "API token or workspace is missing"
+      "Authentication error: API token or workspace is missing."
     );
     $detailsMenuElement.appendChild(missingCredentialsInfo1);
 
     const missingCredentialsInfo2 = createDropdownItem(
-      "Right click the extension icon to access Options"
+      "Click here or on the extension icon to authenticate."
     );
+    missingCredentialsInfo2.addEventListener('click', () => {
+      chrome.runtime.sendMessage("showOptions");
+    })
     $detailsMenuElement.appendChild(missingCredentialsInfo2);
   }
 
