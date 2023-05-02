@@ -2,7 +2,7 @@ import "chrome-extension-async";
 import Alpine from "alpinejs";
 
 import { ORBIT_API_ROOT_URL, OAUTH_CLIENT_ID } from "../constants";
-import { configureRequest } from "../oauth_helpers";
+import { configureRequest, fetchQueryParams } from "../oauth_helpers";
 
 document.addEventListener("alpine:init", () => {
   Alpine.data("orbit", () => ({
@@ -192,35 +192,6 @@ document.addEventListener("alpine:init", () => {
       });
     },
     async startOAuthFlow() {
-      function parse(str) {
-        if (typeof str !== "string") {
-          return {};
-        }
-        str = str.trim().replace(/^(\?|#|&)/, "");
-        if (!str) {
-          return {};
-        }
-        return str.split("&").reduce(function (ret, param) {
-          var parts = param.replace(/\+/g, " ").split("=");
-          // Firefox (pre 40) decodes `%3D` to `=`
-          // https://github.com/sindresorhus/query-string/pull/37
-          var key = parts.shift();
-          var val = parts.length > 0 ? parts.join("=") : undefined;
-          key = decodeURIComponent(key);
-          // missing `=` should be `null`:
-          // http://w3.org/TR/2012/WD-url-20120524/#collect-url-parameters
-          val = val === undefined ? null : decodeURIComponent(val);
-          if (!ret.hasOwnProperty(key)) {
-            ret[key] = val;
-          } else if (Array.isArray(ret[key])) {
-            ret[key].push(val);
-          } else {
-            ret[key] = [ret[key], val];
-          }
-          return ret;
-        }, {});
-      }
-
       let config = {
         implicitGrantUrl: "http://localhost:3000/oauth/authorize",
         clientId: OAUTH_CLIENT_ID,
@@ -271,12 +242,12 @@ document.addEventListener("alpine:init", () => {
         function (redirectUrl) {
           if (redirectUrl) {
             console.debug("launchWebAuthFlow login successful: ", redirectUrl);
-            var parsed = parse(
+            var parsed = fetchQueryParams(
               redirectUrl.substr(
                 chrome.identity.getRedirectURL("oauth2").length + 1
               )
             );
-            console.debug(parsed);
+            console.log("query params", parsed);
 
             console.debug("Background login complete");
             return this.getOAuthToken(parsed.code, codeVerifier); // call the original callback now that we've intercepted what we needed
