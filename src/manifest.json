@@ -16,8 +16,21 @@
       "run_at": "document_start",
       "matches": ["https://github.com/*"],
       "exclude_matches": ["https://*/login/*"],
-      "css": ["github/orbit-action.css"],
-      "js": ["github/github.js"]
+      "js": ["widget/github.ts"]
+    },
+    {
+      "run_at": "document_start",
+      "matches": [
+        "https://twitter.com/*"
+      ],
+      "js": ["widget/twitter.ts"]
+    },
+    {
+      "run_at": "document_start",
+      "matches": [
+        "https://www.linkedin.com/*"
+      ],
+      "js": ["widget/linkedin.ts"]
     }
   ],
   "browser_action": {
@@ -31,7 +44,7 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "web_accessible_resources": ["icons/*.png"],
+  "web_accessible_resources": ["icons/*.png", "icons/*.svg"],
   "options_ui": {
     "page": "options/options.html",
     "open_in_tab": true
