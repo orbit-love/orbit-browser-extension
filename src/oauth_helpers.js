@@ -105,31 +105,36 @@ export async function refreshAuthTokens(refreshToken) {
   }
 }
 
-export function fetchQueryParams(str) {
-  if (typeof str !== "string") {
-    return {};
-  }
-  str = str.trim().replace(/^(\?|#|&)/, "");
-  if (!str) {
-    return {};
-  }
-  return str.split("&").reduce(function (ret, param) {
-    var parts = param.replace(/\+/g, " ").split("=");
-    // Firefox (pre 40) decodes `%3D` to `=`
-    // https://github.com/sindresorhus/query-string/pull/37
-    var key = parts.shift();
-    var val = parts.length > 0 ? parts.join("=") : undefined;
-    key = decodeURIComponent(key);
-    // missing `=` should be `null`:
-    // http://w3.org/TR/2012/WD-url-20120524/#collect-url-parameters
-    val = val === undefined ? null : decodeURIComponent(val);
-    if (!ret.hasOwnProperty(key)) {
-      ret[key] = val;
-    } else if (Array.isArray(ret[key])) {
-      ret[key].push(val);
-    } else {
-      ret[key] = [ret[key], val];
+/**
+ * Parses the query parameters from the search portion of a URL and returns them as an object.
+ * @param {URL} url - The URL to parse.
+ * @returns {Object} An object containing the parsed query parameters.
+ * The keys in the object are the parameter names, and the values are either strings or arrays of strings.
+ * If a parameter appears multiple times, its values will be combined into an array.
+ * If the URL has no search portion, an empty object is returned.
+ */
+export function fetchQueryParams(stringUrl) {
+  try {
+    const url = new URL(stringUrl);
+    const searchParams = new URLSearchParams(url.search);
+    const queryParams = {};
+
+    for (const [key, value] of searchParams) {
+      // If param is new, add it to the object to return
+      if (!queryParams.hasOwnProperty(key)) {
+        queryParams[key] = value;
+        // If existing value is an array, append new value to it
+      } else if (Array.isArray(queryParams[key])) {
+        queryParams[key].push(value);
+        // If existing value is not an array, ocnvert it to an array & add new value
+      } else {
+        queryParams[key] = [queryParams[key], value];
+      }
     }
-    return ret;
-  }, {});
+
+    return queryParams;
+  } catch (err) {
+    console.error(err);
+    return {};
+  }
 }

@@ -242,11 +242,7 @@ document.addEventListener("alpine:init", () => {
         function (redirectUrl) {
           if (redirectUrl) {
             console.debug("launchWebAuthFlow login successful: ", redirectUrl);
-            var parsed = fetchQueryParams(
-              redirectUrl.substr(
-                chrome.identity.getRedirectURL("oauth2").length + 1
-              )
-            );
+            var parsed = fetchQueryParams(redirectUrl);
             console.log("query params", parsed);
 
             console.debug("Background login complete");

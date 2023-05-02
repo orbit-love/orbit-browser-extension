@@ -157,13 +157,14 @@ test("refreshAuthTokens unsets tokens if the request fails, for example if the r
 });
 
 test("fetchQueryParams returns empty object if no params found", () => {
-  const url = "";
+  const url = "https://www.example.com";
 
   expect(fetchQueryParams(url)).toEqual({});
 });
 
 test("fetchQueryParams returns object containing query params", () => {
-  const url = "stringParam=123&arrayParam=1&arrayParam=2";
+  const url =
+    "https://www.example.com?stringParam=123&arrayParam=1&arrayParam=2";
 
   expect(fetchQueryParams(url)).toEqual({
     stringParam: "123",
