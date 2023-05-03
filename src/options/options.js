@@ -196,14 +196,6 @@ document.addEventListener("alpine:init", () => {
       });
     },
     async startOAuthFlow() {
-      let config = {
-        implicitGrantUrl: `${ORBIT_API_ROOT_URL}/oauth/authorize`,
-        clientId: OAUTH_CLIENT_ID,
-        responseType: "code",
-        scopes: "read write",
-        codeChallengeMethod: "S256",
-      };
-
       // PKCE modifies the standard authorization code grant. Before starting the authorization code grant, a random string
       // called code_verifier is generated using the characters: [A-Z], [a-z], [0-9], "-", ".", "_" and "~", with a minimum
       // length of 43 characters and a maximum length of 128 characters
@@ -212,32 +204,29 @@ document.addEventListener("alpine:init", () => {
 
       let codeChallenge = await generateCodeChallenge(codeVerifier);
 
-      // TODO: Convert to urlSearchParams
-      let authUrl =
-        config.implicitGrantUrl +
-        "?response_type=" +
-        config.responseType +
-        "&client_id=" +
-        config.clientId +
-        "&scope=" +
-        config.scopes +
-        "&redirect_uri=" +
-        chrome.identity.getRedirectURL("oauth2") +
-        "&code_challenge=" +
-        codeChallenge +
-        "&code_challenge_method=" +
-        config.codeChallengeMethod;
+      let authUrl = new URL(`${ORBIT_API_ROOT_URL}/oauth/authorize`);
+
+      let params = new URLSearchParams({
+        client_id: OAUTH_CLIENT_ID,
+        response_type: "code",
+        scopes: "read write",
+        code_challenge_method: "S256",
+        redirect_uri: chrome.identity.getRedirectURL("oauth2"),
+        code_challenge: codeChallenge,
+      });
+
+      authUrl.search = params.toString();
 
       chrome.identity.launchWebAuthFlow(
-        { url: authUrl, interactive: true },
+        { url: authUrl.toString(), interactive: true },
         function (redirectUrl) {
           if (redirectUrl) {
             var parsed = parseQueryParams(redirectUrl);
 
             return this.getOAuthToken(parsed.code, codeVerifier);
           } else {
-            // TODO: Console.error, verify failure routes from OAuth
-            console.debug(
+            // TODO: Verify failure routes from OAuth
+            console.error(
               "launchWebAuthFlow login failed. Is your redirect URL (" +
                 chrome.identity.getRedirectURL("oauth2") +
                 ") configured with your OAuth2 provider?"
@@ -248,28 +237,20 @@ document.addEventListener("alpine:init", () => {
       );
     },
     async getOAuthToken(oAuthCode, codeVerifier) {
-      let config = {
-        implicitGrantUrl: `${ORBIT_API_ROOT_URL}/oauth/token`,
-        clientId: OAUTH_CLIENT_ID,
-        grantType: "authorization_code",
-      };
+      let authUrl = new URL(`${ORBIT_API_ROOT_URL}/oauth/token`);
 
-      // TDO: Convert to URLSearchPArams
-      let authUrl =
-        config.implicitGrantUrl +
-        "?grant_type=" +
-        config.grantType +
-        "&client_id=" +
-        config.clientId +
-        "&code=" +
-        oAuthCode +
-        "&code_verifier=" +
-        codeVerifier +
-        "&redirect_uri=" +
-        chrome.identity.getRedirectURL("oauth2");
+      let params = new URLSearchParams({
+        client_id: OAUTH_CLIENT_ID,
+        grant_type: "authorization_code",
+        code: oAuthCode,
+        code_verifier: codeVerifier,
+        redirect_uri: chrome.identity.getRedirectURL("oauth2"),
+      });
+
+      authUrl.search = params.toString();
 
       try {
-        const response = await fetch(authUrl, {
+        const response = await fetch(authUrl.toString(), {
           method: "POST",
         });
 
