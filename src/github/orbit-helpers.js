@@ -219,57 +219,8 @@ export const orbitAPI = {
         success: false,
       };
     }
-  },
-  /**
-   * Adds the current comment as an Orbit content to the member
-   *
-   * @param {*} ORBIT_CREDENTIALS the Orbit credentials
-   * @param {*} member the member slug to add the content to
-   *
-   * @returns {success, status}
-   */
-  async addCommentAsContentToMember(
-    ORBIT_CREDENTIALS,
-    member,
-    commentUrl,
-    commentPublishedAt
-  ) {
-    try {
-      const response = await fetch(
-        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/${member}/activities?api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            activity_type: "content",
-            url: commentUrl,
-            occurred_at: commentPublishedAt,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-            ...ORBIT_HEADERS,
-          },
-        }
-      );
-      if (!response.ok) {
-        return {
-          success: false,
-          status: response.status,
-        };
-      }
-      const { data } = await response.json();
-      return {
-        success: true,
-        id: data.id,
-        status: response.status,
-      };
-    } catch (err) {
-      console.error(err);
-      return {
-        success: false,
-      };
-    }
-  },
-};
+  }
+}
 
 /**
  * Returns the current repository full name based on the current URL.
@@ -289,12 +240,12 @@ export function _getRepositoryFullName() {
  * @returns Array<String> a 1d array of all repsoitory names, ie ["repo-1", "repo-2"]
  */
 export async function _fetchRepositories() {
-  const { repository_keys } = await chrome.storage.sync.get("repository_keys");
+  const { repository_keys } = await chrome.storage.sync.get({ repository_keys: [] });
 
   // Backwards compatibility - if we do not have repository keys,
   //  default to how we used to store them
-  if (repository_keys === undefined) {
-    const { repositories } = await chrome.storage.sync.get("repositories");
+  if (repository_keys.length === 0) {
+    const { repositories } = await chrome.storage.sync.get({ repositories: []});
 
     return repositories;
   }

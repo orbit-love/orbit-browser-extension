@@ -70,28 +70,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const gitHubUsername = authorElement.innerText;
 
-      const relativeTimeElement = comment.querySelector("relative-time");
-
-      if (!relativeTimeElement) {
-        break;
-      }
-
-      const commentUrl =
-        window.location.href +
-        relativeTimeElement.parentElement.getAttribute("href");
-
-      const commentPublishedAt = relativeTimeElement.getAttribute("datetime");
-
-      if (!commentPublishedAt) {
-        break;
-      }
-
       const orbitActionElement = await createOrbitDetailsElement(
         ORBIT_CREDENTIALS,
         gitHubUsername,
-        isRepoInWorkspace,
-        commentUrl,
-        commentPublishedAt
+        isRepoInWorkspace
       );
 
       // The element must be inserted at different places if it's in a Discussions message

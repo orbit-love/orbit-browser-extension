@@ -30,9 +30,7 @@ import { ORBIT_API_ROOT_URL } from "../constants";
 export async function createOrbitDetailsElement(
   ORBIT_CREDENTIALS,
   gitHubUsername,
-  isRepoInWorkspace,
-  commentUrl,
-  commentPublishedAt
+  isRepoInWorkspace
 ) {
   /**
    * As a convention, $variables are “state variables” which can be updated in any
@@ -195,13 +193,16 @@ export async function createOrbitDetailsElement(
 
   function insertContentWhenNoCredentials() {
     const missingCredentialsInfo1 = createDropdownItem(
-      "API token or workspace is missing"
+      "Authentication error: API token or workspace is missing."
     );
     $detailsMenuElement.appendChild(missingCredentialsInfo1);
 
     const missingCredentialsInfo2 = createDropdownItem(
-      "Right click the extension icon to access Options"
+      "Click here or on the extension icon to authenticate."
     );
+    missingCredentialsInfo2.addEventListener('click', () => {
+      chrome.runtime.sendMessage("showOptions");
+    })
     $detailsMenuElement.appendChild(missingCredentialsInfo2);
   }
 
@@ -304,24 +305,6 @@ export async function createOrbitDetailsElement(
     $detailsMenuElement.appendChild(dropdownDivider2);
 
     /**
-     * <a href="…">Add to to X’s content</a>
-     */
-    const detailsMenuLinkContent = window.document.createElement("a");
-    detailsMenuLinkContent.setAttribute(
-      "aria-label",
-      `Add to ${gitHubUsername}’s content`
-    );
-    detailsMenuLinkContent.setAttribute("role", "menuitem");
-    detailsMenuLinkContent.classList.add(
-      "dropdown-item",
-      "dropdown-item-orbit",
-      "btn-link"
-    );
-    detailsMenuLinkContent.textContent = `Add to ${gitHubUsername}’s content`;
-    detailsMenuLinkContent.addEventListener("click", handleAddCommentToMember);
-    $detailsMenuElement.appendChild(detailsMenuLinkContent);
-
-    /**
      * <a href="…">See X’s profile on Orbit</a>
      */
     const detailsMenuLinkProfile = window.document.createElement("a");
@@ -340,31 +323,6 @@ export async function createOrbitDetailsElement(
     );
     detailsMenuLinkProfile.textContent = `See ${gitHubUsername}’s profile on Orbit`;
     $detailsMenuElement.appendChild(detailsMenuLinkProfile);
-  }
-
-  async function handleAddCommentToMember(event) {
-    event.target.removeEventListener("click", handleAddCommentToMember);
-    event.preventDefault();
-    event.stopPropagation();
-    event.target.textContent = "Adding the content…";
-
-    const { success, id } = await orbitAPI.addCommentAsContentToMember(
-      ORBIT_CREDENTIALS,
-      $slug,
-      commentUrl,
-      commentPublishedAt
-    );
-    if (success) {
-      event.target.setAttribute(
-        "href",
-        `${ORBIT_API_ROOT_URL}/${normalizedWorkspace}/activities/${id}`
-      );
-      event.target.setAttribute("target", "_blank");
-      event.target.setAttribute("rel", "noopener");
-      event.target.textContent = `Added! See ${gitHubUsername}’s content on Orbit`;
-    } else {
-      event.target.textContent = `There was a problem with the request.`;
-    }
   }
 
   /**
