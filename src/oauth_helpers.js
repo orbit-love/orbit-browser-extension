@@ -143,16 +143,37 @@ export function fetchQueryParams(stringUrl) {
   }
 }
 
-// TODO: Refactor this, remove deprecated function
+/**
+ * Generates a code_verifier
+ * > a random string called code_verifier is generated using the characters: [A-Z], [a-z], [0-9], "-", ".",
+ * > "_" and "~", with a minimum length of 43 characters and a maximum length of 128 characters
+ * https://doorkeeper.gitbook.io/guides/ruby-on-rails/pkce-flow#how-can-pkce-prevent-this
+ */
+export function generateCodeVerifier() {
+  // Initialise empty array of recommended length
+  const codeVerifierLength = 43;
+  const codeVerifier = new Uint8Array(codeVerifierLength);
+
+  // Fill codeVerifier array with random values
+  window.crypto.getRandomValues(codeVerifier);
+
+  return _prepareArrayForEncoding(codeVerifier).replace(/=/g, "");
+}
+
+/** Generates a code challenge
+ * > With code_challenge_method "S256" the code_challenge is the SHA256 Hash value of the code_verifier url safe base64 encoded (without trailing "=")
+ * https://doorkeeper.gitbook.io/guides/ruby-on-rails/pkce-flow#how-can-pkce-prevent-this
+ */
 export async function generateCodeChallenge(codeVerifier) {
   const msgUint8 = new TextEncoder().encode(codeVerifier); // encode as (utf-8) Uint8Array
   const hashBuffer = await crypto.subtle.digest("SHA-256", msgUint8); // hash the message
-  let base64String = encodeURI(
-    btoa(String.fromCharCode(...new Uint8Array(hashBuffer)))
-  );
-  base64String = base64String.split("=")[0];
-  base64String = base64String.replace("+", "-");
-  base64String = base64String.replace("/", "_");
+  return encodeURI(_prepareArrayForEncoding(hashBuffer).split("=")[0]);
+}
 
-  return base64String;
+// Removes illegal characters from PKCE verification strings
+function _prepareArrayForEncoding(unsignedIntArray) {
+  return window
+    .btoa(String.fromCharCode(...new Uint8Array(unsignedIntArray)))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_");
 }

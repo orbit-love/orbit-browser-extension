@@ -5,6 +5,7 @@ import { ORBIT_API_ROOT_URL, OAUTH_CLIENT_ID } from "../constants";
 import {
   configureRequest,
   generateCodeChallenge,
+  generateCodeVerifier,
   fetchQueryParams as parseQueryParams,
 } from "../oauth_helpers";
 
@@ -196,12 +197,7 @@ document.addEventListener("alpine:init", () => {
       });
     },
     async startOAuthFlow() {
-      // PKCE modifies the standard authorization code grant. Before starting the authorization code grant, a random string
-      // called code_verifier is generated using the characters: [A-Z], [a-z], [0-9], "-", ".", "_" and "~", with a minimum
-      // length of 43 characters and a maximum length of 128 characters
-      // TODO: Generate this randomly using crypto tool
-      let codeVerifier = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-
+      let codeVerifier = generateCodeVerifier();
       let codeChallenge = await generateCodeChallenge(codeVerifier);
 
       let authUrl = new URL(`${ORBIT_API_ROOT_URL}/oauth/authorize`);
