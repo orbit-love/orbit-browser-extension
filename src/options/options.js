@@ -2,7 +2,11 @@ import "chrome-extension-async";
 import Alpine from "alpinejs";
 
 import { ORBIT_API_ROOT_URL, OAUTH_CLIENT_ID } from "../constants";
-import { configureRequest, fetchQueryParams } from "../oauth_helpers";
+import {
+  configureRequest,
+  generateCodeChallenge,
+  fetchQueryParams as parseQueryParams,
+} from "../oauth_helpers";
 
 document.addEventListener("alpine:init", () => {
   Alpine.data("orbit", () => ({
@@ -193,33 +197,22 @@ document.addEventListener("alpine:init", () => {
     },
     async startOAuthFlow() {
       let config = {
-        implicitGrantUrl: "http://localhost:3000/oauth/authorize",
+        implicitGrantUrl: `${ORBIT_API_ROOT_URL}/oauth/authorize`,
         clientId: OAUTH_CLIENT_ID,
         responseType: "code",
         scopes: "read write",
         codeChallengeMethod: "S256",
       };
 
-      console.log(chrome.identity.getRedirectURL("oauth2"));
-
+      // PKCE modifies the standard authorization code grant. Before starting the authorization code grant, a random string
+      // called code_verifier is generated using the characters: [A-Z], [a-z], [0-9], "-", ".", "_" and "~", with a minimum
+      // length of 43 characters and a maximum length of 128 characters
+      // TODO: Generate this randomly using crypto tool
       let codeVerifier = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 
-      async function digestMessage(message) {
-        const msgUint8 = new TextEncoder().encode(message); // encode as (utf-8) Uint8Array
-        const hashBuffer = await crypto.subtle.digest("SHA-256", msgUint8); // hash the message
-        let base64String = encodeURI(
-          btoa(String.fromCharCode(...new Uint8Array(hashBuffer)))
-        );
-        base64String = base64String.split("=")[0];
-        base64String = base64String.replace("+", "-");
-        base64String = base64String.replace("/", "_");
+      let codeChallenge = await generateCodeChallenge(codeVerifier);
 
-        return base64String;
-      }
-
-      let codeChallenge = await digestMessage(codeVerifier);
-      console.log({ codeChallenge });
-
+      // TODO: Convert to urlSearchParams
       let authUrl =
         config.implicitGrantUrl +
         "?response_type=" +
@@ -235,19 +228,15 @@ document.addEventListener("alpine:init", () => {
         "&code_challenge_method=" +
         config.codeChallengeMethod;
 
-      console.debug("launchWebAuthFlow:", authUrl);
-
       chrome.identity.launchWebAuthFlow(
         { url: authUrl, interactive: true },
         function (redirectUrl) {
           if (redirectUrl) {
-            console.debug("launchWebAuthFlow login successful: ", redirectUrl);
-            var parsed = fetchQueryParams(redirectUrl);
-            console.log("query params", parsed);
+            var parsed = parseQueryParams(redirectUrl);
 
-            console.debug("Background login complete");
-            return this.getOAuthToken(parsed.code, codeVerifier); // call the original callback now that we've intercepted what we needed
+            return this.getOAuthToken(parsed.code, codeVerifier);
           } else {
+            // TODO: Console.error, verify failure routes from OAuth
             console.debug(
               "launchWebAuthFlow login failed. Is your redirect URL (" +
                 chrome.identity.getRedirectURL("oauth2") +
@@ -259,16 +248,13 @@ document.addEventListener("alpine:init", () => {
       );
     },
     async getOAuthToken(oAuthCode, codeVerifier) {
-      console.log("in getOAuthToken");
-      console.log({ codeVerifier });
-      console.log({ oAuthCode });
-
       let config = {
-        implicitGrantUrl: "http://localhost:3000/oauth/token",
+        implicitGrantUrl: `${ORBIT_API_ROOT_URL}/oauth/token`,
         clientId: OAUTH_CLIENT_ID,
         grantType: "authorization_code",
       };
 
+      // TDO: Convert to URLSearchPArams
       let authUrl =
         config.implicitGrantUrl +
         "?grant_type=" +
@@ -293,6 +279,7 @@ document.addEventListener("alpine:init", () => {
         // Calculate timestamp when OAuth token expires - current time + it's expires_in timestamp
         const expiresAt = Math.floor(Date.now() / 1000) + expires_in;
 
+        // TODO: Move to own object in storage (auth, authorization etc)
         chrome.storage.sync.set({
           accessToken: access_token,
           refreshToken: refresh_token,
@@ -302,13 +289,6 @@ document.addEventListener("alpine:init", () => {
         this.accessToken = access_token;
         this.refreshToken = refresh_token;
         this.expiresAt = expiresAt;
-
-        const items = await chrome.storage.sync.get({
-          accessToken: "",
-          refreshToken: "",
-          expiresAt: "",
-        });
-        console.log(items);
 
         await this.fetchWorkspaces();
       } catch (err) {

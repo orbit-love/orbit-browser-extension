@@ -1,4 +1,8 @@
-import { ORBIT_HEADERS, OAUTH_CLIENT_ID } from "./constants";
+import {
+  ORBIT_HEADERS,
+  OAUTH_CLIENT_ID,
+  ORBIT_API_ROOT_URL,
+} from "./constants";
 
 /**
  * Sets authentication for a request
@@ -59,7 +63,7 @@ export function isOAuthTokenExpired(expirationTime) {
  * @returns {Object} refreshed tokens for accessToken, refreshToken, expiresAt
  */
 export async function refreshAuthTokens(refreshToken) {
-  const url = new URL("http://localhost:3000/oauth/token");
+  const url = new URL(`${ORBIT_API_ROOT_URL}/oauth/token`);
   let params = new URLSearchParams({
     grant_type: "refresh_token",
     client_id: OAUTH_CLIENT_ID,
@@ -137,4 +141,18 @@ export function fetchQueryParams(stringUrl) {
     console.error(err);
     return {};
   }
+}
+
+// TODO: Refactor this, remove deprecated function
+export async function generateCodeChallenge(codeVerifier) {
+  const msgUint8 = new TextEncoder().encode(codeVerifier); // encode as (utf-8) Uint8Array
+  const hashBuffer = await crypto.subtle.digest("SHA-256", msgUint8); // hash the message
+  let base64String = encodeURI(
+    btoa(String.fromCharCode(...new Uint8Array(hashBuffer)))
+  );
+  base64String = base64String.split("=")[0];
+  base64String = base64String.replace("+", "-");
+  base64String = base64String.replace("/", "_");
+
+  return base64String;
 }
