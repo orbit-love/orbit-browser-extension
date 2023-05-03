@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [0.5.2] - 2023-05-03
+
+### Fixed
+
+- Fixed issue with widget not showing when the user is not authenticated (#38)
+
+### Improved
+
+- Authorization error message now redirects to the options page (#38)
+
+### Removed
+
+- Removed ability to “Add as content” (#38)
+
 ## [0.5.1] - 2023-04-27
 
 ### Fixed
