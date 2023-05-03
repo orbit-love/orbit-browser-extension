@@ -1,7 +1,8 @@
 import "chrome-extension-async";
 import gitHubInjection from "github-injection";
 
-import { getOrbitCredentials, isRepoInOrbitWorkspace } from "./orbit-helpers";
+import { getOrbitCredentials } from "../oauth_helpers";
+import { isRepoInOrbitWorkspace } from "./orbit-helpers";
 import { createOrbitDetailsElement } from "./orbit-action";
 import { getPageType } from "./page-helpers";
 

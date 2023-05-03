@@ -1,4 +1,4 @@
-import { refreshAuthTokens, isOAuthTokenExpired } from "../oauth_helpers";
+import { _refreshAuthTokens, _isOAuthTokenExpired } from "../oauth_helpers";
 import { mockChromeStorage } from "../test-helpers";
 import {
   _getRepositoryFullName,
@@ -36,13 +36,13 @@ test("getOrbitCredentials should refresh auth token if it has expired", async ()
     expiresAt: -1000,
   });
 
-  refreshAuthTokens.mockResolvedValue({
+  _refreshAuthTokens.mockResolvedValue({
     accessToken: "refreshed_access_token",
     refreshToken: "refreshed_refresh_token",
     expiresAt: 1234,
   });
 
-  isOAuthTokenExpired.mockReturnValue(true);
+  _isOAuthTokenExpired.mockReturnValue(true);
 
   const ORBIT_CREDENTIALS = await getOrbitCredentials();
 

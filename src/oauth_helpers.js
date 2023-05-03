@@ -5,6 +5,44 @@ import {
 } from "./constants";
 
 /**
+ * Returns an object with values retrieved from Chrome sync storage.
+ * Workspace is lowercased to match the API expectations.
+ * Will attempt to refresh auth token if it is expired
+ *
+ * @returns {Object} API_TOKEN WORKSPACE ACCESS_TOKEN REFRESH_TOKEN EXPIRES_AT
+ */
+export async function getOrbitCredentials() {
+  const items = await chrome.storage.sync.get({
+    token: "",
+    workspace: "",
+    authentication: {
+      accessToken: "",
+      refreshToken: "",
+      expiresAt: 0,
+    },
+  });
+
+  if (items.expiresAt != 0 && _isOAuthTokenExpired(items.expiresAt)) {
+    const refreshedCredentials = await _refreshAuthTokens(items.refreshToken);
+    return {
+      API_TOKEN: items.token,
+      WORKSPACE: items.workspace.toLowerCase(),
+      ACCESS_TOKEN: refreshedCredentials.accessToken,
+      REFRESH_TOKEN: refreshedCredentials.refreshToken,
+      EXPIRES_AT: refreshedCredentials.expiresAt,
+    };
+  }
+
+  return {
+    API_TOKEN: items.token,
+    WORKSPACE: items.workspace.toLowerCase(),
+    ACCESS_TOKEN: items.authentication.accessToken,
+    REFRESH_TOKEN: items.authentication.refreshToken,
+    EXPIRES_AT: items.authentication.expiresAt,
+  };
+}
+
+/**
  * Sets authentication for a request
  * If OAuth is present, prefers that
  *
@@ -46,7 +84,7 @@ export function configureRequest(ORBIT_CREDENTIALS, params, headers = {}) {
  *
  * @returns {Boolean} true if token expired before the current time
  */
-export function isOAuthTokenExpired(expirationTime) {
+export function _isOAuthTokenExpired(expirationTime) {
   // Get the current time in seconds
   const currentTime = Math.floor(Date.now() / 1000);
 
@@ -62,7 +100,7 @@ export function isOAuthTokenExpired(expirationTime) {
  *
  * @returns {Object} refreshed tokens for accessToken, refreshToken, expiresAt
  */
-export async function refreshAuthTokens(refreshToken) {
+export async function _refreshAuthTokens(refreshToken) {
   const url = new URL(`${ORBIT_API_ROOT_URL}/oauth/token`);
   let params = new URLSearchParams({
     grant_type: "refresh_token",

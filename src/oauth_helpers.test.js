@@ -2,8 +2,8 @@ import { ORBIT_HEADERS } from "./constants";
 import {
   configureRequest,
   fetchQueryParams,
-  isOAuthTokenExpired,
-  refreshAuthTokens,
+  _isOAuthTokenExpired,
+  _refreshAuthTokens,
 } from "./oauth_helpers";
 import { mockChromeStorage, mockOrbitAPICall } from "./test-helpers";
 
@@ -63,16 +63,16 @@ test("configureRequest should use the API key if OAuth token is not present", as
   expect(params.toString()).toMatch("api_key=123");
 });
 
-test("isOAuthTokenExpired returns true if token expired before current time", () => {
-  expect(isOAuthTokenExpired(1)).toEqual(true);
+test("_isOAuthTokenExpired returns true if token expired before current time", () => {
+  expect(_isOAuthTokenExpired(1)).toEqual(true);
 });
 
-test("isOAuthTokenExpired returns false if token is still valid", () => {
+test("_isOAuthTokenExpired returns false if token is still valid", () => {
   const theFuture = Math.floor(Date.now() / 1000) + 10000;
-  expect(isOAuthTokenExpired(theFuture)).toEqual(false);
+  expect(_isOAuthTokenExpired(theFuture)).toEqual(false);
 });
 
-test("refreshAuthTokens requests refreshed tokens, sets them in storage, and returns them", async () => {
+test("_refreshAuthTokens requests refreshed tokens, sets them in storage, and returns them", async () => {
   const originalChrome = mockChromeStorage({
     workspace: "workspace",
     authentication: {
@@ -102,7 +102,7 @@ test("refreshAuthTokens requests refreshed tokens, sets them in storage, and ret
     },
   });
 
-  const refreshed_tokens = await refreshAuthTokens("valid_refresh_token");
+  const refreshed_tokens = await _refreshAuthTokens("valid_refresh_token");
 
   expect(refreshed_tokens).toEqual({
     accessToken: "refreshed_access_token",
@@ -122,7 +122,7 @@ test("refreshAuthTokens requests refreshed tokens, sets them in storage, and ret
   global.chrome = originalChrome;
 });
 
-test("refreshAuthTokens unsets tokens if the request fails, for example if the refresh token is expired", async () => {
+test("_refreshAuthTokens unsets tokens if the request fails, for example if the refresh token is expired", async () => {
   const originalChrome = mockChromeStorage({
     workspace: "workspace",
     authentication: {
@@ -148,7 +148,7 @@ test("refreshAuthTokens unsets tokens if the request fails, for example if the r
     },
   });
 
-  const refreshed_tokens = await refreshAuthTokens("expired_refresh_token");
+  const refreshed_tokens = await _refreshAuthTokens("expired_refresh_token");
 
   expect(refreshed_tokens).toEqual({
     accessToken: "",

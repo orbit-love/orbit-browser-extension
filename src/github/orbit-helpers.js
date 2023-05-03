@@ -1,43 +1,5 @@
 import { ORBIT_API_ROOT_URL } from "../constants";
-import {
-  configureRequest,
-  isOAuthTokenExpired,
-  refreshAuthTokens,
-} from "../oauth_helpers";
-/**
- * Returns an object with values retrieved from Chrome sync storage.
- * Workspace is lowercased to match the API expectations.
- */
-export async function getOrbitCredentials() {
-  const items = await chrome.storage.sync.get({
-    token: "",
-    workspace: "",
-    authentication: {
-      accessToken: "",
-      refreshToken: "",
-      expiresAt: 0,
-    },
-  });
-
-  if (items.expiresAt != 0 && isOAuthTokenExpired(items.expiresAt)) {
-    const refreshedCredentials = await refreshAuthTokens(items.refreshToken);
-    return {
-      API_TOKEN: items.token,
-      WORKSPACE: items.workspace.toLowerCase(),
-      ACCESS_TOKEN: refreshedCredentials.accessToken,
-      REFRESH_TOKEN: refreshedCredentials.refreshToken,
-      EXPIRES_AT: refreshedCredentials.expiresAt,
-    };
-  }
-
-  return {
-    API_TOKEN: items.token,
-    WORKSPACE: items.workspace.toLowerCase(),
-    ACCESS_TOKEN: items.authentication.accessToken,
-    REFRESH_TOKEN: items.authentication.refreshToken,
-    EXPIRES_AT: items.authentication.expiresAt,
-  };
-}
+import { configureRequest } from "../oauth_helpers";
 
 export async function isRepoInOrbitWorkspace() {
   const repositories = await _fetchRepositories();

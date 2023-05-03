@@ -8,6 +8,7 @@ import {
   generateCodeVerifier,
   fetchQueryParams as parseQueryParams,
 } from "../oauth_helpers";
+import { getOrbitCredentials } from "../oauth_helpers";
 
 document.addEventListener("alpine:init", () => {
   Alpine.data("orbit", () => ({
@@ -30,17 +31,12 @@ document.addEventListener("alpine:init", () => {
         accessTokenFromStorage;
       let workspaces = [];
       let repositories = [];
-      const items = await chrome.storage.sync.get({
-        token: "",
-        workspace: "",
-        authentication: {
-          accessToken: "",
-        },
-      });
 
-      apiKeyFromStorage = items.token;
-      selectedWorkspaceSlugFromStorage = items.workspace;
-      accessTokenFromStorage = items.authentication.accessToken;
+      const ORBIT_CREDENTIALS = await getOrbitCredentials();
+
+      apiKeyFromStorage = ORBIT_CREDENTIALS.API_TOKEN;
+      selectedWorkspaceSlugFromStorage = ORBIT_CREDENTIALS.WORKSPACE;
+      accessTokenFromStorage = ORBIT_CREDENTIALS.ACCESS_TOKEN;
 
       if (!!apiKeyFromStorage || !!accessTokenFromStorage) {
         const url = new URL(`${ORBIT_API_ROOT_URL}/workspaces`);
