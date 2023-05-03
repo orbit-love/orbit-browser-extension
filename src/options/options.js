@@ -16,7 +16,7 @@ document.addEventListener("alpine:init", () => {
     workspaces: [],
     repositories: [],
     selectedWorkspaceSlug: undefined,
-    tokenCheckStatus: {
+    authenticationCheckStatus: {
       success: undefined,
       message: "",
     },
@@ -63,7 +63,7 @@ document.addEventListener("alpine:init", () => {
           console.error(err);
         }
       }
-      this.tokenCheckStatus.success = true;
+      this.authenticationCheckStatus.success = true;
       this.token = apiKeyFromStorage;
       this.accessToken = accessTokenFromStorage;
       this.selectedWorkspaceSlug = selectedWorkspaceSlugFromStorage;
@@ -85,8 +85,9 @@ document.addEventListener("alpine:init", () => {
           headers: headers,
         });
         if (!response.ok) {
-          this.tokenCheckStatus.success = false;
-          this.tokenCheckStatus.message = "The token is invalid.";
+          this.authenticationCheckStatus.success = false;
+          this.authenticationCheckStatus.message =
+            "Failed to authenticate, please try again.";
           return;
         }
         const { data, included } = await response.json();
@@ -94,14 +95,14 @@ document.addEventListener("alpine:init", () => {
         this.repositories = included.filter(
           (item) => item.type === "repository"
         );
-        this.tokenCheckStatus.success = true;
-        this.tokenCheckStatus.message =
-          "The token is valid, please select a workspace.";
+        this.authenticationCheckStatus.success = true;
+        this.authenticationCheckStatus.message =
+          "Signed in successfully. Please select a workspace.";
       } catch (err) {
         console.error(err);
-        this.tokenCheckStatus.success = false;
-        this.tokenCheckStatus.message =
-          "There was an unexpected error while validating the token.";
+        this.authenticationCheckStatus.success = false;
+        this.authenticationCheckStatus.message =
+          "There was an unexpected error whilst signing in.";
       }
     },
     _findAllReposFullNameByWorkspaceSlug() {
