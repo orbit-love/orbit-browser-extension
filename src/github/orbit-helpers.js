@@ -12,9 +12,11 @@ export async function getOrbitCredentials() {
   const items = await chrome.storage.sync.get({
     token: "",
     workspace: "",
-    accessToken: "",
-    refreshToken: "",
-    expiresAt: 0,
+    authentication: {
+      accessToken: "",
+      refreshToken: "",
+      expiresAt: 0,
+    },
   });
 
   if (items.expiresAt != 0 && isOAuthTokenExpired(items.expiresAt)) {
@@ -31,9 +33,9 @@ export async function getOrbitCredentials() {
   return {
     API_TOKEN: items.token,
     WORKSPACE: items.workspace.toLowerCase(),
-    ACCESS_TOKEN: items.accessToken,
-    REFRESH_TOKEN: items.refreshToken,
-    EXPIRES_AT: items.expiresAt,
+    ACCESS_TOKEN: items.authentication.accessToken,
+    REFRESH_TOKEN: items.authentication.refreshToken,
+    EXPIRES_AT: items.authentication.expiresAt,
   };
 }
 

@@ -88,7 +88,7 @@ export async function refreshAuthTokens(refreshToken) {
       expiresAt: expiresAt,
     };
 
-    chrome.storage.sync.set(items);
+    chrome.storage.sync.set({ authentication: items });
 
     return items;
   } catch (err) {
@@ -103,7 +103,7 @@ export async function refreshAuthTokens(refreshToken) {
       expiresAt: -1,
     };
 
-    chrome.storage.sync.set(items);
+    chrome.storage.sync.set({ authentication: items });
 
     return items;
   }

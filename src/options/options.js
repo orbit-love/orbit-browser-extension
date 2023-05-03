@@ -33,12 +33,14 @@ document.addEventListener("alpine:init", () => {
       const items = await chrome.storage.sync.get({
         token: "",
         workspace: "",
-        accessToken: "",
+        authentication: {
+          accessToken: "",
+        },
       });
 
       apiKeyFromStorage = items.token;
       selectedWorkspaceSlugFromStorage = items.workspace;
-      accessTokenFromStorage = items.accessToken;
+      accessTokenFromStorage = items.authentication.accessToken;
 
       if (!!apiKeyFromStorage || !!accessTokenFromStorage) {
         const url = new URL(`${ORBIT_API_ROOT_URL}/workspaces`);
@@ -258,9 +260,11 @@ document.addEventListener("alpine:init", () => {
 
         // TODO: Move to own object in storage (auth, authorization etc)
         chrome.storage.sync.set({
-          accessToken: access_token,
-          refreshToken: refresh_token,
-          expiresAt: expiresAt,
+          authentication: {
+            accessToken: access_token,
+            refreshToken: refresh_token,
+            expiresAt: expiresAt,
+          },
         });
 
         this.accessToken = access_token;

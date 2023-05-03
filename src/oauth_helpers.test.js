@@ -75,9 +75,11 @@ test("isOAuthTokenExpired returns false if token is still valid", () => {
 test("refreshAuthTokens requests refreshed tokens, sets them in storage, and returns them", async () => {
   const originalChrome = mockChromeStorage({
     workspace: "workspace",
-    accessToken: "expired_access_token",
-    refreshToken: "valid_refresh_token",
-    expiresAt: -1000,
+    authentication: {
+      accessToken: "expired_access_token",
+      refreshToken: "valid_refresh_token",
+      expiresAt: -1000,
+    },
   });
 
   global.fetch = jest
@@ -93,9 +95,11 @@ test("refreshAuthTokens requests refreshed tokens, sets them in storage, and ret
 
   expect(chrome.storage.sync.get()).toEqual({
     workspace: "workspace",
-    accessToken: "expired_access_token",
-    refreshToken: "valid_refresh_token",
-    expiresAt: -1000,
+    authentication: {
+      accessToken: "expired_access_token",
+      refreshToken: "valid_refresh_token",
+      expiresAt: -1000,
+    },
   });
 
   const refreshed_tokens = await refreshAuthTokens("valid_refresh_token");
@@ -108,9 +112,11 @@ test("refreshAuthTokens requests refreshed tokens, sets them in storage, and ret
 
   expect(chrome.storage.sync.get()).toEqual({
     workspace: "workspace",
-    accessToken: "refreshed_access_token",
-    refreshToken: "refreshed_refresh_token",
-    expiresAt: expect.any(Number),
+    authentication: {
+      accessToken: "refreshed_access_token",
+      refreshToken: "refreshed_refresh_token",
+      expiresAt: expect.any(Number),
+    },
   });
 
   global.chrome = originalChrome;
@@ -119,9 +125,11 @@ test("refreshAuthTokens requests refreshed tokens, sets them in storage, and ret
 test("refreshAuthTokens unsets tokens if the request fails, for example if the refresh token is expired", async () => {
   const originalChrome = mockChromeStorage({
     workspace: "workspace",
-    accessToken: "expired_access_token",
-    refreshToken: "expired_refresh_token",
-    expiresAt: 1,
+    authentication: {
+      accessToken: "expired_access_token",
+      refreshToken: "expired_refresh_token",
+      expiresAt: 1,
+    },
   });
 
   global.fetch = jest
@@ -133,9 +141,11 @@ test("refreshAuthTokens unsets tokens if the request fails, for example if the r
 
   expect(chrome.storage.sync.get()).toEqual({
     workspace: "workspace",
-    accessToken: "expired_access_token",
-    refreshToken: "expired_refresh_token",
-    expiresAt: 1,
+    authentication: {
+      accessToken: "expired_access_token",
+      refreshToken: "expired_refresh_token",
+      expiresAt: 1,
+    },
   });
 
   const refreshed_tokens = await refreshAuthTokens("expired_refresh_token");
@@ -148,9 +158,11 @@ test("refreshAuthTokens unsets tokens if the request fails, for example if the r
 
   expect(chrome.storage.sync.get()).toEqual({
     workspace: "workspace",
-    accessToken: "",
-    refreshToken: "",
-    expiresAt: -1,
+    authentication: {
+      accessToken: "",
+      refreshToken: "",
+      expiresAt: -1,
+    },
   });
 
   global.chrome = originalChrome;
