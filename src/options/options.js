@@ -17,6 +17,7 @@ document.addEventListener("alpine:init", () => {
     workspaces: [],
     repositories: [],
     selectedWorkspaceSlug: undefined,
+    showLogin: true,
     authenticationCheckStatus: {
       success: undefined,
       message: "",
@@ -38,6 +39,7 @@ document.addEventListener("alpine:init", () => {
       selectedWorkspaceSlugFromStorage = ORBIT_CREDENTIALS.WORKSPACE;
       accessTokenFromStorage = ORBIT_CREDENTIALS.ACCESS_TOKEN;
 
+      // If authentication is present, fetch workspaces on page load
       if (!!apiKeyFromStorage || !!accessTokenFromStorage) {
         const url = new URL(`${ORBIT_API_ROOT_URL}/workspaces`);
 
@@ -53,6 +55,7 @@ document.addEventListener("alpine:init", () => {
             headers: headers,
           });
           const { data, included } = await response.json();
+          this.showLogin = false;
           workspaces = data;
           repositories = included.filter((item) => item.type === "repository");
         } catch (err) {
@@ -81,6 +84,7 @@ document.addEventListener("alpine:init", () => {
           headers: headers,
         });
         if (!response.ok) {
+          this.showLogin = true;
           this.authenticationCheckStatus.success = false;
           this.authenticationCheckStatus.message =
             "Failed to authenticate, please try again.";
@@ -91,11 +95,13 @@ document.addEventListener("alpine:init", () => {
         this.repositories = included.filter(
           (item) => item.type === "repository"
         );
+        this.showLogin = false;
         this.authenticationCheckStatus.success = true;
         this.authenticationCheckStatus.message =
           "Signed in successfully. Please select a workspace.";
       } catch (err) {
         console.error(err);
+        this.showLogin = true;
         this.authenticationCheckStatus.success = false;
         this.authenticationCheckStatus.message =
           "There was an unexpected error whilst signing in.";

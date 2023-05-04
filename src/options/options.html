@@ -24,9 +24,16 @@
     <div class="pt-6 mx-auto w-full max-w-screen-sm">
       <h1 class="mb-6">Orbit Extension Settings</h1>
       <div x-data="orbit">
-        <button id="startOAuth" @click="startOAuthFlow" class="mr-2">
+        <button id="startOAuth" @click="startOAuthFlow" x-show="showLogin" class="mr-2">
           Sign in with Orbit
         </button>
+
+        <p x-show="!showLogin">
+          Successfully signed in! If you wish you sign out, visit your <a
+            href="https://app.orbit.love/user/settings/authorized_applications">User Settings on
+            Orbit</a> & revoke access for the "Orbit Browser Extension".
+          application.
+        </p>
 
         <span x-show="authenticationCheckStatus.success !== undefined" x-text="authenticationCheckStatus.message"
           x-bind:class="authenticationCheckStatus.success ? 'text-green-500' : 'text-red-500'"></span>
