@@ -164,7 +164,7 @@ document.addEventListener("alpine:init", () => {
      *
      * @returns {token, workspace, repository_keys}
      */
-    _buildStorageObject(token, workspaceSlug, repositories) {
+    _buildStorageObject(workspaceSlug, repositories) {
       const storageObject = {};
       const repository_keys = this._persistRepositories(
         workspaceSlug,
@@ -172,7 +172,6 @@ document.addEventListener("alpine:init", () => {
       );
 
       // Set common variables
-      storageObject["token"] = token;
       storageObject["workspace"] = workspaceSlug;
       storageObject["repository_keys"] = repository_keys;
 
@@ -184,7 +183,6 @@ document.addEventListener("alpine:init", () => {
         this._findAllReposFullNameByWorkspaceSlug();
 
       let storageData = this._buildStorageObject(
-        this.token,
         this.selectedWorkspaceSlug,
         repositoriesFullNameForWorkspace
       );
