@@ -35,8 +35,8 @@
           application.
         </p>
 
-        <span x-show="authenticationCheckStatus.success !== undefined" x-text="authenticationCheckStatus.message"
-          x-bind:class="authenticationCheckStatus.success ? 'text-green-500' : 'text-red-500'"></span>
+        <p x-show="authenticationCheckStatus.success !== undefined" x-text="authenticationCheckStatus.message"
+          x-bind:class="authenticationCheckStatus.success ? 'text-green-500' : 'text-red-500'"></p>
 
         <div x-show="authenticationCheckStatus.success && workspaces && workspaces.length > 0">
           <div class="mt-2">

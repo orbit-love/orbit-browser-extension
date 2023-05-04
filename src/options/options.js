@@ -55,7 +55,10 @@ document.addEventListener("alpine:init", () => {
             headers: headers,
           });
           const { data, included } = await response.json();
-          this.showLogin = false;
+
+          // Give users with API token chance to switch to OAuth
+          if (!!accessTokenFromStorage) this.showLogin = false;
+
           workspaces = data;
           repositories = included.filter((item) => item.type === "repository");
         } catch (err) {
@@ -95,10 +98,15 @@ document.addEventListener("alpine:init", () => {
         this.repositories = included.filter(
           (item) => item.type === "repository"
         );
-        this.showLogin = false;
         this.authenticationCheckStatus.success = true;
         this.authenticationCheckStatus.message =
           "Signed in successfully. Please select a workspace.";
+
+        if (!!this.accessToken) {
+          this.showLogin = false;
+        } else {
+          this.authenticationCheckStatus.message = `WARNING: You are using an API token for authentication, which is deprecated. Use the button above to switch to the new sign in process.`;
+        }
       } catch (err) {
         console.error(err);
         this.showLogin = true;
