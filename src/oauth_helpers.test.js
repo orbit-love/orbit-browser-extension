@@ -28,6 +28,40 @@ test("getOrbitCredentials should correctly configure orbit credentials object", 
   global.chrome = originalChrome;
 });
 
+test("getOrbitCredentials should refresh auth token if it has expired", async () => {
+  const originalChrome = mockChromeStorage({
+    workspace: "workspace",
+    authentication: {
+      accessToken: "expired_access_token",
+      refreshToken: "valid_refresh_token",
+      expiresAt: -1000,
+    },
+  });
+
+  global.fetch = jest
+    .fn()
+    // mocks /oauth/token
+    .mockImplementationOnce(
+      mockOrbitAPICall({
+        access_token: "refreshed_access_token",
+        refresh_token: "refreshed_refresh_token",
+        expires_in: 7200,
+      })
+    );
+
+  const ORBIT_CREDENTIALS = await getOrbitCredentials();
+
+  expect(ORBIT_CREDENTIALS).toEqual({
+    API_TOKEN: "",
+    WORKSPACE: "workspace",
+    ACCESS_TOKEN: "refreshed_access_token",
+    REFRESH_TOKEN: "refreshed_refresh_token",
+    EXPIRES_AT: expect.any(Number),
+  });
+
+  global.chrome = originalChrome;
+});
+
 test("configureRequest should use the OAuth token and not the API key if it is present", async () => {
   const ORBIT_CREDENTIALS = {
     ACCESS_TOKEN: "123",
