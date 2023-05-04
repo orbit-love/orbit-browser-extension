@@ -7,7 +7,7 @@ export const ORBIT_API_ROOT_URL = "https://app.orbit.love";
 /**
  * Client ID of the OAUTH application generated in Orbit app
  */
-export const OAUTH_CLIENT_ID = "xxx";
+export const OAUTH_CLIENT_ID = "bF59wtruI6qbsaYg3l7wKY6osgh5iQmhEAneRHoZsfM";
 
 /**
  * Headers common to all API calls.
