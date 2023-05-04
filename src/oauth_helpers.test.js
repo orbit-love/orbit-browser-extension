@@ -1,11 +1,32 @@
 import { ORBIT_HEADERS } from "./constants";
 import {
+  getOrbitCredentials,
   configureRequest,
   fetchQueryParams,
   _isOAuthTokenExpired,
   _refreshAuthTokens,
 } from "./oauth_helpers";
+
 import { mockChromeStorage, mockOrbitAPICall } from "./test-helpers";
+
+test("getOrbitCredentials should correctly configure orbit credentials object", async () => {
+  const originalChrome = mockChromeStorage({
+    token: "123",
+    workspace: "workspace",
+  });
+
+  const ORBIT_CREDENTIALS = await getOrbitCredentials();
+
+  expect(ORBIT_CREDENTIALS).toEqual({
+    API_TOKEN: "123",
+    WORKSPACE: "workspace",
+    ACCESS_TOKEN: "",
+    REFRESH_TOKEN: "",
+    EXPIRES_AT: 0,
+  });
+
+  global.chrome = originalChrome;
+});
 
 test("configureRequest should use the OAuth token and not the API key if it is present", async () => {
   const ORBIT_CREDENTIALS = {

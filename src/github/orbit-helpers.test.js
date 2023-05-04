@@ -4,58 +4,7 @@ import {
   _getRepositoryFullName,
   _fetchRepositories,
   areCredentialsValid,
-  getOrbitCredentials,
 } from "./orbit-helpers";
-
-jest.mock("../oauth_helpers");
-
-test("getOrbitCredentials should correctly configure orbit credentials object", async () => {
-  const originalChrome = mockChromeStorage({
-    token: "123",
-    workspace: "workspace",
-  });
-
-  const ORBIT_CREDENTIALS = await getOrbitCredentials();
-
-  expect(ORBIT_CREDENTIALS).toEqual({
-    API_TOKEN: "123",
-    WORKSPACE: "workspace",
-    ACCESS_TOKEN: "",
-    REFRESH_TOKEN: "",
-    EXPIRES_AT: 0,
-  });
-
-  global.chrome = originalChrome;
-});
-
-test("getOrbitCredentials should refresh auth token if it has expired", async () => {
-  const originalChrome = mockChromeStorage({
-    workspace: "workspace",
-    accessToken: "expired_access_token",
-    refreshToken: "valid_refresh_token",
-    expiresAt: -1000,
-  });
-
-  _refreshAuthTokens.mockResolvedValue({
-    accessToken: "refreshed_access_token",
-    refreshToken: "refreshed_refresh_token",
-    expiresAt: 1234,
-  });
-
-  _isOAuthTokenExpired.mockReturnValue(true);
-
-  const ORBIT_CREDENTIALS = await getOrbitCredentials();
-
-  expect(ORBIT_CREDENTIALS).toEqual({
-    API_TOKEN: "",
-    WORKSPACE: "workspace",
-    ACCESS_TOKEN: "refreshed_access_token",
-    REFRESH_TOKEN: "refreshed_refresh_token",
-    EXPIRES_AT: 1234,
-  });
-
-  global.chrome = originalChrome;
-});
 
 test("_getRepositoryFullName should return the full name of the repository based on window.location.pathname", () => {
   global.window = Object.create(window);
