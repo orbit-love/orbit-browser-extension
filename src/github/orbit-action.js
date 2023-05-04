@@ -50,6 +50,7 @@ export async function createOrbitDetailsElement(
     $reach,
     $love,
     $tag_list,
+    $unauthorized,
     $success,
     $slug,
     $detailsMenuElement,
@@ -160,6 +161,7 @@ export async function createOrbitDetailsElement(
       ]);
       $is_a_member = true;
       $slug = slug;
+      $unauthorized = status == 401;
 
       if (status === 404) {
         isRepoInWorkspace = false;
@@ -227,7 +229,9 @@ export async function createOrbitDetailsElement(
    */
   function insertContentWhenHasLoaded() {
     $detailsMenuElement.innerHTML = "";
-    if (!$success) {
+    if ($unauthorized) {
+      insertContentWhenNoCredentials();
+    } else if (!$success) {
       insertContentForError();
     } else if ($is_a_member) {
       insertContentForMember();
