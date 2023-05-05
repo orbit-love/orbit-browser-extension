@@ -1,4 +1,9 @@
-import { getThreshold, orbitAPI } from "./orbit-helpers";
+import {
+  getThreshold,
+  orbitAPI,
+  areCredentialsPresent,
+  areCredentialsValid,
+} from "./orbit-helpers";
 import {
   createDropdownItem,
   createOrbitMetrics,
@@ -45,6 +50,7 @@ export async function createOrbitDetailsElement(
     $reach,
     $love,
     $tag_list,
+    $unauthorized,
     $success,
     $slug,
     $detailsMenuElement,
@@ -131,7 +137,7 @@ export async function createOrbitDetailsElement(
    * a simple caching mechanism which only triggers a single request.
    */
   async function mouseoverListener() {
-    if (Object.values(ORBIT_CREDENTIALS).some((value) => value === "")) {
+    if (!areCredentialsValid(ORBIT_CREDENTIALS)) {
       detailsElement.removeEventListener("mouseover", mouseoverListener, true);
       insertContentWhenNoCredentials();
     } else if (!$isLoading && !$hasLoaded) {
@@ -155,6 +161,7 @@ export async function createOrbitDetailsElement(
       ]);
       $is_a_member = true;
       $slug = slug;
+      $unauthorized = status == 401;
 
       if (status === 404) {
         isRepoInWorkspace = false;
@@ -193,16 +200,16 @@ export async function createOrbitDetailsElement(
 
   function insertContentWhenNoCredentials() {
     const missingCredentialsInfo1 = createDropdownItem(
-      "Authentication error: API token or workspace is missing."
+      "Authentication error: Authentication or workspace is missing."
     );
     $detailsMenuElement.appendChild(missingCredentialsInfo1);
 
     const missingCredentialsInfo2 = createDropdownItem(
       "Click here or on the extension icon to authenticate."
     );
-    missingCredentialsInfo2.addEventListener('click', () => {
+    missingCredentialsInfo2.addEventListener("click", () => {
       chrome.runtime.sendMessage("showOptions");
-    })
+    });
     $detailsMenuElement.appendChild(missingCredentialsInfo2);
   }
 
@@ -222,7 +229,9 @@ export async function createOrbitDetailsElement(
    */
   function insertContentWhenHasLoaded() {
     $detailsMenuElement.innerHTML = "";
-    if (!$success) {
+    if ($unauthorized) {
+      insertContentWhenNoCredentials();
+    } else if (!$success) {
       insertContentForError();
     } else if ($is_a_member) {
       insertContentForMember();

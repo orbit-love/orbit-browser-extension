@@ -98,7 +98,12 @@ test("createOrbitDetailsElement should display an error message if credentials a
     new MouseEvent("mouseover")
   );
   await waitFor(() => {
-    expect(getByText(orbitDetailsElement, "API token or workspace is missing"));
+    expect(
+      getByText(
+        orbitDetailsElement,
+        "Authentication error: Authentication or workspace is missing."
+      )
+    );
   });
 });
 
@@ -177,7 +182,7 @@ test("should create new members for non-members", async () => {
     expect(getByText(orbitDetailsElement, "Creating the member…"));
   });
   expect(global.fetch).toHaveBeenCalledWith(
-    expect.stringContaining("/my-workspace/members"),
+    expect.any(URL),
     expect.objectContaining({
       body: JSON.stringify({ member: { github: "phacks" } }),
     })

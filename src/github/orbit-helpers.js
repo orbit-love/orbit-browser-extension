@@ -1,19 +1,5 @@
-import { ORBIT_API_ROOT_URL, ORBIT_HEADERS } from "../constants";
-
-/**
- * Returns an object with values retrieved from Chrome sync storage.
- * Workspace is lowercased to match the API expectations.
- */
-export async function getOrbitCredentials() {
-  const items = await chrome.storage.sync.get({
-    token: "",
-    workspace: "",
-  });
-  return {
-    API_TOKEN: items.token,
-    WORKSPACE: items.workspace.toLowerCase(),
-  };
-}
+import { ORBIT_API_ROOT_URL } from "../constants";
+import { configureRequest } from "../oauth-helpers";
 
 export async function isRepoInOrbitWorkspace() {
   const repositories = await _fetchRepositories();
@@ -60,15 +46,21 @@ export const orbitAPI = {
    * @returns {is_a_member, contributions_collection, contributions_total}
    */
   async getMemberContributions(ORBIT_CREDENTIALS, username) {
+    const url = new URL(
+      `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/find`
+    );
+
+    const { params, headers } = configureRequest(ORBIT_CREDENTIALS, {
+      source: "github",
+      username: username,
+    });
+
+    url.search = params.toString();
+
     try {
-      const response = await fetch(
-        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/find?source=github&username=${username}&api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
-        {
-          headers: {
-            ...ORBIT_HEADERS,
-          },
-        }
-      );
+      const response = await fetch(url, {
+        headers: headers,
+      });
       if (!response.ok) {
         return {
           success: false,
@@ -111,15 +103,22 @@ export const orbitAPI = {
    */
   async getMemberActivitiesOnThisRepo(ORBIT_CREDENTIALS, member) {
     const repositoryFullName = _getRepositoryFullName();
+    const url = new URL(
+      `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/activities`
+    );
+
+    const { params, headers } = configureRequest(ORBIT_CREDENTIALS, {
+      member_id: member,
+      properties: `github_repository:${repositoryFullName}`,
+      items: 25,
+    });
+
+    url.search = params.toString();
+
     try {
-      const response = await fetch(
-        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/activities?member_id=${member}&properties=github_repository:${repositoryFullName}&items=25&api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
-        {
-          headers: {
-            ...ORBIT_HEADERS,
-          },
-        }
-      );
+      const response = await fetch(url, {
+        headers: headers,
+      });
       if (!response.ok) {
         return {
           success: false,
@@ -148,15 +147,17 @@ export const orbitAPI = {
    * @returns {total_issue_contributions, total_pull_request_contributions}
    */
   async getGitHubUserContributions(ORBIT_CREDENTIALS, username) {
+    const url = new URL(
+      `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/identities/github/${username}`
+    );
+
+    const { params, headers } = configureRequest(ORBIT_CREDENTIALS);
+    url.search = params.toString();
+
     try {
-      const response = await fetch(
-        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/identities/github/${username}?api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
-        {
-          headers: {
-            ...ORBIT_HEADERS,
-          },
-        }
-      );
+      const response = await fetch(url, {
+        headers: headers,
+      });
 
       if (!response.ok) {
         return {
@@ -186,22 +187,28 @@ export const orbitAPI = {
    * @returns {success, status}
    */
   async addMemberToWorkspace(ORBIT_CREDENTIALS, username) {
+    const url = new URL(
+      `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members`
+    );
+
+    const { params, headers } = configureRequest(
+      ORBIT_CREDENTIALS,
+      {},
+      { "Content-Type": "application/json" }
+    );
+
+    url.search = params.toString();
+
     try {
-      const response = await fetch(
-        `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members?api_key=${ORBIT_CREDENTIALS.API_TOKEN}`,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            member: {
-              github: username,
-            },
-          }),
-          headers: {
-            "Content-Type": "application/json",
-            ...ORBIT_HEADERS,
+      const response = await fetch(url, {
+        headers: headers,
+        method: "POST",
+        body: JSON.stringify({
+          member: {
+            github: username,
           },
-        }
-      );
+        }),
+      });
 
       if (!response.ok) {
         return {
@@ -219,7 +226,22 @@ export const orbitAPI = {
         success: false,
       };
     }
+  },
+};
+
+/**
+ * Verifies credentials contain the required keys to connect to Orbit
+ *
+ * @returns Boolean
+ */
+export function areCredentialsValid(ORBIT_CREDENTIALS) {
+  // Workspace is required
+  if (!ORBIT_CREDENTIALS.WORKSPACE) {
+    return false;
   }
+
+  // Only one of the API token & the OAuth token is required for this to be "valid".
+  return !!ORBIT_CREDENTIALS.ACCESS_TOKEN || !!ORBIT_CREDENTIALS.API_TOKEN;
 }
 
 /**
@@ -240,12 +262,16 @@ export function _getRepositoryFullName() {
  * @returns Array<String> a 1d array of all repsoitory names, ie ["repo-1", "repo-2"]
  */
 export async function _fetchRepositories() {
-  const { repository_keys } = await chrome.storage.sync.get({ repository_keys: [] });
+  const { repository_keys } = await chrome.storage.sync.get({
+    repository_keys: [],
+  });
 
   // Backwards compatibility - if we do not have repository keys,
   //  default to how we used to store them
   if (repository_keys.length === 0) {
-    const { repositories } = await chrome.storage.sync.get({ repositories: []});
+    const { repositories } = await chrome.storage.sync.get({
+      repositories: [],
+    });
 
     return repositories;
   }

@@ -6,7 +6,7 @@
   "short_name": "Orbit",
   "homepage_url": "https://orbit.love",
   "minimum_chrome_version": "42",
-  "permissions": ["storage"],
+  "permissions": ["identity", "storage"],
   "background": {
     "persistent": false,
     "scripts": ["background.js"]

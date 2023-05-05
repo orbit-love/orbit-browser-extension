@@ -19,3 +19,60 @@ export const mockOrbitAPICall = (data = {}, ok = true, status = 200) => {
       status,
     });
 };
+
+/**
+ * Mocks the chrome storage object & getter
+ * **Important**: At the end of your test, restore the original behaviour
+ * by setting global.chrome to the object returned by this function.
+ *
+ * IE
+ * const originalChrome = mockChromeStorage({ key: "123" })
+ * ... Your tests
+ * global.chrome = originalChrome
+ *
+ * @param {Object} objectToStore object to put in mock storage
+ *
+ * @returns {originalChrome} to restore behaviour to global.chrome
+ */
+export const mockChromeStorage = (objectToStore = {}) => {
+  const mockChromeStorage = {
+    storage: objectToStore,
+    get: function (keys) {
+      // .get() should return all stored data
+      if (!keys) {
+        return this.storage;
+      }
+
+      const result = {};
+
+      // .get("repository_keys") should just return the stored data for "repository_keys"
+      if (typeof keys === "string") {
+        result[keys] = this.storage[keys];
+        return result;
+      }
+
+      // .get({ repository_keys: 123, repositories: 456) should fetch the data for repository_keys
+      // & repositories, and, if either is not found, return the default value given in the argument
+      Object.keys(keys).forEach((key) => {
+        result[key] = this.storage[key] || keys[key];
+      });
+
+      return result;
+    },
+    set: function (items) {
+      Object.keys(items).forEach((key) => {
+        this.storage[key] = items[key];
+      });
+    },
+  };
+
+  let originalChrome = global.chrome;
+
+  global.chrome = {
+    storage: {
+      sync: mockChromeStorage,
+    },
+  };
+
+  return originalChrome;
+};

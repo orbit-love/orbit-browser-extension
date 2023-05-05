@@ -16,7 +16,7 @@
               ../icons/orbit-logo-color-3x.png 3x
             " style="height: 30px; max-width: inherit;" />
       </div>
-      <div class="mx-auto"></div>
+      <div class="mx-auto text-yellow-600"></div>
       <div class="justify-end mx-2">
         <a class="no-underline" href="https://app.orbit.love" target="_blank" rel="noopener">Open Orbit app</a>
       </div>
@@ -24,21 +24,23 @@
     <div class="pt-6 mx-auto w-full max-w-screen-sm">
       <h1 class="mb-6">Orbit Extension Settings</h1>
       <div x-data="orbit">
-        <div class="field">
-          <div class="mb-2 text-lg">
-            <label for="token">API Token</label>
-          </div>
-          <input type="text" class="form-input py-2 px-3 bg-gray-100 rounded border-none" name="token" x-model="token"
-            autocomplete="off" />
-        </div>
-
-        <button id="save" @click="fetchWorkspaces" class="mr-2">
-          Check token
+        <button id="startOAuth" @click="startOAuthFlow" x-show="showLogin" class="mr-2">
+          Sign in with Orbit
         </button>
-        <span x-show="tokenCheckStatus.success !== undefined" x-text="tokenCheckStatus.message"
-          x-bind:class="tokenCheckStatus.success ? 'text-green-500' : 'text-red-500'"></span>
 
-        <div x-show="tokenCheckStatus.success && workspaces && workspaces.length > 0">
+        <p x-show="!showLogin">
+          Successfully signed in! If you wish you sign out, visit your <a
+            href="https://app.orbit.love/user/settings/authorized_applications">User Settings on
+            Orbit</a> & revoke access for the "Orbit Browser Extension".
+          application.
+        </p>
+
+        <p x-show="authenticationCheckStatus.status !== undefined" x-text="authenticationCheckStatus.message"
+          x-bind:class="authenticationCheckStatus.status == 'success' ? 'text-green-500' : authenticationCheckStatus.status == 'warning' ? 'text-yellow-600' : 'text-red-500'">
+        </p>
+
+        <div
+          x-show="['success', 'warning'].includes(authenticationCheckStatus.status) && workspaces && workspaces.length> 0">
           <div class="mt-2">
             <div class="field">
               <div class="mb-2 text-lg">
