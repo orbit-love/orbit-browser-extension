@@ -19,7 +19,7 @@ document.addEventListener("alpine:init", () => {
     selectedWorkspaceSlug: undefined,
     showLogin: true,
     authenticationCheckStatus: {
-      success: undefined,
+      status: undefined,
       message: "",
     },
     saveStatus: {
@@ -65,7 +65,7 @@ document.addEventListener("alpine:init", () => {
           console.error(err);
         }
       }
-      this.authenticationCheckStatus.success = true;
+      this.authenticationCheckStatus.status = "success";
       this.token = apiKeyFromStorage;
       this.accessToken = accessTokenFromStorage;
       this.selectedWorkspaceSlug = selectedWorkspaceSlugFromStorage;
@@ -88,7 +88,7 @@ document.addEventListener("alpine:init", () => {
         });
         if (!response.ok) {
           this.showLogin = true;
-          this.authenticationCheckStatus.success = false;
+          this.authenticationCheckStatus.status = "error";
           this.authenticationCheckStatus.message =
             "Failed to authenticate, please try again.";
           return;
@@ -98,19 +98,21 @@ document.addEventListener("alpine:init", () => {
         this.repositories = included.filter(
           (item) => item.type === "repository"
         );
-        this.authenticationCheckStatus.success = true;
+        this.authenticationCheckStatus.status = "success";
         this.authenticationCheckStatus.message =
           "Signed in successfully. Please select a workspace.";
 
         if (!!this.accessToken) {
           this.showLogin = false;
         } else {
-          this.authenticationCheckStatus.message = `WARNING: You are using an API token for authentication, which is deprecated. Use the button above to switch to the new sign in process.`;
+          this.authenticationCheckStatus.message =
+            "WARNING: You are using an API token for authentication, which is deprecated. Use the button above to switch to the new sign in process.";
+          this.authenticationCheckStatus.status = "warning";
         }
       } catch (err) {
         console.error(err);
         this.showLogin = true;
-        this.authenticationCheckStatus.success = false;
+        this.authenticationCheckStatus.status = "error";
         this.authenticationCheckStatus.message =
           "There was an unexpected error whilst signing in.";
       }

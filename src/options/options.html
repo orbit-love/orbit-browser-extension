@@ -16,7 +16,7 @@
               ../icons/orbit-logo-color-3x.png 3x
             " style="height: 30px; max-width: inherit;" />
       </div>
-      <div class="mx-auto"></div>
+      <div class="mx-auto text-yellow-600"></div>
       <div class="justify-end mx-2">
         <a class="no-underline" href="https://app.orbit.love" target="_blank" rel="noopener">Open Orbit app</a>
       </div>
@@ -35,10 +35,12 @@
           application.
         </p>
 
-        <p x-show="authenticationCheckStatus.success !== undefined" x-text="authenticationCheckStatus.message"
-          x-bind:class="authenticationCheckStatus.success ? 'text-green-500' : 'text-red-500'"></p>
+        <p x-show="authenticationCheckStatus.status !== undefined" x-text="authenticationCheckStatus.message"
+          x-bind:class="authenticationCheckStatus.status == 'success' ? 'text-green-500' : authenticationCheckStatus.status == 'warning' ? 'text-yellow-600' : 'text-red-500'">
+        </p>
 
-        <div x-show="authenticationCheckStatus.success && workspaces && workspaces.length > 0">
+        <div
+          x-show="['success', 'warning'].includes(authenticationCheckStatus.status) && workspaces && workspaces.length> 0">
           <div class="mt-2">
             <div class="field">
               <div class="mb-2 text-lg">
