@@ -218,7 +218,7 @@ document.addEventListener("alpine:init", () => {
       let params = new URLSearchParams({
         client_id: OAUTH_CLIENT_ID,
         response_type: "code",
-        scopes: "read write",
+        scope: "read write",
         code_challenge_method: "S256",
         redirect_uri: chrome.identity.getRedirectURL("oauth2"),
         code_challenge: codeChallenge,
