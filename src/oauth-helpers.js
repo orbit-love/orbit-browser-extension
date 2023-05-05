@@ -160,7 +160,7 @@ export async function _refreshAuthTokens(refreshToken) {
  * If a parameter appears multiple times, its values will be combined into an array.
  * If the URL has no search portion, an empty object is returned.
  */
-export function fetchQueryParams(stringUrl) {
+export function parseQueryParams(stringUrl) {
   try {
     const url = new URL(stringUrl);
     const searchParams = new URLSearchParams(url.search);
@@ -194,7 +194,7 @@ export function fetchQueryParams(stringUrl) {
  */
 export function generateCodeVerifier() {
   // Initialise empty array of recommended length
-  const codeVerifierLength = 43;
+  const codeVerifierLength = 128;
   const codeVerifier = new Uint8Array(codeVerifierLength);
 
   // Fill codeVerifier array with random values

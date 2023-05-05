@@ -2,10 +2,10 @@ import { ORBIT_HEADERS } from "./constants";
 import {
   getOrbitCredentials,
   configureRequest,
-  fetchQueryParams,
+  parseQueryParams,
   _isOAuthTokenExpired,
   _refreshAuthTokens,
-} from "./oauth_helpers";
+} from "./oauth-helpers";
 
 import { mockChromeStorage, mockOrbitAPICall } from "./test-helpers";
 
@@ -223,17 +223,17 @@ test("_refreshAuthTokens unsets tokens if the request fails, for example if the 
   global.chrome = originalChrome;
 });
 
-test("fetchQueryParams returns empty object if no params found", () => {
+test("parseQueryParams returns empty object if no params found", () => {
   const url = "https://www.example.com";
 
-  expect(fetchQueryParams(url)).toEqual({});
+  expect(parseQueryParams(url)).toEqual({});
 });
 
-test("fetchQueryParams returns object containing query params", () => {
+test("parseQueryParams returns object containing query params", () => {
   const url =
     "https://www.example.com?stringParam=123&arrayParam=1&arrayParam=2";
 
-  expect(fetchQueryParams(url)).toEqual({
+  expect(parseQueryParams(url)).toEqual({
     stringParam: "123",
     arrayParam: ["1", "2"],
   });

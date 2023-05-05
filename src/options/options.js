@@ -6,9 +6,9 @@ import {
   configureRequest,
   generateCodeChallenge,
   generateCodeVerifier,
-  fetchQueryParams as parseQueryParams,
-} from "../oauth_helpers";
-import { getOrbitCredentials } from "../oauth_helpers";
+  parseQueryParams as parseQueryParams,
+} from "../oauth-helpers";
+import { getOrbitCredentials } from "../oauth-helpers";
 
 document.addEventListener("alpine:init", () => {
   Alpine.data("orbit", () => ({
@@ -114,7 +114,7 @@ document.addEventListener("alpine:init", () => {
         this.showLogin = true;
         this.authenticationCheckStatus.status = "error";
         this.authenticationCheckStatus.message =
-          "There was an unexpected error whilst signing in.";
+          "There was an unexpected error while signing in.";
       }
     },
     _findAllReposFullNameByWorkspaceSlug() {
@@ -269,7 +269,6 @@ document.addEventListener("alpine:init", () => {
         // Calculate timestamp when OAuth token expires - current time + it's expires_in timestamp
         const expiresAt = Math.floor(Date.now() / 1000) + expires_in;
 
-        // TODO: Move to own object in storage (auth, authorization etc)
         chrome.storage.sync.set({
           authentication: {
             accessToken: access_token,

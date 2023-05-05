@@ -1,4 +1,4 @@
-import { _refreshAuthTokens, _isOAuthTokenExpired } from "../oauth_helpers";
+import { _refreshAuthTokens, _isOAuthTokenExpired } from "../oauth-helpers";
 import { mockChromeStorage } from "../test-helpers";
 import {
   _getRepositoryFullName,

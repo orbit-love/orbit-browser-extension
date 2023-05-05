@@ -1,5 +1,5 @@
 import { ORBIT_API_ROOT_URL } from "../constants";
-import { configureRequest } from "../oauth_helpers";
+import { configureRequest } from "../oauth-helpers";
 
 export async function isRepoInOrbitWorkspace() {
   const repositories = await _fetchRepositories();
