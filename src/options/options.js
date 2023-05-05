@@ -227,7 +227,7 @@ document.addEventListener("alpine:init", () => {
       authUrl.search = params.toString();
 
       chrome.identity.launchWebAuthFlow(
-        { url: authUrl, interactive: true },
+        { url: authUrl.toString(), interactive: true },
         function (redirectUrl) {
           if (redirectUrl) {
             var parsed = parseQueryParams(redirectUrl);
