@@ -114,7 +114,7 @@ document.addEventListener("alpine:init", () => {
         this.showLogin = true;
         this.authenticationCheckStatus.status = "error";
         this.authenticationCheckStatus.message =
-          "There was an unexpected error while signing in.";
+          "There was an unexpected error whilst signing in.";
       }
     },
     _findAllReposFullNameByWorkspaceSlug() {
@@ -227,7 +227,7 @@ document.addEventListener("alpine:init", () => {
       authUrl.search = params.toString();
 
       chrome.identity.launchWebAuthFlow(
-        { url: authUrl.toString(), interactive: true },
+        { url: authUrl, interactive: true },
         function (redirectUrl) {
           if (redirectUrl) {
             var parsed = parseQueryParams(redirectUrl);
@@ -259,7 +259,7 @@ document.addEventListener("alpine:init", () => {
       authUrl.search = params.toString();
 
       try {
-        const response = await fetch(authUrl.toString(), {
+        const response = await fetch(authUrl, {
           method: "POST",
         });
 

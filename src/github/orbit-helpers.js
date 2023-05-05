@@ -58,7 +58,7 @@ export const orbitAPI = {
     url.search = params.toString();
 
     try {
-      const response = await fetch(url.toString(), {
+      const response = await fetch(url, {
         headers: headers,
       });
       if (!response.ok) {
@@ -116,7 +116,7 @@ export const orbitAPI = {
     url.search = params.toString();
 
     try {
-      const response = await fetch(url.toString(), {
+      const response = await fetch(url, {
         headers: headers,
       });
       if (!response.ok) {
@@ -155,7 +155,7 @@ export const orbitAPI = {
     url.search = params.toString();
 
     try {
-      const response = await fetch(url.toString(), {
+      const response = await fetch(url, {
         headers: headers,
       });
 
@@ -200,7 +200,7 @@ export const orbitAPI = {
     url.search = params.toString();
 
     try {
-      const response = await fetch(url.toString(), {
+      const response = await fetch(url, {
         headers: headers,
         method: "POST",
         body: JSON.stringify({

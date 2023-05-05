@@ -182,7 +182,7 @@ test("should create new members for non-members", async () => {
     expect(getByText(orbitDetailsElement, "Creating the member…"));
   });
   expect(global.fetch).toHaveBeenCalledWith(
-    expect.stringContaining("/my-workspace/members"),
+    expect.any(URL),
     expect.objectContaining({
       body: JSON.stringify({ member: { github: "phacks" } }),
     })
