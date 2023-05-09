@@ -13,7 +13,7 @@ import "./tagComponent";
 import { TailwindMixin } from "../utils/tailwindMixin";
 import { Member } from "../types";
 
-const TAG_LIMIT = 1
+const TAG_LIMIT = 3;
 
 import iconCustomer from "bundle-text:../icons/icon-customer.svg";
 @customElement("obe-widget")
