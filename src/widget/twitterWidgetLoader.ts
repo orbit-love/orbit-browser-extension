@@ -46,7 +46,7 @@ class TwitterProfilePage implements Page {
 
   findInsertionPoint(main: Element) {
     return (
-      main.querySelector("div[data-testid='userActions']")?.parentElement ||
+      main.querySelector("div[data-testid='UserName']")?.parentElement?.children[0]?.children[1] ||
       null
     );
   }
