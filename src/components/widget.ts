@@ -296,7 +296,7 @@ class Widget extends TailwindMixin(LitElement) {
 
   render() {
     return html`
-      <div class="relative inline-block text-left">
+      <div class="relative inline-block font-sans text-left">
         <slot
           name="button"
           @click="${this._toggle}"

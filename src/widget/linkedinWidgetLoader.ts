@@ -1,6 +1,6 @@
 import WidgetLoader from "./widgetLoader";
 import '../components/linkedinButton';
-import Page from "./page";
+import { Page } from "../types";
 
 class LinkedinProfilePage implements Page {
   detect() {
@@ -15,6 +15,8 @@ class LinkedinProfilePage implements Page {
   validateWidgetZone(widgetZone: Element) {
     return true;
   }
+
+  applyCSSPatch() {}
 
   findUsername(main: Element) {
     const pathname = window.location.pathname;

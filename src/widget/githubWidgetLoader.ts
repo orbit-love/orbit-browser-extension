@@ -18,6 +18,8 @@ class GitHubIssueOrPullRequestPage implements Page {
   validateWidgetZone(widgetZone: Element) {
     return widgetZone.querySelector(".timeline-comment-actions") !== null;
   }
+
+  applyCSSPatch() {}
   
   findUsername(comment: Element) {
     return comment.querySelector(".author")?.innerHTML;

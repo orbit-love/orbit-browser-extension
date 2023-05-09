@@ -27,6 +27,8 @@ export default class WidgetLoader {
         break;
       }
 
+      page.applyCSSPatch(widgetZone);
+
       const username = page.findUsername(widgetZone);
       if (username == null) {
         return;
