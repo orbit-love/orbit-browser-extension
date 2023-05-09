@@ -11,6 +11,7 @@ export type Member = {
   name: string,
   slug: string,
   jobTitle: string,
+  teammate: boolean,
   orbitLevel: 1 | 2 | 3 | 4 | null,
   organization: Organization,
   lastActivityOccurredAt: string,

@@ -94,6 +94,7 @@ const loadMemberData = async ({ username, platform }) => {
         name: member.attributes.name,
         jobTitle: member.attributes.title,
         slug: member.attributes.slug,
+        teammate: member.attributes.teammate,
         orbitLevel: member.attributes.orbit_level,
         organization: organization,
         lastActivityOccurredAt: member.attributes.last_activity_occurred_at,

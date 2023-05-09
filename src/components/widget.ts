@@ -148,30 +148,35 @@ class Widget extends TailwindMixin(LitElement) {
         `}
         <!-- Pills -->
         <p class="text-gray-500 block truncate pt-3 pb-1 text-sm uppercase">
-            Orbit Model
+          Orbit Model
         </p>
         <div class="flex flex-row items-center justify-start space-x-1 pt-1">
-          ${this.member.orbitLevel === null
+          ${this.member.teammate
             ? html`<obe-pill value="Teammate"></obe-pill>`
             : html`<obe-pill
                 name="Orbit Level"
-                value="${this.member.orbitLevel}"
+                value="${this.member.orbitLevel || 'None'}"
               ></obe-pill>`}
-          <obe-pill
-            name="Last active"
-            value="${new Date(
-              Date.parse(this.member.lastActivityOccurredAt)
-            ).toLocaleDateString("en-EN", {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            })}"
-          ></obe-pill>
+          ${this.member.lastActivityOccurredAt &&
+          html`
+            <obe-pill
+              name="Last active"
+              value="${new Date(
+                Date.parse(this.member.lastActivityOccurredAt)
+              ).toLocaleDateString("en-EN", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })}"
+              ></obe-pill>
+            `}
         </div>
         <!-- Identities -->
         <p class="text-gray-500 block truncate pt-3 pb-1 text-sm uppercase">
-            Linked profiles & emails
-            <span class="ml-1 text-gray-900">${this.member.identities.length}</span>
+          Linked profiles & emails
+          <span class="ml-1 text-gray-900"
+            >${this.member.identities.length}</span
+          >
         </p>
         <div class="flex flex-row items-center justify-start space-x-1 pt-1">
           ${this.member.identities.map(
@@ -181,21 +186,29 @@ class Widget extends TailwindMixin(LitElement) {
         </div>
         <!-- Tags -->
         <p class="text-gray-500 block truncate pt-3 pb-1 text-sm uppercase">
-            Tags
-            <span class="ml-1 text-gray-900">${this.member.tags.length}</span>
+          Tags
+          <span class="ml-1 text-gray-900">${this.member.tags.length}</span>
         </p>
-        <div class="pb-1 max-w-xs flex flex-row flex-wrap items-center justify-start gap-x-1 gap-y-1 pt-1">
-          ${this.member.tags.map(
-            (tag, index) => {
-              if (!this.showAllTags && index > TAG_LIMIT) {
-                return;
-              }
-              if (!this.showAllTags && index === TAG_LIMIT) {
-                return html`<button @click="${this._showAllTags}" class="cursor-pointer text-gray-500">${this.member.tags.length - TAG_LIMIT} more tags</button>`
-              }
-              return html`<obe-tag tag=${tag}></obe-tag>`
+        <div
+          class="pb-1 max-w-xs flex flex-row flex-wrap items-center justify-start gap-x-1 gap-y-1 pt-1"
+        >
+          ${this.member.tags.map((tag, index) => {
+            if (!this.showAllTags && index > TAG_LIMIT) {
+              return;
             }
-          )}
+            if (!this.showAllTags && index === TAG_LIMIT) {
+              return html`<button
+                @click="${this._showAllTags}"
+                class="cursor-pointer text-gray-500"
+              >
+                ${this.member.tags.length - TAG_LIMIT} more tags
+              </button>`;
+            }
+            return html`<obe-tag
+              tag=${tag}
+              workspace=${this.workspace}
+            ></obe-tag>`;
+          })}
         </div>
       </div>
     `;
@@ -233,7 +246,6 @@ class Widget extends TailwindMixin(LitElement) {
   }
 
   private _showAllTags() {
-    console.log('in here')
     this.showAllTags = true;
   }
 
