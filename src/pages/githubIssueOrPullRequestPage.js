@@ -1,6 +1,6 @@
-import { Page } from "../../types";
+import Page from "./page";
 
-export class GitHubIssueOrPullRequestPage implements Page {
+export default class GitHubIssueOrPullRequestPage extends Page {
   detect() {
     const issuePageRegex = /.*\/.*\/issues?\/.*/;
     const pullRequestPageRegex = /.*\/.*\/pulls?\/.*/;
@@ -14,17 +14,17 @@ export class GitHubIssueOrPullRequestPage implements Page {
     return window.document.getElementsByClassName("timeline-comment");
   }
 
-  validateWidgetZone(widgetZone: Element) {
+  validateWidgetZone(widgetZone) {
     return widgetZone.querySelector(".timeline-comment-actions") !== null;
   }
 
   applyCSSPatch() {}
 
-  findUsername(comment: Element) {
+  findUsername(comment) {
     return comment.querySelector(".author")?.innerHTML;
   }
 
-  findInsertionPoint(comment: Element) {
+  findInsertionPoint(comment) {
     return comment.querySelector(".timeline-comment-actions");
   }
 }

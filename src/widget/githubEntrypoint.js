@@ -1,6 +1,6 @@
 import "chrome-extension-async";
 import "@webcomponents/custom-elements";
-import { GitHubIssueOrPullRequestPage } from "./pages/githubISsueOrPullRequestPage";
+import GitHubIssueOrPullRequestPage from "../pages/githubIssueOrPullRequestPage";
 import WidgetOrchestrator from "./widgetOrchestrator";
 
 /**

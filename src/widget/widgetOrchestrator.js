@@ -1,4 +1,4 @@
-import { Page } from "../types";
+import { Page } from "../pages/page";
 import "../components/widget";
 
 export default class WidgetOrchestrator {
@@ -8,7 +8,7 @@ export default class WidgetOrchestrator {
    * @param {Array<Page>} pages Possible page types that this orchestrator can run on
    * @returns {(Page|null)} the current page
    */
-  detectPage(pages: Page[]): Page | null {
+  detectPage(pages) {
     const page = pages.find((page) => page.detect());
     return page || null;
   }
@@ -19,7 +19,7 @@ export default class WidgetOrchestrator {
    * @param {Page} page the page to insert widget on
    * @param {string} platform the site we're on, used as a key for naming HTML elements
    */
-  addWidgetElements(page: Page, platform: string) {
+  addWidgetElements(page, platform) {
     const widgetZones = page.findWidgetZones();
 
     for (const widgetZone of widgetZones) {
@@ -50,7 +50,7 @@ export default class WidgetOrchestrator {
    *
    * @returns {Element} the created widget element
    */
-  addWidgetElement(username: string, platform: string): Element {
+  addWidgetElement(username, platform) {
     const widgetElement =
       document.querySelector("obe-widget") ||
       window.document.createElement("obe-widget");
@@ -69,7 +69,7 @@ export default class WidgetOrchestrator {
    *
    * @returns {Element} the created button
    */
-  addOrbitButton(widgetElement: Element, platform: string): Element {
+  addOrbitButton(widgetElement, platform) {
     const buttonElement =
       document.querySelector(`obe-${platform}-button`) ||
       window.document.createElement(`obe-${platform}-button`);
@@ -88,7 +88,7 @@ export default class WidgetOrchestrator {
    *
    * @returns {Element} the created element
    */
-  addAdditionalDataElements(widgetElement: Element, platform: string): Element {
+  addAdditionalDataElements(widgetElement, platform) {
     const additionalDataComponent =
       document.querySelector(`obe-${platform}-additional-data`) ||
       window.document.createElement(`obe-${platform}-additional-data`);
