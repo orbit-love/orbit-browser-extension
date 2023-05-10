@@ -3,6 +3,10 @@ import "@webcomponents/custom-elements";
 import { GitHubIssueOrPullRequestPage } from "./pages/githubISsueOrPullRequestPage";
 import WidgetOrchestrator from "./widgetOrchestrator";
 
+/**
+ * Defines the list of pages supported on Github
+ * Uses the widget orchestrator to insert Orbit widget where needed
+ */
 const initializeWidget = () => {
   const pages = [new GitHubIssueOrPullRequestPage()];
   const orchestrator = new WidgetOrchestrator();
