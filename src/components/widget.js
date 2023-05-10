@@ -1,16 +1,22 @@
 import { LitElement, html, css } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { TailwindMixin } from "../utils/tailwindMixin";
-@customElement("obe-widget")
-class Widget extends TailwindMixin(LitElement) {
-  @state() isOpen = false;
 
-  connectedCallback(): void {
+class Widget extends TailwindMixin(LitElement) {
+  static get properties() {
+    return {
+      isOpen: { type: Boolean, state: true },
+    };
+  }
+
+  constructor() {
+    super();
+    this.isOpen = false;
+  }
+
+  connectedCallback() {
     super.connectedCallback();
 
-    // Close the widget when clicking outside.
-    // See https://lamplightdev.com/blog/2021/04/10/how-to-detect-clicks-outside-of-a-web-component/
-    // for an explanation about `event.composedPath`
     document.addEventListener("click", (event) => {
       if (this.isOpen && !event.composedPath().includes(this)) {
         this.isOpen = false;
@@ -34,22 +40,24 @@ class Widget extends TailwindMixin(LitElement) {
     `;
   }
 
-  private _toggle() {
+  _toggle() {
     this.isOpen = !this.isOpen;
   }
 
-  private async _loadOrbitData() {
+  async _loadOrbitData() {
     console.log("#_loadOrbitData");
   }
 
-  static styles = css`
-    :not(:defined) {
-      display: none;
-    }
-    * {
-      @apply font-sans;
-    }
-  `;
+  static get styles() {
+    return css`
+      :not(:defined) {
+        display: none;
+      }
+      * {
+        @apply font-sans;
+      }
+    `;
+  }
 
   render() {
     return html`
@@ -64,3 +72,5 @@ class Widget extends TailwindMixin(LitElement) {
     `;
   }
 }
+
+customElements.define("obe-widget", Widget);
