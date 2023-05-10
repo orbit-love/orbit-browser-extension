@@ -1,10 +1,6 @@
-import WidgetOrchestrator from "./widgetOrchestrator";
-import "../components/githubButton";
-import "../components/pillComponent";
-import "../components/githubAdditionalDataComponent";
-import { Page } from "../types";
+import { Page } from "../../types";
 
-class GitHubIssueOrPullRequestPage implements Page {
+export class GitHubIssueOrPullRequestPage implements Page {
   detect() {
     const issuePageRegex = /.*\/.*\/issues?\/.*/;
     const pullRequestPageRegex = /.*\/.*\/pulls?\/.*/;
@@ -31,9 +27,4 @@ class GitHubIssueOrPullRequestPage implements Page {
   findInsertionPoint(comment: Element) {
     return comment.querySelector(".timeline-comment-actions");
   }
-}
-
-export default class GitHubWidgetOrchestrator extends WidgetOrchestrator {
-  readonly pages = [new GitHubIssueOrPullRequestPage()];
-  readonly platform = "github";
 }
