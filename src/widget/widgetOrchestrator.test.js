@@ -4,7 +4,7 @@ const orchestrator = new WidgetOrchestrator();
 
 describe("addWidgetElement", () => {
   test("returns an Element object", () => {
-    const result = ("john_doe", "twitter");
+    const result = orchestrator.addWidgetElement("john_doe", "twitter");
     expect(result instanceof Element).toBe(true);
   });
 
