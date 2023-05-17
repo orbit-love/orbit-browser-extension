@@ -51,3 +51,35 @@ describe("#addOrbitButton", () => {
     expect(button.tagName).toEqual("OBE-TEST-BUTTON");
   });
 });
+
+describe("#addAdditionalDataElements", () => {
+  it("adds additional data element if none exist", () => {
+    const widget = document.createElement("div");
+    document.body.appendChild(widget);
+    const additionalDataElement = orchestrator.addAdditionalDataElements(
+      widget,
+      "test"
+    );
+
+    expect(widget.children.item(0)).toEqual(additionalDataElement);
+    expect(widget.children.length).toEqual(1);
+    expect(additionalDataElement.getAttribute("slot")).toBe("additional-data");
+    expect(additionalDataElement.tagName).toEqual("OBE-TEST-ADDITIONAL-DATA");
+  });
+
+  it("uses existing element if one exists", () => {
+    const widget = document.createElement("div");
+    document.body.appendChild(widget);
+
+    const additionalDataElement = document.createElement(
+      "obe-test-additional-data"
+    );
+    widget.appendChild(additionalDataElement);
+
+    orchestrator.addAdditionalDataElements(widget, "test");
+
+    expect(widget.children.item(0)).toEqual(additionalDataElement);
+    expect(widget.children.length).toEqual(1);
+    expect(additionalDataElement.tagName).toEqual("OBE-TEST-ADDITIONAL-DATA");
+  });
+});

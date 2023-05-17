@@ -91,9 +91,12 @@ export default class WidgetOrchestrator {
    * @returns {Element} the created element
    */
   addAdditionalDataElements(widgetElement, platform) {
-    const additionalDataComponent =
-      document.querySelector(`obe-${platform}-additional-data`) ||
-      window.document.createElement(`obe-${platform}-additional-data`);
+    if (!!widgetElement.querySelector(`obe-${platform}-additional-data`))
+      return;
+
+    const additionalDataComponent = window.document.createElement(
+      `obe-${platform}-additional-data`
+    );
 
     additionalDataComponent.setAttribute("slot", "additional-data");
 
