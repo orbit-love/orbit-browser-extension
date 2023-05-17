@@ -70,9 +70,11 @@ export default class WidgetOrchestrator {
    * @returns {Element} the created button
    */
   addOrbitButton(widgetElement, platform) {
-    const buttonElement =
-      document.querySelector(`obe-${platform}-button`) ||
-      window.document.createElement(`obe-${platform}-button`);
+    if (!!widgetElement.querySelector(`obe-${platform}-button`)) return;
+
+    const buttonElement = window.document.createElement(
+      `obe-${platform}-button`
+    );
 
     buttonElement.setAttribute("slot", "button");
 
