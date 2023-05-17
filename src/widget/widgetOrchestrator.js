@@ -51,9 +51,7 @@ export default class WidgetOrchestrator {
    * @returns {Element} the created widget element
    */
   addWidgetElement(username, platform) {
-    const widgetElement =
-      document.querySelector("obe-widget") ||
-      window.document.createElement("obe-widget");
+    const widgetElement = window.document.createElement("obe-widget");
 
     widgetElement.setAttribute("username", username);
     widgetElement.setAttribute("platform", platform);
