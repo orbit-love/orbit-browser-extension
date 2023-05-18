@@ -26,15 +26,16 @@ export const mockOrbitAPICall = (data = {}, ok = true, status = 200) => {
  * by setting global.chrome to the object returned by this function.
  *
  * IE
- * const originalChrome = mockChromeStorage({ key: "123" })
+ * const originalChrome = mockChrome({ key: "123" })
  * ... Your tests
  * global.chrome = originalChrome
  *
  * @param {Object} objectToStore object to put in mock storage
+ * @param {Object} runtimeResponse object to return from sendMessage requests
  *
  * @returns {originalChrome} to restore behaviour to global.chrome
  */
-export const mockChromeStorage = (objectToStore = {}) => {
+export const mockChrome = (objectToStore = {}, runtimeResponse = {}) => {
   const mockChromeStorage = {
     storage: objectToStore,
     get: function (keys) {
@@ -66,12 +67,21 @@ export const mockChromeStorage = (objectToStore = {}) => {
     },
   };
 
+  const mockRuntime = {
+    sendMessage: jest.fn(() => {
+      return new Promise((resolve) => {
+        resolve(runtimeResponse);
+      });
+    }),
+  };
+
   let originalChrome = global.chrome;
 
   global.chrome = {
     storage: {
       sync: mockChromeStorage,
     },
+    runtime: mockRuntime,
   };
 
   return originalChrome;

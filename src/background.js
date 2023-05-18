@@ -38,6 +38,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     case "GET_OAUTH_TOKEN":
       getOAuthToken(request).then(sendResponse);
       break;
+    case "REFRESH_OAUTH_TOKEN":
+      refreshOAuthToken(request).then(sendResponse);
+      break;
+
     default:
       console.error(`Unknown operation: ${request.operation}`);
   }
@@ -89,6 +93,27 @@ const getOAuthToken = async ({ oAuthCode, codeVerifier }) => {
     authUrl.search = params.toString();
 
     const response = await fetch(authUrl, {
+      method: "POST",
+    });
+
+    return { success: true, response: await response.json(), ok: response.ok };
+  } catch (e) {
+    return { success: false, response: e.message };
+  }
+};
+
+const refreshOAuthToken = async ({ refreshToken }) => {
+  try {
+    const url = new URL(`${ORBIT_API_ROOT_URL}/oauth/token`);
+    let params = new URLSearchParams({
+      grant_type: "refresh_token",
+      client_id: OAUTH_CLIENT_ID,
+      refresh_token: refreshToken,
+    });
+
+    url.search = params.toString();
+
+    const response = await fetch(url, {
       method: "POST",
     });
 

@@ -106,36 +106,13 @@ export function _isOAuthTokenExpired(expirationTime) {
  * @returns {Object} refreshed tokens for accessToken, refreshToken, expiresAt
  */
 export async function _refreshAuthTokens(refreshToken) {
-  const url = new URL(`${ORBIT_API_ROOT_URL}/oauth/token`);
-  let params = new URLSearchParams({
-    grant_type: "refresh_token",
-    client_id: OAUTH_CLIENT_ID,
-    refresh_token: refreshToken,
+  const { response, success } = await chrome.runtime.sendMessage({
+    operation: "REFRESH_OAUTH_TOKEN",
+    refreshToken: refreshToken,
   });
 
-  url.search = params.toString();
-
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-    });
-
-    const { access_token, refresh_token, expires_in } = await response.json();
-
-    // Calculate timestamp when OAuth token expires - current time + it's expires_in timestamp
-    const expiresAt = Math.floor(Date.now() / 1000) + expires_in;
-
-    const items = {
-      accessToken: access_token,
-      refreshToken: refresh_token,
-      expiresAt: expiresAt,
-    };
-
-    chrome.storage.sync.set({ authentication: items });
-
-    return items;
-  } catch (err) {
-    console.error(err);
+  if (!success) {
+    console.error(response);
 
     // If the request fails (for example if the refresh token has expired),
     // remove the OAuth credentials from storage. This will let the user
@@ -150,6 +127,21 @@ export async function _refreshAuthTokens(refreshToken) {
 
     return items;
   }
+
+  const { access_token, refresh_token, expires_in } = response;
+
+  // Calculate timestamp when OAuth token expires - current time + it's expires_in timestamp
+  const expiresAt = Math.floor(Date.now() / 1000) + expires_in;
+
+  const items = {
+    accessToken: access_token,
+    refreshToken: refresh_token,
+    expiresAt: expiresAt,
+  };
+
+  chrome.storage.sync.set({ authentication: items });
+
+  return items;
 }
 
 /**
