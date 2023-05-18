@@ -54,11 +54,10 @@ document.addEventListener("alpine:init", () => {
 
         // Give users with API token chance to switch to OAuth
         if (!!accessTokenFromStorage) this.showLogin = false;
+        const { data, included } = response;
 
-        workspaces = response.data;
-        repositories = response.included.filter(
-          (item) => item.type === "repository"
-        );
+        workspaces = data;
+        repositories = included.filter((item) => item.type === "repository");
       }
       this.authenticationCheckStatus.status = "success";
       this.token = apiKeyFromStorage;
@@ -68,48 +67,43 @@ document.addEventListener("alpine:init", () => {
       this.repositories = repositories;
     },
     async fetchWorkspaces() {
-      const url = new URL(`${ORBIT_API_ROOT_URL}/workspaces`);
-
-      const { params, headers } = configureRequest({
-        ACCESS_TOKEN: this.accessToken,
-        API_TOKEN: this.token,
+      const { response, success, ok } = await chrome.runtime.sendMessage({
+        operation: "LOAD_WORKSPACES",
+        accessTokenFromStorage: this.accessToken,
+        apiKeyFromStorage: this.token,
       });
 
-      url.search = params.toString();
+      console.log(response);
 
-      try {
-        const response = await fetch(url, {
-          headers: headers,
-        });
-        if (!response.ok) {
-          this.showLogin = true;
-          this.authenticationCheckStatus.status = "error";
-          this.authenticationCheckStatus.message =
-            "Failed to authenticate, please try again.";
-          return;
-        }
-        const { data, included } = await response.json();
-        this.workspaces = data;
-        this.repositories = included.filter(
-          (item) => item.type === "repository"
-        );
-        this.authenticationCheckStatus.status = "success";
-        this.authenticationCheckStatus.message =
-          "Signed in successfully. Please select a workspace.";
-
-        if (!!this.accessToken) {
-          this.showLogin = false;
-        } else {
-          this.authenticationCheckStatus.message =
-            "WARNING: You are using an API token for authentication, which is deprecated. Use the button above to switch to the new sign in process.";
-          this.authenticationCheckStatus.status = "warning";
-        }
-      } catch (err) {
+      if (!success) {
         console.error(err);
         this.showLogin = true;
         this.authenticationCheckStatus.status = "error";
         this.authenticationCheckStatus.message =
           "There was an unexpected error whilst signing in.";
+        return;
+      }
+
+      if (!ok) {
+        this.showLogin = true;
+        this.authenticationCheckStatus.status = "error";
+        this.authenticationCheckStatus.message =
+          "Failed to authenticate, please try again.";
+        return;
+      }
+      const { data, included } = response;
+      this.workspaces = data;
+      this.repositories = included.filter((item) => item.type === "repository");
+      this.authenticationCheckStatus.status = "success";
+      this.authenticationCheckStatus.message =
+        "Signed in successfully. Please select a workspace.";
+
+      if (!!this.accessToken) {
+        this.showLogin = false;
+      } else {
+        this.authenticationCheckStatus.message =
+          "WARNING: You are using an API token for authentication, which is deprecated. Use the button above to switch to the new sign in process.";
+        this.authenticationCheckStatus.status = "warning";
       }
     },
     _findAllReposFullNameByWorkspaceSlug() {

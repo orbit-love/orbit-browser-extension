@@ -48,7 +48,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
  * @param {String} accessTokenFromStorage
  * @param {String} apiKeyFromStorage
  *
- * @returns {success, response}
+ * @returns {success, response, ok}
  */
 const fetchWorkspaces = async ({
   accessTokenFromStorage,
@@ -68,7 +68,7 @@ const fetchWorkspaces = async ({
       headers: headers,
     });
 
-    return { success: true, response: await response.json() };
+    return { success: true, response: await response.json(), ok: response.ok };
   } catch (e) {
     return { success: false, response: e.message };
   }
