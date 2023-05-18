@@ -17,6 +17,8 @@ class Widget extends TailwindMixin(LitElement) {
   connectedCallback() {
     super.connectedCallback();
 
+    // Used to detect clicks outside of the widget & collapse it
+    // https://lamplightdev.com/blog/2021/04/10/how-to-detect-clicks-outside-of-a-web-component/
     document.addEventListener("click", (event) => {
       if (this.isOpen && !event.composedPath().includes(this)) {
         this.isOpen = false;
