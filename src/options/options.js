@@ -43,8 +43,8 @@ document.addEventListener("alpine:init", () => {
       if (!!apiKeyFromStorage || !!accessTokenFromStorage) {
         const { response, success } = await chrome.runtime.sendMessage({
           operation: "LOAD_WORKSPACES",
-          accessTokenFromStorage: accessTokenFromStorage,
-          apiKeyFromStorage: apiKeyFromStorage,
+          accessToken: accessTokenFromStorage,
+          apiKey: apiKeyFromStorage,
         });
 
         if (!success) {
@@ -69,11 +69,9 @@ document.addEventListener("alpine:init", () => {
     async fetchWorkspaces() {
       const { response, success, ok } = await chrome.runtime.sendMessage({
         operation: "LOAD_WORKSPACES",
-        accessTokenFromStorage: this.accessToken,
-        apiKeyFromStorage: this.token,
+        accessToken: this.accessToken,
+        apiKey: this.token,
       });
-
-      console.log(response);
 
       if (!success) {
         console.error(err);
@@ -235,45 +233,35 @@ document.addEventListener("alpine:init", () => {
       );
     },
     async getOAuthToken(oAuthCode, codeVerifier) {
-      let authUrl = new URL(`${ORBIT_API_ROOT_URL}/oauth/token`);
-
-      let params = new URLSearchParams({
-        client_id: OAUTH_CLIENT_ID,
-        grant_type: "authorization_code",
-        code: oAuthCode,
-        code_verifier: codeVerifier,
-        redirect_uri: chrome.identity.getRedirectURL("oauth2"),
+      const { response, success } = await chrome.runtime.sendMessage({
+        operation: "GET_OAUTH_TOKEN",
+        oAuthCode: oAuthCode,
+        codeVerifier: codeVerifier,
       });
 
-      authUrl.search = params.toString();
-
-      try {
-        const response = await fetch(authUrl, {
-          method: "POST",
-        });
-
-        const { access_token, refresh_token, expires_in } =
-          await response.json();
-
-        // Calculate timestamp when OAuth token expires - current time + it's expires_in timestamp
-        const expiresAt = Math.floor(Date.now() / 1000) + expires_in;
-
-        chrome.storage.sync.set({
-          authentication: {
-            accessToken: access_token,
-            refreshToken: refresh_token,
-            expiresAt: expiresAt,
-          },
-        });
-
-        this.accessToken = access_token;
-        this.refreshToken = refresh_token;
-        this.expiresAt = expiresAt;
-
-        await this.fetchWorkspaces();
-      } catch (err) {
-        console.error(err);
+      if (!success) {
+        console.error(response);
+        return;
       }
+
+      const { access_token, refresh_token, expires_in } = response;
+
+      // Calculate timestamp when OAuth token expires - current time + it's expires_in timestamp
+      const expiresAt = Math.floor(Date.now() / 1000) + expires_in;
+
+      chrome.storage.sync.set({
+        authentication: {
+          accessToken: access_token,
+          refreshToken: refresh_token,
+          expiresAt: expiresAt,
+        },
+      });
+
+      this.accessToken = access_token;
+      this.refreshToken = refresh_token;
+      this.expiresAt = expiresAt;
+
+      await this.fetchWorkspaces();
     },
   }));
 });

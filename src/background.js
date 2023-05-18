@@ -1,6 +1,6 @@
 import "chrome-extension-async";
-import { ORBIT_API_ROOT_URL, ORBIT_HEADERS } from "./constants";
-import { configureRequest, getOrbitCredentials } from "./oauth-helpers";
+import { ORBIT_API_ROOT_URL, OAUTH_CLIENT_ID } from "./constants";
+import { configureRequest } from "./oauth-helpers";
 
 // When clicking on the Orbit extension button, open the options page
 chrome.browserAction.onClicked.addListener(() =>
@@ -33,7 +33,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   switch (request.operation) {
     case "LOAD_WORKSPACES":
-      fetchWorkspaces(request).then(sendResponse);
+      loadWorkspaces(request).then(sendResponse);
+      break;
+    case "GET_OAUTH_TOKEN":
+      getOAuthToken(request).then(sendResponse);
       break;
     default:
       console.error(`Unknown operation: ${request.operation}`);
@@ -45,27 +48,48 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
  * Fetch workspaces from Orbit API
  * Credentials passed as arguments since this is called from options page
  *
- * @param {String} accessTokenFromStorage
- * @param {String} apiKeyFromStorage
+ * @param {String} accessToken
+ * @param {String} apiKey
  *
  * @returns {success, response, ok}
  */
-const fetchWorkspaces = async ({
-  accessTokenFromStorage,
-  apiKeyFromStorage,
-}) => {
+const loadWorkspaces = async ({ accessToken, apiKey }) => {
   try {
     const url = new URL(`${ORBIT_API_ROOT_URL}/workspaces`);
 
     const { params, headers } = configureRequest({
-      ACCESS_TOKEN: accessTokenFromStorage,
-      API_TOKEN: apiKeyFromStorage,
+      ACCESS_TOKEN: accessToken,
+      API_TOKEN: apiKey,
     });
 
     url.search = params.toString();
 
     const response = await fetch(url, {
       headers: headers,
+    });
+
+    return { success: true, response: await response.json(), ok: response.ok };
+  } catch (e) {
+    return { success: false, response: e.message };
+  }
+};
+
+const getOAuthToken = async ({ oAuthCode, codeVerifier }) => {
+  try {
+    let authUrl = new URL(`${ORBIT_API_ROOT_URL}/oauth/token`);
+
+    let params = new URLSearchParams({
+      client_id: OAUTH_CLIENT_ID,
+      grant_type: "authorization_code",
+      code: oAuthCode,
+      code_verifier: codeVerifier,
+      redirect_uri: chrome.identity.getRedirectURL("oauth2"),
+    });
+
+    authUrl.search = params.toString();
+
+    const response = await fetch(authUrl, {
+      method: "POST",
     });
 
     return { success: true, response: await response.json(), ok: response.ok };
