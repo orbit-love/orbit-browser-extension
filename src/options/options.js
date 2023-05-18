@@ -41,29 +41,24 @@ document.addEventListener("alpine:init", () => {
 
       // If authentication is present, fetch workspaces on page load
       if (!!apiKeyFromStorage || !!accessTokenFromStorage) {
-        const url = new URL(`${ORBIT_API_ROOT_URL}/workspaces`);
-
-        const { params, headers } = configureRequest({
-          ACCESS_TOKEN: accessTokenFromStorage,
-          API_TOKEN: apiKeyFromStorage,
+        const { response, success } = await chrome.runtime.sendMessage({
+          operation: "LOAD_WORKSPACES",
+          accessTokenFromStorage: accessTokenFromStorage,
+          apiKeyFromStorage: apiKeyFromStorage,
         });
 
-        url.search = params.toString();
-
-        try {
-          const response = await fetch(url, {
-            headers: headers,
-          });
-          const { data, included } = await response.json();
-
-          // Give users with API token chance to switch to OAuth
-          if (!!accessTokenFromStorage) this.showLogin = false;
-
-          workspaces = data;
-          repositories = included.filter((item) => item.type === "repository");
-        } catch (err) {
-          console.error(err);
+        if (!success) {
+          console.error(response);
+          return;
         }
+
+        // Give users with API token chance to switch to OAuth
+        if (!!accessTokenFromStorage) this.showLogin = false;
+
+        workspaces = response.data;
+        repositories = response.included.filter(
+          (item) => item.type === "repository"
+        );
       }
       this.authenticationCheckStatus.status = "success";
       this.token = apiKeyFromStorage;
