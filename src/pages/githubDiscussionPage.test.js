@@ -1,10 +1,10 @@
-import GitHubIssueOrPullRequestPage from "./githubIssueOrPullRequestPage";
+import GitHubDiscussionPage from "./githubDiscussionPage";
 
 describe("GithubIssueOrPullRequestPage", () => {
   let page, originalLocation;
 
   beforeEach(() => {
-    page = new GitHubIssueOrPullRequestPage();
+    page = new GitHubDiscussionPage();
     originalLocation = window.location;
   });
 
@@ -13,21 +13,11 @@ describe("GithubIssueOrPullRequestPage", () => {
   });
 
   describe("#detect", () => {
-    it("recognises issue pages", () => {
+    it("recognises discussion pages", () => {
       delete window.location;
       window.location = {
         ...originalLocation,
-        pathname: "/orbit-love/orbit-browser-extension/issues/36",
-      };
-
-      expect(page.detect()).toBe(true);
-    });
-
-    it("recognises pull request pages", () => {
-      delete window.location;
-      window.location = {
-        ...originalLocation,
-        pathname: "/orbit-love/orbit-browser-extension/pull/40",
+        pathname: "/orbit-love/orbit-browser-extension/discussions/9",
       };
 
       expect(page.detect()).toBe(true);
@@ -37,7 +27,7 @@ describe("GithubIssueOrPullRequestPage", () => {
       delete window.location;
       window.location = {
         ...originalLocation,
-        pathname: "/orbit-love/orbit-browser-extension/commits/main",
+        pathname: "/orbit-love/orbit-browser-extension/pull/40",
       };
 
       expect(page.detect()).toBe(false);

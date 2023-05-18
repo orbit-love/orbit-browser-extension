@@ -2,14 +2,17 @@ import "chrome-extension-async";
 import "@webcomponents/custom-elements";
 import GitHubIssueOrPullRequestPage from "../pages/githubIssueOrPullRequestPage";
 import WidgetOrchestrator from "./widgetOrchestrator";
+import GitHubDiscussionPage from "../pages/githubDiscussionPage";
 
 /**
  * Defines the list of pages supported on Github
  * Uses the widget orchestrator to insert Orbit widget where needed
  */
 const initializeWidget = () => {
-  console.log("Initialising");
-  const pages = [new GitHubIssueOrPullRequestPage()];
+  const pages = [
+    new GitHubIssueOrPullRequestPage(),
+    new GitHubDiscussionPage(),
+  ];
   const orchestrator = new WidgetOrchestrator();
 
   const page = orchestrator.detectPage(pages);

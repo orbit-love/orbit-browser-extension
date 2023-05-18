@@ -1,13 +1,9 @@
 import Page from "./page";
 
-export default class GitHubIssueOrPullRequestPage extends Page {
+export default class GitHubDiscussionPage extends Page {
   detect() {
-    const issuePageRegex = /.*\/.*\/issues?\/.*/;
-    const pullRequestPageRegex = /.*\/.*\/pulls?\/.*/;
-    return (
-      issuePageRegex.test(window.location.pathname) ||
-      pullRequestPageRegex.test(window.location.pathname)
-    );
+    const pageRegex = /.*\/.*\/discussions?\/.*/;
+    return pageRegex.test(window.location.pathname);
   }
 
   findWidgetZones() {
@@ -18,10 +14,12 @@ export default class GitHubIssueOrPullRequestPage extends Page {
     return widgetZone.querySelector(".timeline-comment-actions") !== null;
   }
 
-  applyCSSPatch() {}
-
   findUsername(comment) {
-    return comment.querySelector(".author")?.innerHTML;
+    const authorElement =
+      comment.querySelector('a > img[class~="avatar"] + div > span') ||
+      comment.querySelector(".author");
+
+    return authorElement.innerText;
   }
 
   findInsertionPoint(comment) {
