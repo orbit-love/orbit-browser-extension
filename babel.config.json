@@ -1,19 +1,19 @@
 {
   "plugins": [
-    "@babel/plugin-transform-runtime"
+    "@babel/plugin-transform-runtime",
+    [
+      "@babel/plugin-proposal-decorators",
+      {
+        "legacy": true
+      }
+    ]
   ],
   "env": {
     "test": {
       "plugins": [
         "@babel/plugin-transform-modules-commonjs",
         "@babel/plugin-proposal-optional-chaining",
-        "@babel/plugin-transform-runtime",
-        [
-          "@babel/plugin-proposal-decorators",
-          {
-            "legacy": true
-          }
-        ]
+        "@babel/plugin-transform-runtime"
       ]
     }
   }

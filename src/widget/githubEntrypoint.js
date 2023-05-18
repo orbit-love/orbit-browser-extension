@@ -8,6 +8,7 @@ import WidgetOrchestrator from "./widgetOrchestrator";
  * Uses the widget orchestrator to insert Orbit widget where needed
  */
 const initializeWidget = () => {
+  console.log("Initialising");
   const pages = [new GitHubIssueOrPullRequestPage()];
   const orchestrator = new WidgetOrchestrator();
 

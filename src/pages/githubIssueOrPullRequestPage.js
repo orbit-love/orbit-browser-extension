@@ -2,6 +2,7 @@ import Page from "./page";
 
 export default class GitHubIssueOrPullRequestPage extends Page {
   detect() {
+    console.log("Detecting!");
     const issuePageRegex = /.*\/.*\/issues?\/.*/;
     const pullRequestPageRegex = /.*\/.*\/pulls?\/.*/;
     return (

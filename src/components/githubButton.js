@@ -6,8 +6,8 @@ export class GitHubButton extends LitElement {
   render() {
     return html`
       <button>
-        <span class="sr-only">Open options</span>
-        Github button
+        <span class="sr-only">Open Orbit widget</span>
+        <span>Github button</span>
       </button>
     `;
   }

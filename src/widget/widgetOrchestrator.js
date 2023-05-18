@@ -1,5 +1,6 @@
 import { Page } from "../pages/page";
 import "../components/widget";
+import "../components/githubButton";
 
 export default class WidgetOrchestrator {
   /**
