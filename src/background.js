@@ -78,6 +78,14 @@ const loadWorkspaces = async ({ accessToken, apiKey }) => {
   }
 };
 
+/**
+ * Request the OAuth token. Called from options page when authenticating
+ *
+ * @param {String} oAuthCode
+ * @param {String} codeVerifier
+ *
+ * @returns {success, response}
+ */
 const getOAuthToken = async ({ oAuthCode, codeVerifier }) => {
   try {
     let authUrl = new URL(`${ORBIT_API_ROOT_URL}/oauth/token`);
@@ -96,12 +104,19 @@ const getOAuthToken = async ({ oAuthCode, codeVerifier }) => {
       method: "POST",
     });
 
-    return { success: true, response: await response.json(), ok: response.ok };
+    return { success: true, response: await response.json() };
   } catch (e) {
     return { success: false, response: e.message };
   }
 };
 
+/**
+ * Fetch new OAuth credentials using the refresh token
+ *
+ * @param {String} refreshToken from storage
+ *
+ * @returns {success, response}
+ */
 const refreshOAuthToken = async ({ refreshToken }) => {
   try {
     const url = new URL(`${ORBIT_API_ROOT_URL}/oauth/token`);
@@ -117,7 +132,7 @@ const refreshOAuthToken = async ({ refreshToken }) => {
       method: "POST",
     });
 
-    return { success: true, response: await response.json(), ok: response.ok };
+    return { success: true, response: await response.json() };
   } catch (e) {
     return { success: false, response: e.message };
   }
