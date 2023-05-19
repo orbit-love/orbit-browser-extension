@@ -13,6 +13,7 @@ class Widget extends TailwindMixin(LitElement) {
     super();
     this.isOpen = false;
     this.isLoading = false;
+    this.hasAuthError = false;
   }
 
   connectedCallback() {
@@ -39,7 +40,9 @@ class Widget extends TailwindMixin(LitElement) {
         style="visibility: ${this.isOpen ? "visible" : "hidden"}"
       >
         <div class="py-1" role="none">
-          ${this.isLoading ? this.loadingTemplate() : nothing} Widget contents
+          ${this.isLoading ? this.loadingTemplate() : nothing}
+          ${this.hasAuthError ? this.authErrorTemplate() : nothing} Widget
+          contents
         </div>
       </div>
     `;
@@ -51,6 +54,23 @@ class Widget extends TailwindMixin(LitElement) {
         class="block py-1 px-4 text-sm text-gray-500 truncate"
         role="menuitem"
         >Loading Orbit data…</span
+      >
+    `;
+  }
+
+  authErrorTemplate() {
+    return html`
+      <span
+        class="block py-1 px-4 text-sm text-gray-500 truncate"
+        role="menuitem"
+        >Authentication error: API token or workspace is missing or
+        invalid</span
+      >
+      <span
+        @click=${() => chrome.runtime.sendMessage("showOptions")}
+        class="block py-1 px-4 text-sm text-gray-500 cursor-pointer"
+        role="menuitem"
+        >Click here or on the extension icon to authenticate.</span
       >
     `;
   }

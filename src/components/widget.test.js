@@ -15,6 +15,14 @@ describe("obe-widget", () => {
   it("sets property default values", () => {
     expect(element.isOpen).toBe(false);
     expect(element.isLoading).toBe(false);
+    expect(element.hasAuthError).toBe(false);
+  });
+
+  it("sets default state", () => {
+    element.update();
+    const dropdown = element.shadowRoot.querySelector(".obe-dropdown");
+    expect(dropdown.innerHTML).not.toMatch("Loading Orbit data");
+    expect(dropdown.innerHTML).not.toMatch("Authentication error");
   });
 
   it("responds to click event", () => {
@@ -35,7 +43,6 @@ describe("obe-widget", () => {
     element.update();
     const dropdown = element.shadowRoot.querySelector(".obe-dropdown");
     expect(dropdown.style.visibility).toBe("visible");
-    expect(dropdown.innerHTML).not.toMatch("Loading Orbit data");
   });
 
   it("does not render dropdown when isOpen is false", () => {
@@ -50,5 +57,12 @@ describe("obe-widget", () => {
     element.update();
     const dropdown = element.shadowRoot.querySelector(".obe-dropdown");
     expect(dropdown.innerHTML).toMatch("Loading Orbit data");
+  });
+
+  it("renders auth error state when hasAuthError is true", () => {
+    element.hasAuthError = true;
+    element.update();
+    const dropdown = element.shadowRoot.querySelector(".obe-dropdown");
+    expect(dropdown.innerHTML).toMatch("Authentication error");
   });
 });
