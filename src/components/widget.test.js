@@ -12,8 +12,9 @@ describe("obe-widget", () => {
     document.body.removeChild(element);
   });
 
-  it("has a default isOpen property set to false", () => {
+  it("sets property default values", () => {
     expect(element.isOpen).toBe(false);
+    expect(element.isLoading).toBe(false);
   });
 
   it("responds to click event", () => {
@@ -34,6 +35,7 @@ describe("obe-widget", () => {
     element.update();
     const dropdown = element.shadowRoot.querySelector(".obe-dropdown");
     expect(dropdown.style.visibility).toBe("visible");
+    expect(dropdown.innerHTML).not.toMatch("Loading Orbit data");
   });
 
   it("does not render dropdown when isOpen is false", () => {
@@ -41,5 +43,12 @@ describe("obe-widget", () => {
     element.update();
     const dropdown = element.shadowRoot.querySelector(".obe-dropdown");
     expect(dropdown.style.visibility).toBe("hidden");
+  });
+
+  it("renders loading state when isLoading is true", () => {
+    element.isLoading = true;
+    element.update();
+    const dropdown = element.shadowRoot.querySelector(".obe-dropdown");
+    expect(dropdown.innerHTML).toMatch("Loading Orbit data");
   });
 });

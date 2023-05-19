@@ -1,4 +1,4 @@
-import { LitElement, html, css } from "lit";
+import { LitElement, html, css, nothing } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { TailwindMixin } from "../utils/tailwindMixin";
 
@@ -12,6 +12,7 @@ class Widget extends TailwindMixin(LitElement) {
   constructor() {
     super();
     this.isOpen = false;
+    this.isLoading = false;
   }
 
   connectedCallback() {
@@ -37,8 +38,20 @@ class Widget extends TailwindMixin(LitElement) {
         tabindex="-1"
         style="visibility: ${this.isOpen ? "visible" : "hidden"}"
       >
-        <div class="py-1" role="none">Widget contents</div>
+        <div class="py-1" role="none">
+          ${this.isLoading ? this.loadingTemplate() : nothing} Widget contents
+        </div>
       </div>
+    `;
+  }
+
+  loadingTemplate() {
+    return html`
+      <span
+        class="block py-1 px-4 text-sm text-gray-500 truncate"
+        role="menuitem"
+        >Loading Orbit data…</span
+      >
     `;
   }
 
