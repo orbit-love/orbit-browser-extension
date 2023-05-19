@@ -14,6 +14,7 @@ class Widget extends TailwindMixin(LitElement) {
     this.isOpen = false;
     this.isLoading = false;
     this.hasAuthError = false;
+    this.hasError = false;
   }
 
   connectedCallback() {
@@ -40,20 +41,23 @@ class Widget extends TailwindMixin(LitElement) {
         style="visibility: ${this.isOpen ? "visible" : "hidden"}"
       >
         <div class="py-1" role="none">
-          ${this.isLoading ? this.loadingTemplate() : nothing}
-          ${this.hasAuthError ? this.authErrorTemplate() : nothing} Widget
-          contents
+          ${this.isLoading ? this.textTemplate("Loading Orbit data…") : nothing}
+          ${this.hasAuthError ? this.authErrorTemplate() : nothing}
+          ${this.hasError
+            ? this.textTemplate("There was an error fetching Orbit data.")
+            : nothing}
+          Widget contents
         </div>
       </div>
     `;
   }
 
-  loadingTemplate() {
+  textTemplate(text) {
     return html`
       <span
         class="block py-1 px-4 text-sm text-gray-500 truncate"
         role="menuitem"
-        >Loading Orbit data…</span
+        >${text}</span
       >
     `;
   }

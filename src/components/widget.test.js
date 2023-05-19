@@ -23,6 +23,9 @@ describe("obe-widget", () => {
     const dropdown = element.shadowRoot.querySelector(".obe-dropdown");
     expect(dropdown.innerHTML).not.toMatch("Loading Orbit data");
     expect(dropdown.innerHTML).not.toMatch("Authentication error");
+    expect(dropdown.innerHTML).not.toMatch(
+      "There was an error fetching Orbit data"
+    );
   });
 
   it("responds to click event", () => {
@@ -64,5 +67,14 @@ describe("obe-widget", () => {
     element.update();
     const dropdown = element.shadowRoot.querySelector(".obe-dropdown");
     expect(dropdown.innerHTML).toMatch("Authentication error");
+  });
+
+  it("renders generic error state when hasError is true", () => {
+    element.hasError = true;
+    element.update();
+    const dropdown = element.shadowRoot.querySelector(".obe-dropdown");
+    expect(dropdown.innerHTML).toMatch(
+      "There was an error fetching Orbit data"
+    );
   });
 });
