@@ -133,15 +133,15 @@ export async function _refreshAuthTokens(refreshToken) {
   // Calculate timestamp when OAuth token expires - current time + it's expires_in timestamp
   const expiresAt = Math.floor(Date.now() / 1000) + expires_in;
 
-  const items = {
+  const authentication = {
     accessToken: access_token,
     refreshToken: refresh_token,
     expiresAt: expiresAt,
   };
 
-  chrome.storage.sync.set({ authentication: items });
+  chrome.storage.sync.set({ authentication });
 
-  return items;
+  return authentication;
 }
 
 /**
