@@ -1,11 +1,17 @@
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { TailwindMixin } from "../utils/tailwindMixin";
+import { getOrbitCredentials } from "../oauth-helpers";
 
 class Widget extends TailwindMixin(LitElement) {
+  //   @queryAssignedElements({ slot: "additional-data" })
+  // _additionalDataSlots!;
+
   static get properties() {
     return {
       isOpen: { type: Boolean, state: true },
+      username: { type: String },
+      platform: { type: String },
     };
   }
 
@@ -15,6 +21,12 @@ class Widget extends TailwindMixin(LitElement) {
     this.isLoading = false;
     this.hasAuthError = false;
     this.hasError = false;
+
+    this.isAMember = false;
+
+    this.member = {};
+
+    this.workspace = {};
   }
 
   connectedCallback() {
@@ -40,16 +52,19 @@ class Widget extends TailwindMixin(LitElement) {
         tabindex="-1"
         style="visibility: ${this.isOpen ? "visible" : "hidden"}"
       >
-        <div class="py-1" role="none">
-          ${this.isLoading ? this.textTemplate("Loading Orbit data…") : nothing}
-          ${this.hasAuthError ? this.authErrorTemplate() : nothing}
-          ${this.hasError
-            ? this.textTemplate("There was an error fetching Orbit data.")
-            : nothing}
-          Widget contents
-        </div>
+        <div class="py-1" role="none">${this.getTemplateContent()}</div>
       </div>
     `;
+  }
+
+  getTemplateContent() {
+    // TODO: - check if member present, use generic error as default state instead?
+    if (this.isLoading) return this.textTemplate("Loading Orbit data…");
+    if (this.hasAuthError) return this.authErrorTemplate();
+    if (this.hasError)
+      return this.textTemplate("There was an error fetching Orbit data.");
+
+    return this.memberTemplate();
   }
 
   textTemplate(text) {
@@ -79,12 +94,62 @@ class Widget extends TailwindMixin(LitElement) {
     `;
   }
 
+  memberTemplate() {
+    return html`
+      <div class="px-4 truncate" role="menuitem">
+        <!-- Name -->
+        <span
+          class="block pt-1 text-sm text-xl font-bold text-gray-900 truncate"
+          >${this.member.name}</span
+        >
+        <!-- Title -->
+        <span class="block text-sm text-gray-500 truncate"
+          >${this.member.jobTitle}</span
+        >
+        <!-- Organization -->
+        ${this.member.organization}
+      </div>
+    `;
+  }
+
   _toggle() {
     this.isOpen = !this.isOpen;
   }
 
   async _loadOrbitData() {
-    console.log("#_loadOrbitData");
+    if (!this.isLoading && !this.hasLoaded) {
+      this.isLoading = true;
+
+      const ORBIT_CREDENTIALS = await getOrbitCredentials();
+
+      const response = await chrome.runtime.sendMessage({
+        operation: "LOAD_MEMBER_DATA",
+        username: this.username,
+        platform: this.platform,
+        ORBIT_CREDENTIALS,
+      });
+
+      this.isLoading = false;
+
+      const { success, status, workspace, member, additionalData } = response;
+
+      this.workspace = workspace;
+
+      if (status === 401) {
+        this.hasAuthError = true;
+      } else if (status === 404) {
+        this.isAMember = false;
+      } else if (success === false) {
+        this.hasError = true;
+      } else {
+        this.isAMember = true;
+        this.member = member;
+      }
+
+      this.requestUpdate();
+
+      // this._additionalDataSlots[0].additionalData = additionalData;
+    }
   }
 
   static get styles() {

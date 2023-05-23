@@ -1,8 +1,4 @@
-import {
-  ORBIT_HEADERS,
-  OAUTH_CLIENT_ID,
-  ORBIT_API_ROOT_URL,
-} from "./constants";
+import { ORBIT_HEADERS } from "./constants";
 
 /**
  * Returns an object with values retrieved from Chrome sync storage.
