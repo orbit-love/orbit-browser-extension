@@ -7,10 +7,10 @@ import {
   _refreshAuthTokens,
 } from "./oauth-helpers";
 
-import { mockChromeStorage, mockOrbitAPICall } from "./test-helpers";
+import { mockChrome } from "./test-helpers";
 
 test("getOrbitCredentials should correctly configure orbit credentials object", async () => {
-  const originalChrome = mockChromeStorage({
+  const originalChrome = mockChrome({
     token: "123",
     workspace: "workspace",
   });
@@ -29,25 +29,24 @@ test("getOrbitCredentials should correctly configure orbit credentials object", 
 });
 
 test("getOrbitCredentials should refresh auth token if it has expired", async () => {
-  const originalChrome = mockChromeStorage({
-    workspace: "workspace",
-    authentication: {
-      accessToken: "expired_access_token",
-      refreshToken: "valid_refresh_token",
-      expiresAt: -1000,
+  const originalChrome = mockChrome(
+    {
+      workspace: "workspace",
+      authentication: {
+        accessToken: "expired_access_token",
+        refreshToken: "valid_refresh_token",
+        expiresAt: -1000,
+      },
     },
-  });
-
-  global.fetch = jest
-    .fn()
-    // mocks /oauth/token
-    .mockImplementationOnce(
-      mockOrbitAPICall({
+    {
+      success: true,
+      response: {
         access_token: "refreshed_access_token",
         refresh_token: "refreshed_refresh_token",
-        expires_in: 7200,
-      })
-    );
+        expires_in: 1234,
+      },
+    }
+  );
 
   const ORBIT_CREDENTIALS = await getOrbitCredentials();
 
@@ -128,25 +127,24 @@ test("_isOAuthTokenExpired returns false if token is still valid", () => {
 });
 
 test("_refreshAuthTokens requests refreshed tokens, sets them in storage, and returns them", async () => {
-  const originalChrome = mockChromeStorage({
-    workspace: "workspace",
-    authentication: {
-      accessToken: "expired_access_token",
-      refreshToken: "valid_refresh_token",
-      expiresAt: -1000,
+  const originalChrome = mockChrome(
+    {
+      workspace: "workspace",
+      authentication: {
+        accessToken: "expired_access_token",
+        refreshToken: "valid_refresh_token",
+        expiresAt: -1000,
+      },
     },
-  });
-
-  global.fetch = jest
-    .fn()
-    // mocks /oauth/token
-    .mockImplementationOnce(
-      mockOrbitAPICall({
+    {
+      success: true,
+      response: {
         access_token: "refreshed_access_token",
         refresh_token: "refreshed_refresh_token",
         expires_in: 7200,
-      })
-    );
+      },
+    }
+  );
 
   expect(chrome.storage.sync.get()).toEqual({
     workspace: "workspace",
@@ -178,21 +176,20 @@ test("_refreshAuthTokens requests refreshed tokens, sets them in storage, and re
 });
 
 test("_refreshAuthTokens unsets tokens if the request fails, for example if the refresh token is expired", async () => {
-  const originalChrome = mockChromeStorage({
-    workspace: "workspace",
-    authentication: {
-      accessToken: "expired_access_token",
-      refreshToken: "expired_refresh_token",
-      expiresAt: 1,
+  const originalChrome = mockChrome(
+    {
+      workspace: "workspace",
+      authentication: {
+        accessToken: "expired_access_token",
+        refreshToken: "expired_refresh_token",
+        expiresAt: 1,
+      },
     },
-  });
-
-  global.fetch = jest
-    .fn()
-    // mocks /oauth/token
-    .mockRejectedValueOnce(
-      "Test error - if you see this in the test runs it's okay :D"
-    );
+    {
+      success: false,
+      response: "Test error - if you see this in the test runs it's okay :D",
+    }
+  );
 
   expect(chrome.storage.sync.get()).toEqual({
     workspace: "workspace",

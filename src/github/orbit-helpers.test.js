@@ -1,5 +1,5 @@
 import { _refreshAuthTokens, _isOAuthTokenExpired } from "../oauth-helpers";
-import { mockChromeStorage } from "../test-helpers";
+import { mockChrome } from "../test-helpers";
 import {
   _getRepositoryFullName,
   _fetchRepositories,
@@ -18,7 +18,7 @@ test("_getRepositoryFullName should return the full name of the repository based
 });
 
 test("_fetchRepositories should collapse chunked repositories into a single array", async () => {
-  const originalChrome = mockChromeStorage({
+  const originalChrome = mockChrome({
     repository_keys: ["test_key_1", "test_key_2"],
     test_key_1: ["repo-1", "repo-2"],
     test_key_2: ["repo-3", "repo-4"],
@@ -33,7 +33,7 @@ test("_fetchRepositories should collapse chunked repositories into a single arra
 });
 
 test("_fetchRepositories should support a single array", async () => {
-  const originalChrome = mockChromeStorage({
+  const originalChrome = mockChrome({
     repositories: ["repo-1", "repo-2", "repo-3", "repo-4"],
   });
 

@@ -41,29 +41,23 @@ document.addEventListener("alpine:init", () => {
 
       // If authentication is present, fetch workspaces on page load
       if (!!apiKeyFromStorage || !!accessTokenFromStorage) {
-        const url = new URL(`${ORBIT_API_ROOT_URL}/workspaces`);
-
-        const { params, headers } = configureRequest({
-          ACCESS_TOKEN: accessTokenFromStorage,
-          API_TOKEN: apiKeyFromStorage,
+        const { response, success } = await chrome.runtime.sendMessage({
+          operation: "LOAD_WORKSPACES",
+          accessToken: accessTokenFromStorage,
+          apiKey: apiKeyFromStorage,
         });
 
-        url.search = params.toString();
-
-        try {
-          const response = await fetch(url, {
-            headers: headers,
-          });
-          const { data, included } = await response.json();
-
-          // Give users with API token chance to switch to OAuth
-          if (!!accessTokenFromStorage) this.showLogin = false;
-
-          workspaces = data;
-          repositories = included.filter((item) => item.type === "repository");
-        } catch (err) {
-          console.error(err);
+        if (!success) {
+          console.error(response);
+          return;
         }
+
+        // Give users with API token chance to switch to OAuth
+        if (!!accessTokenFromStorage) this.showLogin = false;
+        const { data, included } = response;
+
+        workspaces = data;
+        repositories = included.filter((item) => item.type === "repository");
       }
       this.authenticationCheckStatus.status = "success";
       this.token = apiKeyFromStorage;
@@ -73,48 +67,41 @@ document.addEventListener("alpine:init", () => {
       this.repositories = repositories;
     },
     async fetchWorkspaces() {
-      const url = new URL(`${ORBIT_API_ROOT_URL}/workspaces`);
-
-      const { params, headers } = configureRequest({
-        ACCESS_TOKEN: this.accessToken,
-        API_TOKEN: this.token,
+      const { response, success, ok } = await chrome.runtime.sendMessage({
+        operation: "LOAD_WORKSPACES",
+        accessToken: this.accessToken,
+        apiKey: this.token,
       });
 
-      url.search = params.toString();
-
-      try {
-        const response = await fetch(url, {
-          headers: headers,
-        });
-        if (!response.ok) {
-          this.showLogin = true;
-          this.authenticationCheckStatus.status = "error";
-          this.authenticationCheckStatus.message =
-            "Failed to authenticate, please try again.";
-          return;
-        }
-        const { data, included } = await response.json();
-        this.workspaces = data;
-        this.repositories = included.filter(
-          (item) => item.type === "repository"
-        );
-        this.authenticationCheckStatus.status = "success";
-        this.authenticationCheckStatus.message =
-          "Signed in successfully. Please select a workspace.";
-
-        if (!!this.accessToken) {
-          this.showLogin = false;
-        } else {
-          this.authenticationCheckStatus.message =
-            "WARNING: You are using an API token for authentication, which is deprecated. Use the button above to switch to the new sign in process.";
-          this.authenticationCheckStatus.status = "warning";
-        }
-      } catch (err) {
+      if (!success) {
         console.error(err);
         this.showLogin = true;
         this.authenticationCheckStatus.status = "error";
         this.authenticationCheckStatus.message =
           "There was an unexpected error whilst signing in.";
+        return;
+      }
+
+      if (!ok) {
+        this.showLogin = true;
+        this.authenticationCheckStatus.status = "error";
+        this.authenticationCheckStatus.message =
+          "Failed to authenticate, please try again.";
+        return;
+      }
+      const { data, included } = response;
+      this.workspaces = data;
+      this.repositories = included.filter((item) => item.type === "repository");
+      this.authenticationCheckStatus.status = "success";
+      this.authenticationCheckStatus.message =
+        "Signed in successfully. Please select a workspace.";
+
+      if (!!this.accessToken) {
+        this.showLogin = false;
+      } else {
+        this.authenticationCheckStatus.message =
+          "WARNING: You are using an API token for authentication, which is deprecated. Use the button above to switch to the new sign in process.";
+        this.authenticationCheckStatus.status = "warning";
       }
     },
     _findAllReposFullNameByWorkspaceSlug() {
@@ -246,45 +233,35 @@ document.addEventListener("alpine:init", () => {
       );
     },
     async getOAuthToken(oAuthCode, codeVerifier) {
-      let authUrl = new URL(`${ORBIT_API_ROOT_URL}/oauth/token`);
-
-      let params = new URLSearchParams({
-        client_id: OAUTH_CLIENT_ID,
-        grant_type: "authorization_code",
-        code: oAuthCode,
-        code_verifier: codeVerifier,
-        redirect_uri: chrome.identity.getRedirectURL("oauth2"),
+      const { response, success } = await chrome.runtime.sendMessage({
+        operation: "GET_OAUTH_TOKEN",
+        oAuthCode: oAuthCode,
+        codeVerifier: codeVerifier,
       });
 
-      authUrl.search = params.toString();
-
-      try {
-        const response = await fetch(authUrl, {
-          method: "POST",
-        });
-
-        const { access_token, refresh_token, expires_in } =
-          await response.json();
-
-        // Calculate timestamp when OAuth token expires - current time + it's expires_in timestamp
-        const expiresAt = Math.floor(Date.now() / 1000) + expires_in;
-
-        chrome.storage.sync.set({
-          authentication: {
-            accessToken: access_token,
-            refreshToken: refresh_token,
-            expiresAt: expiresAt,
-          },
-        });
-
-        this.accessToken = access_token;
-        this.refreshToken = refresh_token;
-        this.expiresAt = expiresAt;
-
-        await this.fetchWorkspaces();
-      } catch (err) {
-        console.error(err);
+      if (!success) {
+        console.error(response);
+        return;
       }
+
+      const { access_token, refresh_token, expires_in } = response;
+
+      // Calculate timestamp when OAuth token expires - current time + it's expires_in timestamp
+      const expiresAt = Math.floor(Date.now() / 1000) + expires_in;
+
+      chrome.storage.sync.set({
+        authentication: {
+          accessToken: access_token,
+          refreshToken: refresh_token,
+          expiresAt: expiresAt,
+        },
+      });
+
+      this.accessToken = access_token;
+      this.refreshToken = refresh_token;
+      this.expiresAt = expiresAt;
+
+      await this.fetchWorkspaces();
     },
   }));
 });
