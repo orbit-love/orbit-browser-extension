@@ -58,7 +58,8 @@ class Widget extends TailwindMixin(LitElement) {
   }
 
   getTemplateContent() {
-    // TODO: - check if member present, use generic error as default state instead?
+    // TODO: check if member present, use generic error as default state instead?
+    // TODO: this.isAMember state
     if (this.isLoading) return this.textTemplate("Loading Orbit data…");
     if (this.hasAuthError) return this.authErrorTemplate();
     if (this.hasError)
@@ -129,11 +130,9 @@ class Widget extends TailwindMixin(LitElement) {
         ORBIT_CREDENTIALS,
       });
 
-      this.isLoading = false;
+      const { status, success } = response;
 
-      const { success, status, workspace, member, additionalData } = response;
-
-      this.workspace = workspace;
+      this.workspace = ORBIT_CREDENTIALS.WORKSPACE;
 
       if (status === 401) {
         this.hasAuthError = true;
@@ -143,9 +142,50 @@ class Widget extends TailwindMixin(LitElement) {
         this.hasError = true;
       } else {
         this.isAMember = true;
-        this.member = member;
+
+        const { data, included } = response.response;
+
+        if (!data) {
+          this.isAMember = false;
+
+          this.hasError = true;
+          this.isLoading = false;
+          this.requestUpdate();
+          return;
+        }
+
+        const identities = data.relationships.identities.data.map(
+          ({ id, type }) =>
+            included.find(
+              ({ id: included_id, type: included_type }) =>
+                id === included_id && type === included_type
+            )?.attributes
+        );
+
+        const organizations = data.relationships.organizations.data.map(
+          ({ id, type }) =>
+            included.find(
+              ({ id: included_id, type: included_type }) =>
+                id === included_id && type === included_type
+            )?.attributes
+        );
+
+        const organization = organizations[0] || null;
+
+        this.member = {
+          name: data.attributes.name,
+          jobTitle: data.attributes.title,
+          slug: data.attributes.slug,
+          teammate: data.attributes.teammate,
+          orbitLevel: data.attributes.orbit_level,
+          organization: organization,
+          lastActivityOccurredAt: data.attributes.last_activity_occurred_at,
+          tags: data.attributes.tags,
+          identities: identities,
+        };
       }
 
+      this.isLoading = false;
       this.requestUpdate();
 
       // this._additionalDataSlots[0].additionalData = additionalData;

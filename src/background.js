@@ -145,6 +145,7 @@ const loadMemberData = async ({ username, platform, ORBIT_CREDENTIALS }) => {
   const url = new URL(
     `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/find`
   );
+
   const { params, headers } = configureRequest(ORBIT_CREDENTIALS, {
     source: platform,
     username: username,
@@ -157,54 +158,13 @@ const loadMemberData = async ({ username, platform, ORBIT_CREDENTIALS }) => {
       headers,
     });
 
-    const { data, included } = await response.json();
-    if (!data) {
-      return {
-        success: false,
-        status: 404,
-        workspace: ORBIT_CREDENTIALS.WORKSPACE,
-      };
-    }
-    const member = data;
-    const identities = data.relationships.identities.data.map(
-      ({ id, type }) =>
-        included.find(
-          ({ id: included_id, type: included_type }) =>
-            id === included_id && type === included_type
-        )?.attributes
-    );
-    const organizations = data.relationships.organizations.data.map(
-      ({ id, type }) =>
-        included.find(
-          ({ id: included_id, type: included_type }) =>
-            id === included_id && type === included_type
-        )?.attributes
-    );
-    const organization = organizations[0] || null;
-
     return {
       success: true,
+      response: await response.json(),
       status: response.status,
-      workspace: ORBIT_CREDENTIALS.WORKSPACE,
-      member: {
-        name: member.attributes.name,
-        jobTitle: member.attributes.title,
-        slug: member.attributes.slug,
-        teammate: member.attributes.teammate,
-        orbitLevel: member.attributes.orbit_level,
-        organization: organization,
-        lastActivityOccurredAt: member.attributes.last_activity_occurred_at,
-        tags: member.attributes.tags,
-        identities: identities,
-      },
-      additionalData: {
-        contributionsTotal: 12,
-      },
     };
-  } catch (err) {
-    console.error(err);
-    return {
-      success: false,
-    };
+  } catch (e) {
+    console.log(e);
+    return { success: false, response: e.message, status: 500 };
   }
 };
