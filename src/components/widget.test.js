@@ -1,4 +1,5 @@
 import "./widget";
+import { mockChrome } from "../test-helpers";
 
 describe("obe-widget", () => {
   let element;
@@ -76,5 +77,156 @@ describe("obe-widget", () => {
     expect(dropdown.innerHTML).toMatch(
       "There was an error fetching Orbit data"
     );
+  });
+
+  describe("#_loadOrbitData", () => {
+    it("exits the flow without updating if already loading", () => {
+      element.isLoading = true;
+      element.update();
+      element._loadOrbitData();
+      const dropdown = element.shadowRoot.querySelector(".obe-dropdown");
+      expect(dropdown.innerHTML).toMatch("Loading Orbit data");
+    });
+
+    it("shows auth error if response is 401", async () => {
+      const originalChrome = mockChrome(
+        {},
+        {
+          success: true,
+          status: 401,
+        }
+      );
+
+      expect(element.hasAuthError).toBe(false);
+
+      await element._loadOrbitData();
+      await element.updateComplete;
+
+      expect(element.hasAuthError).toBe(true);
+
+      global.chrome = originalChrome;
+    });
+
+    it("shows not a member template if user is not found", async () => {
+      element.isAMember = true;
+      element.update();
+
+      const originalChrome = mockChrome(
+        {},
+        {
+          success: true,
+          status: 404,
+        }
+      );
+
+      expect(element.isAMember).toBe(true);
+
+      await element._loadOrbitData();
+      await element.updateComplete;
+
+      expect(element.isAMember).toBe(false);
+
+      global.chrome = originalChrome;
+    });
+
+    it("shows generic error if request fails", async () => {
+      const originalChrome = mockChrome(
+        {},
+        {
+          success: false,
+          status: 500,
+        }
+      );
+
+      expect(element.hasError).toBe(false);
+
+      await element._loadOrbitData();
+      await element.updateComplete;
+
+      expect(element.hasError).toBe(true);
+
+      global.chrome = originalChrome;
+    });
+
+    it("shows generic error if data is empty", async () => {
+      element.isAMember = true;
+      element.update();
+
+      const originalChrome = mockChrome(
+        {},
+        {
+          success: true,
+          status: 200,
+          response: {},
+        }
+      );
+
+      expect(element.isAMember).toBe(true);
+      expect(element.hasError).toBe(false);
+
+      await element._loadOrbitData();
+      await element.updateComplete;
+
+      expect(element.isAMember).toBe(false);
+      expect(element.hasError).toBe(true);
+      expect(element.isLoading).toBe(false);
+
+      global.chrome = originalChrome;
+    });
+
+    it("fetches & displays member if member is correctly retrieved", async () => {
+      const originalChrome = mockChrome(
+        {},
+        {
+          success: true,
+          status: 200,
+          response: {
+            data: {
+              attributes: {
+                name: "Delete",
+                title: "CEO",
+                slug: "delete",
+                teammate: false,
+                orbit_level: 100,
+                last_activity_occurred_at: 1234,
+                tags: ["123"],
+              },
+              relationships: {
+                identities: { data: [] },
+                organizations: { data: [] },
+              },
+            },
+            included: [{ id: 123, type: "twitter_identity" }],
+          },
+        }
+      );
+
+      expect(element.hasAuthError).toBe(false);
+      expect(element.hasError).toBe(false);
+      expect(element.isAMember).toBe(false);
+
+      expect(element.member).toEqual({});
+
+      await element._loadOrbitData();
+      await element.updateComplete;
+
+      expect(element.hasAuthError).toBe(false);
+      expect(element.hasError).toBe(false);
+      expect(element.isAMember).toBe(true);
+
+      expect(element.member).toEqual({
+        identities: [],
+        jobTitle: "CEO",
+        lastActivityOccurredAt: 1234,
+        name: "Delete",
+        orbitLevel: 100,
+        organization: null,
+        slug: "delete",
+        tags: ["123"],
+        teammate: false,
+      });
+
+      global.chrome = originalChrome;
+    });
   });
 });

@@ -118,7 +118,7 @@ class Widget extends TailwindMixin(LitElement) {
   }
 
   async _loadOrbitData() {
-    if (!this.isLoading && !this.hasLoaded) {
+    if (!this.isLoading) {
       this.isLoading = true;
 
       const ORBIT_CREDENTIALS = await getOrbitCredentials();
