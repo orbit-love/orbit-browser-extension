@@ -123,14 +123,12 @@ class Widget extends TailwindMixin(LitElement) {
 
       const ORBIT_CREDENTIALS = await getOrbitCredentials();
 
-      const response = await chrome.runtime.sendMessage({
+      const { status, success, response } = await chrome.runtime.sendMessage({
         operation: "LOAD_MEMBER_DATA",
         username: this.username,
         platform: this.platform,
         ORBIT_CREDENTIALS,
       });
-
-      const { status, success } = response;
 
       this.workspace = ORBIT_CREDENTIALS.WORKSPACE;
 
@@ -143,7 +141,7 @@ class Widget extends TailwindMixin(LitElement) {
       } else {
         this.isAMember = true;
 
-        const { data, included } = response.response;
+        const { data, included } = response;
 
         if (!data) {
           this.isAMember = false;
