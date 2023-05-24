@@ -41,6 +41,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     case "REFRESH_OAUTH_TOKEN":
       refreshOAuthToken(request).then(sendResponse);
       break;
+    case "LOAD_MEMBER_DATA":
+      loadMemberData(request).then(sendResponse);
+      break;
 
     default:
       console.error(`Unknown operation: ${request.operation}`);
@@ -135,5 +138,32 @@ const refreshOAuthToken = async ({ refreshToken }) => {
     return { success: true, response: await response.json() };
   } catch (e) {
     return { success: false, response: e.message };
+  }
+};
+
+const loadMemberData = async ({ username, platform, ORBIT_CREDENTIALS }) => {
+  const url = new URL(
+    `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/find`
+  );
+
+  const { params, headers } = configureRequest(ORBIT_CREDENTIALS, {
+    source: platform,
+    username: username,
+  });
+
+  url.search = params.toString();
+
+  try {
+    const response = await fetch(url, {
+      headers,
+    });
+
+    return {
+      success: true,
+      response: await response.json(),
+      status: response.status,
+    };
+  } catch (e) {
+    return { success: false, response: e.message, status: 500 };
   }
 };
