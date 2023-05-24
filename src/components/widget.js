@@ -4,6 +4,7 @@ import { TailwindMixin } from "../utils/tailwindMixin";
 import { getOrbitCredentials } from "../oauth-helpers";
 import "./pill";
 import "./tag";
+import "./identity";
 
 import iconCustomer from "bundle-text:../icons/icon-customer.svg";
 
@@ -160,13 +161,29 @@ class Widget extends TailwindMixin(LitElement) {
             ></obe-pill>
           </div>
 
+          <!-- Identities -->
+          <p class="block pb-1 pt-3 text-sm text-gray-500 uppercase truncate">
+            Linked profiles & emails
+            <span class="ml-1 text-gray-900"
+              >${this.member.identities.length}</span
+            >
+          </p>
+          <div
+            class="flex flex-row flex-wrap gap-1 justify-start items-center py-1 max-w-xs"
+          >
+            ${this.member.identities.map(
+              (identity) =>
+                html`<obe-identity .identity=${identity}></obe-identity>`
+            )}
+          </div>
+
           <!-- Tags -->
           <p class="block pb-1 pt-3 text-sm text-gray-500 uppercase truncate">
             Tags
             <span class="ml-1 text-gray-900">${this.member.tags.length}</span>
           </p>
           <div
-            class="flex flex-row flex-wrap gap-x-1 gap-y-1 justify-start items-center pt-1 pb-1 max-w-xs"
+            class="flex flex-row flex-wrap gap-1 justify-start items-center py-1 max-w-xs"
           >
             ${this.member.tags.map((tag, index) => {
               // Do not render tags that are above tag limit, unless we are showing all
