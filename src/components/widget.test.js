@@ -21,7 +21,7 @@ describe("obe-widget", () => {
     expect(element.showAllTags).toBe(false);
     expect(element.isAMember).toBe(false);
     expect(element.member).toEqual({});
-    expect(element.workspace).toEqual({});
+    expect(element.workspace).toEqual("");
   });
 
   it("sets default state", () => {

@@ -7,6 +7,7 @@ import "./tag";
 import "./identity";
 
 import iconCustomer from "bundle-text:../icons/icon-customer.svg";
+import { ORBIT_API_ROOT_URL } from "../constants";
 
 const TAG_LIMIT = 5;
 
@@ -31,7 +32,7 @@ class Widget extends TailwindMixin(LitElement) {
 
     this.member = {};
 
-    this.workspace = {};
+    this.workspace = "";
   }
 
   connectedCallback() {
@@ -57,7 +58,11 @@ class Widget extends TailwindMixin(LitElement) {
         tabindex="-1"
         style="visibility: ${this.isOpen ? "visible" : "hidden"}"
       >
-        <div class="py-1" role="none">${this.getTemplateContent()}</div>
+        <div role="none">${this.getTemplateContent()}</div>
+
+        ${!this.isLoading && !this.hasAuthError && !this.hasOtherError
+          ? this.actionsTemplate()
+          : nothing}
       </div>
     `;
   }
@@ -70,7 +75,7 @@ class Widget extends TailwindMixin(LitElement) {
     if (this.hasError)
       return this.textTemplate("There was an error fetching Orbit data.");
 
-    return this.memberTemplate();
+    if (this.isAMember) return this.memberTemplate();
   }
 
   textTemplate(text) {
@@ -102,7 +107,7 @@ class Widget extends TailwindMixin(LitElement) {
 
   memberTemplate() {
     return html`
-      <div class="px-4 truncate" role="menuitem">
+      <div class="py-1 px-4 truncate" role="menuitem">
         <section class="mt-1">
           <!-- Name -->
           <span class="block text-xl font-bold text-gray-900 truncate"
@@ -219,6 +224,32 @@ class Widget extends TailwindMixin(LitElement) {
     `;
   }
 
+  actionsTemplate() {
+    return this.isAMember
+      ? html`
+          <hr class="block border-t border-[#d0d7de] mt-[6px]" role="none" />
+          <a
+            target="_blank"
+            rel="noreferrer noopener"
+            href="${ORBIT_API_ROOT_URL}/${this.workspace}/members/${this.member
+              .slug}"
+            class="block py-2 px-4 text-sm text-gray-700 truncate bg-gray-50 rounded-md hover:bg-gray-100 focus:bg-gray-100"
+            role="menuitem"
+          >
+            See ${this.username}’s profile on Orbit
+          </a>
+        `
+      : html`
+          <button
+            class="block py-2 px-4 text-sm text-gray-700 truncate bg-gray-50 rounded-md hover:bg-gray-100 focus:bg-gray-100"
+            role="menuitem"
+            @click="${this._addMemberToWorkspace}"
+          >
+            Add ${this.username} to ${this.workspace} on Orbit
+          </button>
+        `;
+  }
+
   _toggle() {
     this.isOpen = !this.isOpen;
   }
@@ -297,6 +328,10 @@ class Widget extends TailwindMixin(LitElement) {
       this.isLoading = false;
       this.requestUpdate();
     }
+  }
+
+  async _addMemberToWorkspace() {
+    console.log("TODO");
   }
 
   static get styles() {

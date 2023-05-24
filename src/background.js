@@ -44,6 +44,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     case "LOAD_MEMBER_DATA":
       loadMemberData(request).then(sendResponse);
       break;
+    // Load additional data
+    // IF !github, return
 
     default:
       console.error(`Unknown operation: ${request.operation}`);
