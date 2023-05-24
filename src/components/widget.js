@@ -2,6 +2,7 @@ import { LitElement, html, css, nothing } from "lit";
 import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 import { TailwindMixin } from "../utils/tailwindMixin";
 import { getOrbitCredentials } from "../oauth-helpers";
+import "./pill";
 
 import iconCustomer from "bundle-text:../icons/icon-customer.svg";
 
@@ -98,7 +99,7 @@ class Widget extends TailwindMixin(LitElement) {
   }
 
   memberTemplate() {
-    console.log(this.member.organization);
+    console.log(this.member.orbitLevel);
     return html`
       <div class="px-4 truncate" role="menuitem">
         <!-- Name -->
@@ -106,10 +107,12 @@ class Widget extends TailwindMixin(LitElement) {
           class="block pt-1 text-sm text-xl font-bold text-gray-900 truncate"
           >${this.member.name}</span
         >
+
         <!-- Title -->
         <span class="block text-sm text-gray-500 truncate"
           >${this.member.jobTitle}</span
         >
+
         <!-- Organization -->
         ${this.member.organization &&
         html`
@@ -129,6 +132,29 @@ class Widget extends TailwindMixin(LitElement) {
             ${this.member.organization.lifecycle_stage === "customer"
               ? unsafeSVG(iconCustomer)
               : nothing}
+          </div>
+
+          <!-- Pills -->
+          <p class="block pb-1 pt-3 text-sm text-gray-500 uppercase truncate">
+            Orbit Model
+          </p>
+          <div class="flex flex-row justify-start items-center pt-1 space-x-1">
+            ${this.member.orbitLevel === null
+              ? html`<obe-pill value="Teammate"></obe-pill>`
+              : html`<obe-pill
+                  name="Orbit Level"
+                  value="${this.member.orbitLevel}"
+                ></obe-pill>`}
+            <obe-pill
+              name="Last active"
+              value="${new Date(
+                Date.parse(this.member.lastActivityOccurredAt)
+              ).toLocaleDateString("en-EN", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })}"
+            ></obe-pill>
           </div>
         `}
       </div>
