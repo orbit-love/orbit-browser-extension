@@ -11,9 +11,6 @@ import iconCustomer from "bundle-text:../icons/icon-customer.svg";
 const TAG_LIMIT = 5;
 
 class Widget extends TailwindMixin(LitElement) {
-  //   @queryAssignedElements({ slot: "additional-data" })
-  // _additionalDataSlots!;
-
   static get properties() {
     return {
       isOpen: { type: Boolean, state: true },
@@ -253,18 +250,18 @@ class Widget extends TailwindMixin(LitElement) {
       } else if (success === false) {
         this.hasError = true;
       } else {
-        this.isAMember = true;
-
         const { data, included } = response;
 
         if (!data) {
           this.isAMember = false;
-
           this.hasError = true;
           this.isLoading = false;
+
           this.requestUpdate();
           return;
         }
+
+        this.isAMember = true;
 
         const identities = data.relationships.identities.data.map(
           ({ id, type }) =>
@@ -299,8 +296,6 @@ class Widget extends TailwindMixin(LitElement) {
 
       this.isLoading = false;
       this.requestUpdate();
-
-      // this._additionalDataSlots[0].additionalData = additionalData;
     }
   }
 

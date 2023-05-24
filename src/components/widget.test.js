@@ -14,10 +14,14 @@ describe("obe-widget", () => {
   });
 
   it("sets property default values", () => {
-    // FIXME: Add remaining states to this
     expect(element.isOpen).toBe(false);
     expect(element.isLoading).toBe(false);
     expect(element.hasAuthError).toBe(false);
+    expect(element.hasError).toBe(false);
+    expect(element.showAllTags).toBe(false);
+    expect(element.isAMember).toBe(false);
+    expect(element.member).toEqual({});
+    expect(element.workspace).toEqual({});
   });
 
   it("sets default state", () => {

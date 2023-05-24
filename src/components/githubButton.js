@@ -17,7 +17,7 @@ class GitHubButton extends TailwindMixin(LitElement) {
           aria-expanded="true"
           aria-haspopup="true"
         >
-          <span class="sr-only">Open options</span>
+          <span class="sr-only">Open Orbit widget</span>
           ${unsafeSVG(orbitLogo)}
         </button>
       </div>
