@@ -16,7 +16,7 @@ class Pill extends TailwindMixin(LitElement) {
       >
         ${this.name &&
         html`<span class="mr-1 font-medium text-gray-600">${this.name}</span>`}
-        <span class="font-bold text-gray-700">${this.value}</span>
+        <span class="font-semibold text-gray-700">${this.value}</span>
       </div>
     `;
   }

@@ -106,49 +106,56 @@ class Widget extends TailwindMixin(LitElement) {
   memberTemplate() {
     return html`
       <div class="px-4 truncate" role="menuitem">
-        <!-- Name -->
-        <span
-          class="block pt-1 text-sm text-xl font-bold text-gray-900 truncate"
-          >${this.member.name}</span
-        >
+        <section class="mt-1">
+          <!-- Name -->
+          <span class="block text-xl font-bold text-gray-900 truncate"
+            >${this.member.name}</span
+          >
 
-        <!-- Title -->
-        <span class="block text-sm text-gray-500 truncate"
-          >${this.member.jobTitle}</span
-        >
+          <!-- Title -->
+          <span class="block text-sm text-gray-500 truncate"
+            >${this.member.jobTitle}</span
+          >
 
-        <!-- Organization -->
-        ${this.member.organization &&
-        html`
-          <div class="flex flex-row justify-start items-center pt-1">
-            ${this.member.organization.logo_url &&
-            html` <img
-              class="mr-1 w-5 h-5"
-              src="${this.member.organization.logo_url}"
-            />`}
-            <a
-              href="${this.member.organization.website}"
-              target="_blank"
-              rel="noreferrer"
-              class="mr-2 text-sm text-blue-500 hover:underline"
-              >${this.member.organization.name}</a
-            >
-            ${this.member.organization.lifecycle_stage === "customer"
-              ? unsafeSVG(iconCustomer)
-              : nothing}
-          </div>
+          <!-- Organization -->
+          ${
+            this.member.organization &&
+            html`
+            <div class="flex flex-row justify-start items-center mt-1 mb-3">
+              ${
+                this.member.organization.logo_url &&
+                html` <img
+                  class="mr-1 w-5 h-5"
+                  src="${this.member.organization.logo_url}"
+                />`
+              }
+              <a
+                href="${this.member.organization.website}"
+                target="_blank"
+                rel="noreferrer"
+                class="mr-2 text-sm text-blue-500 hover:underline"
+                >${this.member.organization.name}</a
+              >
+              ${
+                this.member.organization.lifecycle_stage === "customer"
+                  ? unsafeSVG(iconCustomer)
+                  : nothing
+              }
+            </div>
+          </section>
 
           <!-- Pills -->
-          <p class="block pb-1 pt-3 text-sm text-gray-500 uppercase truncate">
-            Orbit Model
-          </p>
-          <div class="flex flex-row justify-start items-center pt-1 space-x-1">
-            ${this.member.orbitLevel === null
-              ? html`<obe-pill value="Teammate"></obe-pill>`
-              : html`<obe-pill
-                  name="Orbit Level"
-                  value="${this.member.orbitLevel}"
-                ></obe-pill>`}
+          <section
+            class="flex flex-row justify-start items-center mb-3 space-x-1"
+          >
+            ${
+              this.member.orbitLevel === null
+                ? html`<obe-pill value="Teammate"></obe-pill>`
+                : html`<obe-pill
+                    name="Orbit Level"
+                    value="${this.member.orbitLevel}"
+                  ></obe-pill>`
+            }
             <obe-pill
               name="Last active"
               value="${new Date(
@@ -159,53 +166,58 @@ class Widget extends TailwindMixin(LitElement) {
                 day: "numeric",
               })}"
             ></obe-pill>
-          </div>
+          </section>
 
           <!-- Identities -->
-          <p class="block pb-1 pt-3 text-sm text-gray-500 uppercase truncate">
-            Linked profiles & emails
-            <span class="ml-1 text-gray-900"
-              >${this.member.identities.length}</span
+          <section class="mb-3">
+            <p class="block text-sm text-gray-500 uppercase truncate">
+              Linked profiles & emails
+              <span class="ml-1 text-gray-900"
+                >${this.member.identities.length}</span
+              >
+            </p>
+            <div
+              class="flex flex-row flex-wrap gap-1 justify-start items-center py-1"
             >
-          </p>
-          <div
-            class="flex flex-row flex-wrap gap-1 justify-start items-center py-1 max-w-xs"
-          >
-            ${this.member.identities.map(
-              (identity) =>
-                html`<obe-identity .identity=${identity}></obe-identity>`
-            )}
-          </div>
+              ${this.member.identities.map(
+                (identity) =>
+                  html`<obe-identity .identity=${identity}></obe-identity>`
+              )}
+            </div>
+          </section>
 
           <!-- Tags -->
-          <p class="block pb-1 pt-3 text-sm text-gray-500 uppercase truncate">
-            Tags
-            <span class="ml-1 text-gray-900">${this.member.tags.length}</span>
-          </p>
-          <div
-            class="flex flex-row flex-wrap gap-1 justify-start items-center py-1 max-w-xs"
-          >
-            ${this.member.tags.map((tag, index) => {
-              // Do not render tags that are above tag limit, unless we are showing all
-              if (!this.showAllTags && index > TAG_LIMIT) {
-                return;
-              }
+          <section class="mb-3">
+            <p class="block text-sm text-gray-500 uppercase truncate">
+              Tags
+              <span class="ml-1 text-gray-900">${this.member.tags.length}</span>
+            </p>
+            <div
+              class="flex flex-row flex-wrap gap-1 justify-start items-center py-1"
+            >
+              ${this.member.tags.map((tag, index) => {
+                // Do not render tags that are above tag limit, unless we are showing all
+                if (!this.showAllTags && index > TAG_LIMIT) {
+                  return;
+                }
 
-              // If we have reached limit, show button to show all tags
-              if (!this.showAllTags && index === TAG_LIMIT) {
-                return html`<button
-                  @click="${this._showAllTags}"
-                  class="text-gray-500 cursor-pointer"
-                >
-                  ${this.member.tags.length - TAG_LIMIT} more tags
-                </button>`;
-              }
+                // If we have reached limit, show button to show all tags
+                if (!this.showAllTags && index === TAG_LIMIT) {
+                  return html`<button
+                    @click="${this._showAllTags}"
+                    class="text-gray-500 cursor-pointer"
+                  >
+                    Show ${this.member.tags.length - TAG_LIMIT} more tags
+                  </button>`;
+                }
 
-              // Otherwise, render tag
-              return html`<obe-tag tag=${tag}></obe-tag>`;
-            })}
-          </div>
-        `}
+                // Otherwise, render tag
+                return html`<obe-tag tag=${tag}></obe-tag>`;
+              })}
+            </div>
+          </section>
+        `
+          }
       </div>
     `;
   }

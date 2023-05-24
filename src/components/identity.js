@@ -9,7 +9,7 @@ class IdentityElement extends TailwindMixin(LitElement) {
   }
 
   getIconPath() {
-    switch (this.identity.source) {
+    switch (this.identity.source.toLowerCase()) {
       case "email":
         return "icons/email.svg";
       case "discord":
@@ -21,7 +21,7 @@ class IdentityElement extends TailwindMixin(LitElement) {
       case "stack_overflow":
       case "twitter":
       case "youtube":
-        return `icons/${this.identity.source}.png`;
+        return `icons/${this.identity.source.toLowerCase()}.png`;
       default:
         return "icons/custom-identity.svg";
     }
