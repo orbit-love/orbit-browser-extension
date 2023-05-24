@@ -3,8 +3,11 @@ import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 import { TailwindMixin } from "../utils/tailwindMixin";
 import { getOrbitCredentials } from "../oauth-helpers";
 import "./pill";
+import "./tag";
 
 import iconCustomer from "bundle-text:../icons/icon-customer.svg";
+
+const TAG_LIMIT = 5;
 
 class Widget extends TailwindMixin(LitElement) {
   //   @queryAssignedElements({ slot: "additional-data" })
@@ -24,6 +27,7 @@ class Widget extends TailwindMixin(LitElement) {
     this.isLoading = false;
     this.hasAuthError = false;
     this.hasError = false;
+    this.showAllTags = false;
 
     this.isAMember = false;
 
@@ -99,7 +103,6 @@ class Widget extends TailwindMixin(LitElement) {
   }
 
   memberTemplate() {
-    console.log(this.member.orbitLevel);
     return html`
       <div class="px-4 truncate" role="menuitem">
         <!-- Name -->
@@ -156,6 +159,35 @@ class Widget extends TailwindMixin(LitElement) {
               })}"
             ></obe-pill>
           </div>
+
+          <!-- Tags -->
+          <p class="block pb-1 pt-3 text-sm text-gray-500 uppercase truncate">
+            Tags
+            <span class="ml-1 text-gray-900">${this.member.tags.length}</span>
+          </p>
+          <div
+            class="flex flex-row flex-wrap gap-x-1 gap-y-1 justify-start items-center pt-1 pb-1 max-w-xs"
+          >
+            ${this.member.tags.map((tag, index) => {
+              // Do not render tags that are above tag limit, unless we are showing all
+              if (!this.showAllTags && index > TAG_LIMIT) {
+                return;
+              }
+
+              // If we have reached limit, show button to show all tags
+              if (!this.showAllTags && index === TAG_LIMIT) {
+                return html`<button
+                  @click="${this._showAllTags}"
+                  class="text-gray-500 cursor-pointer"
+                >
+                  ${this.member.tags.length - TAG_LIMIT} more tags
+                </button>`;
+              }
+
+              // Otherwise, render tag
+              return html`<obe-tag tag=${tag}></obe-tag>`;
+            })}
+          </div>
         `}
       </div>
     `;
@@ -163,6 +195,11 @@ class Widget extends TailwindMixin(LitElement) {
 
   _toggle() {
     this.isOpen = !this.isOpen;
+  }
+
+  _showAllTags() {
+    this.showAllTags = true;
+    this.requestUpdate();
   }
 
   async _loadOrbitData() {

@@ -164,7 +164,6 @@ const loadMemberData = async ({ username, platform, ORBIT_CREDENTIALS }) => {
       status: response.status,
     };
   } catch (e) {
-    console.log(e);
     return { success: false, response: e.message, status: 500 };
   }
 };

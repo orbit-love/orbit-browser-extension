@@ -14,6 +14,7 @@ describe("obe-widget", () => {
   });
 
   it("sets property default values", () => {
+    // FIXME: Add remaining states to this
     expect(element.isOpen).toBe(false);
     expect(element.isLoading).toBe(false);
     expect(element.hasAuthError).toBe(false);
@@ -77,6 +78,12 @@ describe("obe-widget", () => {
     expect(dropdown.innerHTML).toMatch(
       "There was an error fetching Orbit data"
     );
+  });
+
+  it("sets showAllTags to true when _showAllTags called", () => {
+    expect(element.showAllTags).toBe(false);
+    element._showAllTags();
+    expect(element.showAllTags).toBe(true);
   });
 
   describe("#_loadOrbitData", () => {
