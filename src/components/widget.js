@@ -1,7 +1,9 @@
 import { LitElement, html, css, nothing } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 import { TailwindMixin } from "../utils/tailwindMixin";
 import { getOrbitCredentials } from "../oauth-helpers";
+
+import iconCustomer from "bundle-text:../icons/icon-customer.svg";
 
 class Widget extends TailwindMixin(LitElement) {
   //   @queryAssignedElements({ slot: "additional-data" })
@@ -96,6 +98,7 @@ class Widget extends TailwindMixin(LitElement) {
   }
 
   memberTemplate() {
+    console.log(this.member.organization);
     return html`
       <div class="px-4 truncate" role="menuitem">
         <!-- Name -->
@@ -108,7 +111,26 @@ class Widget extends TailwindMixin(LitElement) {
           >${this.member.jobTitle}</span
         >
         <!-- Organization -->
-        ${this.member.organization}
+        ${this.member.organization &&
+        html`
+          <div class="flex flex-row justify-start items-center pt-1">
+            ${this.member.organization.logo_url &&
+            html` <img
+              class="mr-1 w-5 h-5"
+              src="${this.member.organization.logo_url}"
+            />`}
+            <a
+              href="${this.member.organization.website}"
+              target="_blank"
+              rel="noreferrer"
+              class="mr-2 text-sm text-blue-500 hover:underline"
+              >${this.member.organization.name}</a
+            >
+            ${this.member.organization.lifecycle_stage === "customer"
+              ? unsafeSVG(iconCustomer)
+              : nothing}
+          </div>
+        `}
       </div>
     `;
   }
