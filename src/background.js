@@ -152,7 +152,7 @@ const refreshOAuthToken = async ({ refreshToken }) => {
  *
  * @param {String} username from widget
  * @param {String} platform from widget
- * @param {Object} ORBIT_CREDENITALS fetched from storage
+ * @param {Object} ORBIT_CREDENTIALS fetched from storage
  *
  * @returns {success, response, ok}
  */
@@ -183,11 +183,82 @@ const loadMemberData = async ({ username, platform, ORBIT_CREDENTIALS }) => {
   }
 };
 
+const loadAdditionalData = async ({
+  username,
+  platform,
+  repositoryFullName,
+  member,
+  ORBIT_CREDENTIALS,
+}) => {
+  if (platform != "github") return;
+
+  let additionalData = {};
+
+  const url = new URL(
+    `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/identities/github/${username}`
+  );
+
+  const { params, headers } = configureRequest(ORBIT_CREDENTIALS);
+  url.search = params.toString();
+
+  try {
+    const response = await fetch(url, {
+      headers: headers,
+    });
+
+    const { data } = await response.json();
+
+    additionalData = {
+      success: true,
+      response: { contributions_total: data.attributes.g_contributions_total },
+      status: response.status,
+      ok: response.ok,
+    };
+  } catch (err) {
+    return {
+      success: false,
+      response: err.message,
+    };
+  }
+
+  // IE, if repository exists in this workspace
+  // FIXME: 404 set as output of fetchOrbitData :|
+  if (additionalData.status !== 404) {
+    const url = new URL(
+      `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/activities`
+    );
+
+    const { params, headers } = configureRequest(ORBIT_CREDENTIALS, {
+      member_id: member,
+      properties: `github_repository:${repositoryFullName}`,
+      items: 25,
+    });
+
+    url.search = params.toString();
+
+    try {
+      const response = await fetch(url, {
+        headers: headers,
+      });
+
+      const { data } = await response.json();
+      additionalData.response.contributions_on_this_repo_total = data.length;
+    } catch (err) {
+      return {
+        success: false,
+        response: err.message,
+      };
+    }
+  }
+
+  return additionalData;
+};
+
 /**
  * Add a member to Orbit
  *
  * @param {String} username from widget
- * @param {Object} ORBIT_CREDENITALS fetched from storage
+ * @param {Object} ORBIT_CREDENTIALS fetched from storage
  *
  * @returns {success, response, ok}
  */
@@ -220,5 +291,3 @@ const addMemberToWorkspace = async ({ username, ORBIT_CREDENTIALS }) => {
     return { success: false, response: e.message };
   }
 };
-
-const loadAdditionalData = async () => {};

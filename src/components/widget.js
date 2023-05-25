@@ -8,6 +8,7 @@ import "./identity";
 
 import iconCustomer from "bundle-text:../icons/icon-customer.svg";
 import { ORBIT_API_ROOT_URL } from "../constants";
+import { getThreshold } from "../github/orbit-helpers";
 
 const TAG_LIMIT = 5;
 
@@ -31,7 +32,7 @@ class Widget extends TailwindMixin(LitElement) {
     this.isAMember = false;
 
     this.member = {};
-    this.additionalData = { "owo2:": 123 };
+    this.additionalData = [];
 
     this.workspace = "";
   }
@@ -61,7 +62,7 @@ class Widget extends TailwindMixin(LitElement) {
       >
         <div role="none">${this.getTemplateContent()}</div>
 
-        ${Object.keys(this.additionalData).length > 0
+        ${this.additionalData.length > 0
           ? this.additionalDataTemplate()
           : nothing}
         ${!this.isLoading && !this.hasAuthError && !this.hasOtherError
@@ -234,7 +235,13 @@ class Widget extends TailwindMixin(LitElement) {
   }
 
   additionalDataTemplate() {
-    return html``;
+    return html`<hr
+        class="block border-t border-[#d0d7de] my-[6px]"
+        role="none"
+      />
+      <section class="flex flex-col gap-2 py-1 px-4 truncate">
+        ${this.additionalData.map((datum) => html`<p>${datum}</p>`)}
+      </section> `;
   }
 
   actionsTemplate() {
@@ -356,7 +363,36 @@ class Widget extends TailwindMixin(LitElement) {
     }
   }
 
-  async _loadAdditionalData() {}
+  async _loadAdditionalData() {
+    const ORBIT_CREDENTIALS = await getOrbitCredentials();
+    const repositoryFullName = `${window.location.pathname.split("/")[1]}/${
+      window.location.pathname.split("/")[2]
+    }`;
+
+    const { status, success, response, ok } = await chrome.runtime.sendMessage({
+      operation: "LOAD_ADDITIONAL_DATA",
+      username: this.username,
+      platform: this.platform,
+      ORBIT_CREDENTIALS,
+      repositoryFullName,
+      member: this.member.slug,
+    });
+
+    if (!success || !ok) {
+      // TODO: Handle error
+    }
+
+    this.additionalData = [
+      `Contributed ${getThreshold(
+        response.contributions_total
+      )} times on GitHub`,
+      response.contributions_on_this_repo_total === 1
+        ? "First contribution to this repository"
+        : `Contributed ${getThreshold(
+            response.contributions_on_this_repo_total
+          )} times to this repository`,
+    ];
+  }
 
   async _addMemberToWorkspace() {
     this.isLoading = true;
@@ -397,7 +433,7 @@ class Widget extends TailwindMixin(LitElement) {
         <slot
           name="button"
           @click="${this._toggle}"
-          @mouseover="${this._loadMemberData}"
+          @mouseover="${this._loadOrbitData}"
         ></slot>
         ${this.dropdownTemplate()}
       </div>
