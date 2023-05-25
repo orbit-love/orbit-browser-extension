@@ -237,10 +237,13 @@ class Widget extends LitElement {
   }
 
   additionalDataTemplate() {
-    return html`<hr
-        class="block border-t border-[#d0d7de] my-[6px]"
-        role="none"
-      />
+    console.log(this.isAMember);
+    return html`${this.isAMember
+        ? html`<hr
+            class="block border-t border-[#d0d7de] my-[6px]"
+            role="none"
+          />`
+        : nothing}
       <section class="flex flex-col gap-2 py-1 px-4 truncate">
         ${this.additionalData.map((datum) => html`<p>${datum}</p>`)}
       </section> `;
@@ -255,15 +258,21 @@ class Widget extends LitElement {
             rel="noreferrer noopener"
             href="${ORBIT_API_ROOT_URL}/${this.workspace}/members/${this.member
               .slug}"
-            class="block py-2 px-4 text-sm text-gray-700 truncate bg-gray-50 rounded-md hover:bg-gray-100 focus:bg-gray-100"
+            class="block py-2 px-4 w-full text-sm text-left text-gray-700 truncate bg-gray-50 rounded-md hover:bg-gray-100 focus:bg-gray-100"
             role="menuitem"
           >
             See ${this.username}’s profile on Orbit
           </a>
         `
       : html`
+          ${this.additionalData.length > 0
+            ? html`<hr
+                class="block border-t border-[#d0d7de] mt-[6px]"
+                role="none"
+              />`
+            : nothing}
           <button
-            class="block py-2 px-4 text-sm text-gray-700 truncate bg-gray-50 rounded-md hover:bg-gray-100 focus:bg-gray-100"
+            class="block py-2 px-4 w-full text-sm text-left text-gray-700 truncate bg-gray-50 rounded-md hover:bg-gray-100 focus:bg-gray-100"
             role="menuitem"
             @click="${this._addMemberToWorkspace}"
           >
@@ -366,6 +375,7 @@ class Widget extends LitElement {
   }
 
   async _loadAdditionalData() {
+    if (this.platform !== "github") return;
     const ORBIT_CREDENTIALS = await getOrbitCredentials();
     const repositoryFullName = `${window.location.pathname.split("/")[1]}/${
       window.location.pathname.split("/")[2]
@@ -426,7 +436,7 @@ class Widget extends LitElement {
       :host:not(:defined) {
         display: none;
       }
-    `
+    `,
   ];
 
   render() {

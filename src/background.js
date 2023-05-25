@@ -190,7 +190,7 @@ const loadAdditionalData = async ({
   member,
   ORBIT_CREDENTIALS,
 }) => {
-  if (platform != "github") return;
+  if (platform !== "github") return;
 
   let additionalData = {};
 
