@@ -160,16 +160,13 @@ class Widget extends TailwindMixin(LitElement) {
                     value="${this.member.orbitLevel || "N/A"}"
                   ></obe-pill>`
             }
-            <obe-pill
-              name="Last active"
-              value="${new Date(
-                Date.parse(this.member.lastActivityOccurredAt)
-              ).toLocaleDateString("en-EN", {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-              })}"
-            ></obe-pill>
+            ${
+              this.member.lastActivityOccurredAt &&
+              html` <obe-pill
+                name="Last active"
+                value="${_formatDate(this.member.lastActivityOccurredAt)}"
+              ></obe-pill>`
+            }
           </section>
 
           <!-- Identities -->
@@ -298,6 +295,14 @@ class Widget extends TailwindMixin(LitElement) {
       tags: member.attributes.tags,
       identities: identities,
     };
+  }
+
+  _formatDate(date) {
+    return new Date(Date.parse(date)).toLocaleDateString("en-EN", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
   }
 
   async _loadOrbitData() {
