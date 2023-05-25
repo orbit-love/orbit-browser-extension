@@ -2,6 +2,7 @@ import { Page } from "../pages/page";
 import "../components/widget";
 import "../components/githubButton";
 import "../components/twitterButton";
+import "../components/linkedinButton";
 
 export default class WidgetOrchestrator {
   /**
