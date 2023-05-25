@@ -1,16 +1,16 @@
-import { LitElement, html, css, nothing } from "lit";
+import { LitElement, html, css, nothing, unsafeCSS } from "lit";
 import { unsafeSVG } from "lit/directives/unsafe-svg.js";
-import { TailwindMixin } from "../utils/tailwindMixin";
 import { getOrbitCredentials } from "../oauth-helpers";
 import "./pill";
 import "./tag";
 import "./identity";
 
+import tailwindStylesheet from "bundle-text:../styles/tailwind.global.css";
 import iconCustomer from "bundle-text:../icons/icon-customer.svg";
 
 const TAG_LIMIT = 5;
 
-class Widget extends TailwindMixin(LitElement) {
+class Widget extends LitElement {
   static get properties() {
     return {
       isOpen: { type: Boolean, state: true },
@@ -304,16 +304,14 @@ class Widget extends TailwindMixin(LitElement) {
     }
   }
 
-  static get styles() {
-    return css`
-      :not(:defined) {
+  static styles = [
+    unsafeCSS(tailwindStylesheet),
+    css`
+      :host:not(:defined) {
         display: none;
       }
-      * {
-        @apply font-sans;
-      }
-    `;
-  }
+    `
+  ];
 
   render() {
     return html`

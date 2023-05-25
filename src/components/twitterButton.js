@@ -1,12 +1,14 @@
-import { LitElement, html } from "lit";
+import { LitElement, html, unsafeCSS } from "lit";
 import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 import { customElement } from "lit/decorators.js";
-import { TailwindMixin } from "../utils/tailwindMixin";
 
+import tailwindStylesheet from "bundle-text:../styles/tailwind.global.css";
 import orbitLogo from "bundle-text:../icons/orbit-logo.svg";
 
 @customElement("obe-twitter-button")
-class TwitterButton extends TailwindMixin(LitElement) {
+class TwitterButton extends LitElement {
+  static styles = [unsafeCSS(tailwindStylesheet)];
+
   render() {
     return html`
       <div>

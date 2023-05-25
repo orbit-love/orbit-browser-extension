@@ -1,13 +1,16 @@
-import { LitElement, html } from "lit";
-import { TailwindMixin } from "../utils/tailwindMixin";
+import { LitElement, html, unsafeCSS } from "lit";
 
-class Pill extends TailwindMixin(LitElement) {
+import tailwindStylesheet from "bundle-text:../styles/tailwind.global.css";
+
+class Pill extends LitElement {
   static get properties() {
     return {
       name: { type: String },
       value: { type: String },
     };
   }
+
+  static styles = [unsafeCSS(tailwindStylesheet)];
 
   render() {
     return html`
