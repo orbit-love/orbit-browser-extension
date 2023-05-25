@@ -1,4 +1,5 @@
 import { LitElement, html, css, nothing, unsafeCSS } from "lit";
+import { customElement } from "lit/decorators.js";
 import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 import { getOrbitCredentials } from "../oauth-helpers";
 import "./pill";
@@ -10,6 +11,7 @@ import iconCustomer from "bundle-text:../icons/icon-customer.svg";
 
 const TAG_LIMIT = 5;
 
+@customElement("obe-widget")
 class Widget extends LitElement {
   static get properties() {
     return {
@@ -326,5 +328,3 @@ class Widget extends LitElement {
     `;
   }
 }
-
-customElements.define("obe-widget", Widget);

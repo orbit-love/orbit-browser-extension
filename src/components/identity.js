@@ -1,7 +1,9 @@
 import { LitElement, html, unsafeCSS } from "lit";
+import { customElement } from "lit/decorators.js";
 
 import tailwindStylesheet from "bundle-text:../styles/tailwind.global.css";
 
+@customElement("obe-identity")
 class IdentityElement extends LitElement {
   static get properties() {
     return {
@@ -87,5 +89,3 @@ class IdentityElement extends LitElement {
     `;
   }
 }
-
-customElements.define("obe-identity", IdentityElement);

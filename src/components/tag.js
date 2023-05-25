@@ -1,9 +1,11 @@
 import { LitElement, html, unsafeCSS } from "lit";
+import { customElement } from "lit/decorators.js";
 
 import tailwindStylesheet from "bundle-text:../styles/tailwind.global.css";
 
 import { ORBIT_API_ROOT_URL } from "../constants";
 
+@customElement("obe-tag")
 class Tag extends LitElement {
   static get properties() {
     return {
@@ -31,5 +33,3 @@ class Tag extends LitElement {
     `;
   }
 }
-
-customElements.define("obe-tag", Tag);

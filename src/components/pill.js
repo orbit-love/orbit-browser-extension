@@ -1,7 +1,9 @@
 import { LitElement, html, unsafeCSS } from "lit";
+import { customElement } from "lit/decorators.js";
 
 import tailwindStylesheet from "bundle-text:../styles/tailwind.global.css";
 
+@customElement("obe-pill")
 class Pill extends LitElement {
   static get properties() {
     return {
@@ -24,5 +26,3 @@ class Pill extends LitElement {
     `;
   }
 }
-
-customElements.define("obe-pill", Pill);
