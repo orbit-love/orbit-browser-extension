@@ -1,7 +1,7 @@
 import { LitElement, html, css, nothing } from "lit";
 import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 import { TailwindMixin } from "../utils/tailwindMixin";
-import { getOrbitCredentials } from "../oauth-helpers";
+import { configureRequest, getOrbitCredentials } from "../oauth-helpers";
 import "./pill";
 import "./tag";
 import "./identity";
@@ -145,17 +145,19 @@ class Widget extends TailwindMixin(LitElement) {
               }
             </div>
           </section>
+          `
+          }
 
           <!-- Pills -->
           <section
             class="flex flex-row justify-start items-center mb-3 space-x-1"
           >
             ${
-              this.member.orbitLevel === null
+              this.member.teammate
                 ? html`<obe-pill value="Teammate"></obe-pill>`
                 : html`<obe-pill
                     name="Orbit Level"
-                    value="${this.member.orbitLevel}"
+                    value="${this.member.orbitLevel || "N/A"}"
                   ></obe-pill>`
             }
             <obe-pill
@@ -171,54 +173,60 @@ class Widget extends TailwindMixin(LitElement) {
           </section>
 
           <!-- Identities -->
-          <section class="mb-3">
-            <p class="block text-sm text-gray-500 uppercase truncate">
-              Linked profiles & emails
-              <span class="ml-1 text-gray-900"
-                >${this.member.identities.length}</span
+          ${
+            !!this.member.identities &&
+            html` <section class="mb-3">
+              <p class="block text-sm text-gray-500 uppercase truncate">
+                Linked profiles & emails
+                <span class="ml-1 text-gray-900"
+                  >${this.member.identities.length}</span
+                >
+              </p>
+              <div
+                class="flex flex-row flex-wrap gap-1 justify-start items-center py-1"
               >
-            </p>
-            <div
-              class="flex flex-row flex-wrap gap-1 justify-start items-center py-1"
-            >
-              ${this.member.identities.map(
-                (identity) =>
-                  html`<obe-identity .identity=${identity}></obe-identity>`
-              )}
-            </div>
-          </section>
+                ${this.member.identities.map(
+                  (identity) =>
+                    html`<obe-identity .identity=${identity}></obe-identity>`
+                )}
+              </div>
+            </section>`
+          }
 
           <!-- Tags -->
-          <section class="mb-3">
-            <p class="block text-sm text-gray-500 uppercase truncate">
-              Tags
-              <span class="ml-1 text-gray-900">${this.member.tags.length}</span>
-            </p>
-            <div
-              class="flex flex-row flex-wrap gap-1 justify-start items-center py-1"
-            >
-              ${this.member.tags.map((tag, index) => {
-                // Do not render tags that are above tag limit, unless we are showing all
-                if (!this.showAllTags && index > TAG_LIMIT) {
-                  return;
-                }
+          ${
+            !!this.member.tags &&
+            html` <section class="mb-3">
+              <p class="block text-sm text-gray-500 uppercase truncate">
+                Tags
+                <span class="ml-1 text-gray-900"
+                  >${this.member.tags.length}</span
+                >
+              </p>
+              <div
+                class="flex flex-row flex-wrap gap-1 justify-start items-center py-1"
+              >
+                ${this.member.tags.map((tag, index) => {
+                  // Do not render tags that are above tag limit, unless we are showing all
+                  if (!this.showAllTags && index > TAG_LIMIT) {
+                    return;
+                  }
 
-                // If we have reached limit, show button to show all tags
-                if (!this.showAllTags && index === TAG_LIMIT) {
-                  return html`<button
-                    @click="${this._showAllTags}"
-                    class="text-gray-500 cursor-pointer"
-                  >
-                    Show ${this.member.tags.length - TAG_LIMIT} more tags
-                  </button>`;
-                }
+                  // If we have reached limit, show button to show all tags
+                  if (!this.showAllTags && index === TAG_LIMIT) {
+                    return html`<button
+                      @click="${this._showAllTags}"
+                      class="text-gray-500 cursor-pointer"
+                    >
+                      Show ${this.member.tags.length - TAG_LIMIT} more tags
+                    </button>`;
+                  }
 
-                // Otherwise, render tag
-                return html`<obe-tag tag=${tag}></obe-tag>`;
-              })}
-            </div>
-          </section>
-        `
+                  // Otherwise, render tag
+                  return html`<obe-tag tag=${tag}></obe-tag>`;
+                })}
+              </div>
+            </section>`
           }
       </div>
     `;
@@ -259,6 +267,39 @@ class Widget extends TailwindMixin(LitElement) {
     this.requestUpdate();
   }
 
+  _buildMemberData(member, included) {
+    const identities = member.relationships.identities.data.map(
+      ({ id, type }) =>
+        included.find(
+          ({ id: included_id, type: included_type }) =>
+            id === included_id && type === included_type
+        )?.attributes
+    );
+
+    const organizations = member.relationships.organizations.data.map(
+      ({ id, type }) =>
+        included.find(
+          ({ id: included_id, type: included_type }) =>
+            id === included_id && type === included_type
+        )?.attributes
+    );
+
+    const organization = organizations[0] || null;
+
+    this.isAMember = true;
+    this.member = {
+      name: member.attributes.name,
+      jobTitle: member.attributes.title,
+      slug: member.attributes.slug,
+      teammate: member.attributes.teammate,
+      orbitLevel: member.attributes.orbit_level,
+      organization: organization,
+      lastActivityOccurredAt: member.attributes.last_activity_occurred_at,
+      tags: member.attributes.tags,
+      identities: identities,
+    };
+  }
+
   async _loadOrbitData() {
     if (!this.isLoading) {
       this.isLoading = true;
@@ -292,37 +333,7 @@ class Widget extends TailwindMixin(LitElement) {
           return;
         }
 
-        this.isAMember = true;
-
-        const identities = data.relationships.identities.data.map(
-          ({ id, type }) =>
-            included.find(
-              ({ id: included_id, type: included_type }) =>
-                id === included_id && type === included_type
-            )?.attributes
-        );
-
-        const organizations = data.relationships.organizations.data.map(
-          ({ id, type }) =>
-            included.find(
-              ({ id: included_id, type: included_type }) =>
-                id === included_id && type === included_type
-            )?.attributes
-        );
-
-        const organization = organizations[0] || null;
-
-        this.member = {
-          name: data.attributes.name,
-          jobTitle: data.attributes.title,
-          slug: data.attributes.slug,
-          teammate: data.attributes.teammate,
-          orbitLevel: data.attributes.orbit_level,
-          organization: organization,
-          lastActivityOccurredAt: data.attributes.last_activity_occurred_at,
-          tags: data.attributes.tags,
-          identities: identities,
-        };
+        this._buildMemberData(data, included);
       }
 
       this.isLoading = false;
@@ -331,7 +342,24 @@ class Widget extends TailwindMixin(LitElement) {
   }
 
   async _addMemberToWorkspace() {
-    console.log("TODO");
+    this.isLoading = true;
+    this.requestUpdate();
+
+    const ORBIT_CREDENTIALS = await getOrbitCredentials();
+
+    const { success, response, ok } = await chrome.runtime.sendMessage({
+      operation: "ADD_MEMBER_TO_WORKSPACE",
+      username: this.username,
+      ORBIT_CREDENTIALS,
+    });
+
+    if (!success || !ok) {
+      // FIXME: Error state
+    } else {
+      this._buildMemberData(response.data, response.included);
+      this.isLoading = false;
+      this.requestUpdate();
+    }
   }
 
   static get styles() {

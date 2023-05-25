@@ -44,6 +44,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     case "LOAD_MEMBER_DATA":
       loadMemberData(request).then(sendResponse);
       break;
+    case "ADD_MEMBER_TO_WORKSPACE":
+      addMemberToWorkspace(request).then(sendResponse);
+      break;
     // Load additional data
     // IF !github, return
 
@@ -143,6 +146,15 @@ const refreshOAuthToken = async ({ refreshToken }) => {
   }
 };
 
+/**
+ * Fetch member from Orbit
+ *
+ * @param {String} username from widget
+ * @param {String} platform from widget
+ * @param {Object} ORBIT_CREDENITALS fetched from storage
+ *
+ * @returns {success, response, ok}
+ */
 const loadMemberData = async ({ username, platform, ORBIT_CREDENTIALS }) => {
   const url = new URL(
     `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/find`
@@ -167,5 +179,43 @@ const loadMemberData = async ({ username, platform, ORBIT_CREDENTIALS }) => {
     };
   } catch (e) {
     return { success: false, response: e.message, status: 500 };
+  }
+};
+
+/**
+ * Add a member to Orbit
+ *
+ * @param {String} username from widget
+ * @param {Object} ORBIT_CREDENITALS fetched from storage
+ *
+ * @returns {success, response, ok}
+ */
+const addMemberToWorkspace = async ({ username, ORBIT_CREDENTIALS }) => {
+  const url = new URL(
+    `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members`
+  );
+
+  const { params, headers } = configureRequest(
+    ORBIT_CREDENTIALS,
+    {},
+    { "Content-Type": "application/json" }
+  );
+
+  url.search = params.toString();
+
+  try {
+    const response = await fetch(url, {
+      headers: headers,
+      method: "POST",
+      body: JSON.stringify({
+        member: {
+          github: username,
+        },
+      }),
+    });
+
+    return { success: true, response: await response.json(), ok: response.ok };
+  } catch (e) {
+    return { success: false, response: e.message };
   }
 };
