@@ -1,6 +1,7 @@
 import { Page } from "../pages/page";
 import "../components/widget";
 import "../components/githubButton";
+import "../components/twitterButton";
 
 export default class WidgetOrchestrator {
   /**
@@ -21,6 +22,10 @@ export default class WidgetOrchestrator {
    * @param {string} platform the site we're on, used as a key for naming HTML elements
    */
   addWidgetElements(page, platform) {
+    if (document.querySelector('obe-widget')) {
+      return;
+    }
+
     const widgetZones = page.findWidgetZones();
 
     for (const widgetZone of widgetZones) {
