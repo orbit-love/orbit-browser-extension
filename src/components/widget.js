@@ -1,7 +1,7 @@
 import { LitElement, html, css, nothing } from "lit";
 import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 import { TailwindMixin } from "../utils/tailwindMixin";
-import { configureRequest, getOrbitCredentials } from "../oauth-helpers";
+import { getOrbitCredentials } from "../oauth-helpers";
 import "./pill";
 import "./tag";
 import "./identity";
@@ -31,6 +31,7 @@ class Widget extends TailwindMixin(LitElement) {
     this.isAMember = false;
 
     this.member = {};
+    this.additionalData = { "owo2:": 123 };
 
     this.workspace = "";
   }
@@ -60,6 +61,9 @@ class Widget extends TailwindMixin(LitElement) {
       >
         <div role="none">${this.getTemplateContent()}</div>
 
+        ${Object.keys(this.additionalData).length > 0
+          ? this.additionalDataTemplate()
+          : nothing}
         ${!this.isLoading && !this.hasAuthError && !this.hasOtherError
           ? this.actionsTemplate()
           : nothing}
@@ -164,7 +168,7 @@ class Widget extends TailwindMixin(LitElement) {
               this.member.lastActivityOccurredAt &&
               html` <obe-pill
                 name="Last active"
-                value="${_formatDate(this.member.lastActivityOccurredAt)}"
+                value="${this._formatDate(this.member.lastActivityOccurredAt)}"
               ></obe-pill>`
             }
           </section>
@@ -229,6 +233,10 @@ class Widget extends TailwindMixin(LitElement) {
     `;
   }
 
+  additionalDataTemplate() {
+    return html``;
+  }
+
   actionsTemplate() {
     return this.isAMember
       ? html`
@@ -283,8 +291,7 @@ class Widget extends TailwindMixin(LitElement) {
 
     const organization = organizations[0] || null;
 
-    this.isAMember = true;
-    this.member = {
+    return {
       name: member.attributes.name,
       jobTitle: member.attributes.title,
       slug: member.attributes.slug,
@@ -308,43 +315,48 @@ class Widget extends TailwindMixin(LitElement) {
   async _loadOrbitData() {
     if (!this.isLoading) {
       this.isLoading = true;
+      this.requestUpdate();
 
-      const ORBIT_CREDENTIALS = await getOrbitCredentials();
-
-      const { status, success, response } = await chrome.runtime.sendMessage({
-        operation: "LOAD_MEMBER_DATA",
-        username: this.username,
-        platform: this.platform,
-        ORBIT_CREDENTIALS,
-      });
-
-      this.workspace = ORBIT_CREDENTIALS.WORKSPACE;
-
-      if (status === 401) {
-        this.hasAuthError = true;
-      } else if (status === 404) {
-        this.isAMember = false;
-      } else if (success === false) {
-        this.hasError = true;
-      } else {
-        const { data, included } = response;
-
-        if (!data) {
-          this.isAMember = false;
-          this.hasError = true;
-          this.isLoading = false;
-
-          this.requestUpdate();
-          return;
-        }
-
-        this._buildMemberData(data, included);
-      }
+      await Promise.all([this._loadMemberData(), this._loadAdditionalData()]);
 
       this.isLoading = false;
       this.requestUpdate();
     }
   }
+
+  async _loadMemberData() {
+    const ORBIT_CREDENTIALS = await getOrbitCredentials();
+
+    const { status, success, response } = await chrome.runtime.sendMessage({
+      operation: "LOAD_MEMBER_DATA",
+      username: this.username,
+      platform: this.platform,
+      ORBIT_CREDENTIALS,
+    });
+
+    this.workspace = ORBIT_CREDENTIALS.WORKSPACE;
+
+    if (status === 401) {
+      this.hasAuthError = true;
+    } else if (status === 404) {
+      this.isAMember = false;
+    } else if (success === false) {
+      this.hasError = true;
+    } else {
+      const { data, included } = response;
+
+      if (!data) {
+        this.isAMember = false;
+        this.hasError = true;
+        return;
+      }
+
+      this.isAMember = true;
+      this.member = this._buildMemberData(data, included);
+    }
+  }
+
+  async _loadAdditionalData() {}
 
   async _addMemberToWorkspace() {
     this.isLoading = true;
@@ -361,7 +373,8 @@ class Widget extends TailwindMixin(LitElement) {
     if (!success || !ok) {
       // FIXME: Error state
     } else {
-      this._buildMemberData(response.data, response.included);
+      this.isAMember = true;
+      this.member = this._buildMemberData(response.data, response.included);
       this.isLoading = false;
       this.requestUpdate();
     }
@@ -384,7 +397,7 @@ class Widget extends TailwindMixin(LitElement) {
         <slot
           name="button"
           @click="${this._toggle}"
-          @mouseover="${this._loadOrbitData}"
+          @mouseover="${this._loadMemberData}"
         ></slot>
         ${this.dropdownTemplate()}
       </div>

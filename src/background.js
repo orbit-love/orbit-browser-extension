@@ -47,8 +47,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     case "ADD_MEMBER_TO_WORKSPACE":
       addMemberToWorkspace(request).then(sendResponse);
       break;
-    // Load additional data
-    // IF !github, return
+    case "LOAD_ADDITIONAL_DATA":
+      loadAdditionalData(request).then(sendResponse);
+      break;
 
     default:
       console.error(`Unknown operation: ${request.operation}`);
@@ -219,3 +220,5 @@ const addMemberToWorkspace = async ({ username, ORBIT_CREDENTIALS }) => {
     return { success: false, response: e.message };
   }
 };
+
+const loadAdditionalData = async () => {};
