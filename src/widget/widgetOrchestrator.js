@@ -1,6 +1,8 @@
 import { Page } from "../pages/page";
 import "../components/widget";
 import "../components/githubButton";
+import "../components/twitterButton";
+import "../components/linkedinButton";
 
 export default class WidgetOrchestrator {
   /**
@@ -21,9 +23,14 @@ export default class WidgetOrchestrator {
    * @param {string} platform the site we're on, used as a key for naming HTML elements
    */
   addWidgetElements(page, platform) {
+
     const widgetZones = page.findWidgetZones();
 
     for (const widgetZone of widgetZones) {
+      if (widgetZone.querySelector('obe-widget')) {
+        return;
+      }
+
       if (!page.validateWidgetZone(widgetZone)) break;
 
       page.applyCSSPatch(widgetZone);

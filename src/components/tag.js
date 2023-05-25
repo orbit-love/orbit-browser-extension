@@ -1,15 +1,20 @@
-import { LitElement, html } from "lit";
-import { TailwindMixin } from "../utils/tailwindMixin";
+import { LitElement, html, unsafeCSS } from "lit";
+import { customElement } from "lit/decorators.js";
+
+import tailwindStylesheet from "bundle-text:../styles/tailwind.global.css";
 
 import { ORBIT_API_ROOT_URL } from "../constants";
 
-class Tag extends TailwindMixin(LitElement) {
+@customElement("obe-tag")
+class Tag extends LitElement {
   static get properties() {
     return {
       tag: { type: String },
       workspace: { type: String },
     };
   }
+
+  static styles = [unsafeCSS(tailwindStylesheet)];
 
   render() {
     return html`
@@ -28,5 +33,3 @@ class Tag extends TailwindMixin(LitElement) {
     `;
   }
 }
-
-customElements.define("obe-tag", Tag);

@@ -1,7 +1,10 @@
-import { LitElement, html } from "lit";
-import { TailwindMixin } from "../utils/tailwindMixin";
+import { LitElement, html, unsafeCSS } from "lit";
+import { customElement } from "lit/decorators.js";
 
-class IdentityElement extends TailwindMixin(LitElement) {
+import tailwindStylesheet from "bundle-text:../styles/tailwind.global.css";
+
+@customElement("obe-identity")
+class IdentityElement extends LitElement {
   static get properties() {
     return {
       identity: { type: Object },
@@ -68,6 +71,8 @@ class IdentityElement extends TailwindMixin(LitElement) {
     `;
   }
 
+  static styles = [unsafeCSS(tailwindStylesheet)];
+
   render() {
     return html`
       ${this.identity.profile_url || this.identity.url
@@ -84,5 +89,3 @@ class IdentityElement extends TailwindMixin(LitElement) {
     `;
   }
 }
-
-customElements.define("obe-identity", IdentityElement);
