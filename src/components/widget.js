@@ -380,6 +380,7 @@ class Widget extends TailwindMixin(LitElement) {
 
     if (!success || !ok) {
       // TODO: Handle error
+      return;
     }
 
     this.additionalData = [
@@ -408,6 +409,7 @@ class Widget extends TailwindMixin(LitElement) {
 
     if (!success || !ok) {
       // FIXME: Error state
+      return;
     } else {
       this.isAMember = true;
       this.member = this._buildMemberData(response.data, response.included);

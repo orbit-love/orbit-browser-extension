@@ -90,6 +90,13 @@ describe("obe-widget", () => {
     expect(element.showAllTags).toBe(true);
   });
 
+  it("shows additionalData if present", () => {
+    element.additionalData = ["Test Additional Data Section"];
+    element.update();
+    const dropdown = element.shadowRoot.querySelector(".obe-dropdown");
+    expect(dropdown.innerHTML).toMatch("Test Additional Data Section");
+  });
+
   describe("#_loadOrbitData", () => {
     it("exits the flow without updating if already loading", () => {
       element.isLoading = true;
