@@ -157,7 +157,7 @@ class Widget extends TailwindMixin(LitElement) {
               this.member.lastActivityOccurredAt &&
               html` <obe-pill
                 name="Last active"
-                value="${_formatDate(this.member.lastActivityOccurredAt)}"
+                value="${this._formatDate(this.member.lastActivityOccurredAt)}"
               ></obe-pill>`
             }
           </section>
