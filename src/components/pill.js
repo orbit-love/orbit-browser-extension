@@ -1,13 +1,18 @@
-import { LitElement, html } from "lit";
-import { TailwindMixin } from "../utils/tailwindMixin";
+import { LitElement, html, unsafeCSS } from "lit";
+import { customElement } from "lit/decorators.js";
 
-class Pill extends TailwindMixin(LitElement) {
+import tailwindStylesheet from "bundle-text:../styles/tailwind.global.css";
+
+@customElement("obe-pill")
+class Pill extends LitElement {
   static get properties() {
     return {
       name: { type: String },
       value: { type: String },
     };
   }
+
+  static styles = [unsafeCSS(tailwindStylesheet)];
 
   render() {
     return html`
@@ -21,5 +26,3 @@ class Pill extends TailwindMixin(LitElement) {
     `;
   }
 }
-
-customElements.define("obe-pill", Pill);
