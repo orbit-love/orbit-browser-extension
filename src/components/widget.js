@@ -27,6 +27,7 @@ class Widget extends LitElement {
     super();
     this.isOpen = false;
     this.isLoading = false;
+    this.hasLoaded = false;
     this.hasAuthError = false;
     this.hasError = false;
     this.showAllTags = false;
@@ -237,7 +238,6 @@ class Widget extends LitElement {
   }
 
   additionalDataTemplate() {
-    console.log(this.isAMember);
     return html`${this.isAMember
         ? html`<hr
             class="block border-t border-[#d0d7de] my-[6px]"
@@ -331,13 +331,14 @@ class Widget extends LitElement {
   }
 
   async _loadOrbitData() {
-    if (!this.isLoading) {
+    if (!this.isLoading && !this.hasLoaded) {
       this.isLoading = true;
       this.requestUpdate();
 
       await Promise.all([this._loadMemberData(), this._loadAdditionalData()]);
 
       this.isLoading = false;
+      this.hasLoaded = true;
       this.requestUpdate();
     }
   }
