@@ -43,11 +43,15 @@ export default class TwitterProfilePage extends Page {
   }
 
   findUsername(main) {
-    return main
-      .querySelector("div[data-testid='UserName']")
-      ?.children[0]?.children[0]?.children[1]?.children[0]?.children[0]?.children[0]?.children[0]?.innerHTML?.slice(
-        1
-      );
+    /**
+     * The headerPhoto element here is a link surrounding the, well, header photo,
+     * which links to "/<username>/header_photo"
+     */
+    const headerPhoto = main.querySelector('a[href$="/header_photo"]');
+
+    if (!headerPhoto) { return }
+
+    return headerPhoto.getAttribute('href').split('/')[1];
   }
 
   findInsertionPoint(main) {

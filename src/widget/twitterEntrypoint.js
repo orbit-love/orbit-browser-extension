@@ -6,9 +6,6 @@ import WidgetOrchestrator from "./widgetOrchestrator";
 
 import TwitterProfilePage from "../pages/twitterProfilePage";
 
-/**
- * 
- */
 const initializeWidget = () => {
   const pages = [ new TwitterProfilePage() ];
 
