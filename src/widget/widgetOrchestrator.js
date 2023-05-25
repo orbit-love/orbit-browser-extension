@@ -3,6 +3,7 @@ import "../components/widget";
 import "../components/githubButton";
 import "../components/twitterButton";
 import "../components/linkedinButton";
+import "../components/gmailButton";
 
 export default class WidgetOrchestrator {
   /**
