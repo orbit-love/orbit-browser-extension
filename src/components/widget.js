@@ -9,7 +9,7 @@ import "./identity";
 import tailwindStylesheet from "bundle-text:../styles/tailwind.global.css";
 import iconCustomer from "bundle-text:../icons/icon-customer.svg";
 import { ORBIT_API_ROOT_URL } from "../constants";
-import { getThreshold } from "../github/orbit-helpers";
+import { getThreshold, isRepoInOrbitWorkspace } from "../github/orbit-helpers";
 
 const TAG_LIMIT = 5;
 
@@ -381,11 +381,13 @@ class Widget extends LitElement {
   async _loadAdditionalData() {
     if (this.platform !== "github") return;
     const ORBIT_CREDENTIALS = await getOrbitCredentials();
+    const isRepoInWorkspace = await isRepoInOrbitWorkspace();
+
     const repositoryFullName = `${window.location.pathname.split("/")[1]}/${
       window.location.pathname.split("/")[2]
     }`;
 
-    const { status, success, response, ok } = await chrome.runtime.sendMessage({
+    const { success, response, ok } = await chrome.runtime.sendMessage({
       operation: "LOAD_ADDITIONAL_DATA",
       username: this.username,
       platform: this.platform,
@@ -405,12 +407,19 @@ class Widget extends LitElement {
       `Contributed ${getThreshold(
         response.contributions_total
       )} times on GitHub`,
-      response.contributions_on_this_repo_total === 1
-        ? "First contribution to this repository"
-        : `Contributed ${getThreshold(
-            response.contributions_on_this_repo_total
-          )} times to this repository`,
     ];
+
+    if (response.contributions_on_this_repo_total === 1) {
+      this.additionalData.push("First contribution to this repository");
+    } else if (!isRepoInWorkspace) {
+      return;
+    } else {
+      this.additionalData.push(
+        `Contributed ${getThreshold(
+          response.contributions_on_this_repo_total
+        )} times to this repository`
+      );
+    }
   }
 
   async _addMemberToWorkspace() {

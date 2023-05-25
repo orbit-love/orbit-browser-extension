@@ -211,7 +211,6 @@ const loadAdditionalData = async ({
     additionalData = {
       success: true,
       response: { contributions_total: data.attributes.g_contributions_total },
-      status: response.status,
       ok: response.ok,
     };
   } catch (err) {
