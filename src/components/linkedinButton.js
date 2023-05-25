@@ -1,17 +1,20 @@
-import {LitElement, html, css} from 'lit';
+import { LitElement, html, css, unsafeCSS } from "lit";
 import {customElement} from 'lit/decorators.js';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
-import { TailwindMixin } from "../utils/tailwindMixin";
 
+import tailwindStylesheet from "bundle-text:../styles/tailwind.global.css";
 import orbitLogo from 'bundle-text:../icons/orbit-logo.svg'
 
 @customElement('obe-linkedin-button')
-class LinkedinButton extends TailwindMixin(LitElement) {
-  static styles = css`
-    .orbit-logo {
-      @apply relative left-[1px]
-    }
-  `
+class LinkedinButton extends LitElement {
+  static styles = [
+    unsafeCSS(tailwindStylesheet),
+    css`
+      .orbit-logo {
+        @apply relative left-[1px]
+      }
+    `
+  ];
 
   render() {
     return html`
