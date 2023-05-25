@@ -7,7 +7,7 @@ export default class TwitterProfilePage extends Page {
      * pages, we look for a header photo instead. Conveniently, they always
      * seem to link to "/<username>/header_photo"
      */
-    return document.querySelector('a[href$="/header_photo"]');    
+    return !!document.querySelector('a[href$="/header_photo"]');
   }
 
   findWidgetZones() {

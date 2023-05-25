@@ -1,5 +1,5 @@
 import { LitElement, html } from "lit";
-import { unsafeSVG } from "lit/directives/unsafe-svg";
+import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 import { customElement } from "lit/decorators.js";
 import { TailwindMixin } from "../utils/tailwindMixin";
 
@@ -17,7 +17,7 @@ class TwitterButton extends TailwindMixin(LitElement) {
           aria-expanded="true"
           aria-haspopup="true"
         >
-          <span class="sr-only">Open options</span>
+          <span class="sr-only">Open Orbit Widget</span>
           ${unsafeSVG(orbitLogo)}
         </button>
       </div>
