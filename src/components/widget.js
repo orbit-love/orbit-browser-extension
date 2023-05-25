@@ -335,7 +335,10 @@ class Widget extends LitElement {
       this.isLoading = true;
       this.requestUpdate();
 
-      await Promise.all([this._loadMemberData(), this._loadAdditionalData()]);
+      // Perform requests sequentially instead of using Promise.all, as
+      // _loadAdditionalData relies on the member retrieved from _loadMemberData.
+      await this._loadMemberData();
+      await this._loadAdditionalData();
 
       this.isLoading = false;
       this.hasLoaded = true;
@@ -390,6 +393,8 @@ class Widget extends LitElement {
       repositoryFullName,
       member: this.member.slug,
     });
+
+    console.log(response);
 
     if (!success || !ok) {
       // TODO: Handle error
