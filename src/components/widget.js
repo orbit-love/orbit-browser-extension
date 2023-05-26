@@ -57,6 +57,8 @@ class Widget extends LitElement {
     });
   }
 
+  // Main template for the widget
+  // Provides common wrapper elements, then chooses which content to show inside
   dropdownTemplate() {
     return html`
       <div
@@ -80,9 +82,16 @@ class Widget extends LitElement {
     `;
   }
 
+  /**
+   * Decides which content to show inside widget
+   * If loading, show loading state
+   * If any errors present, show relevant error message
+   * If member present, show member
+   *
+   * @returns {HTMLElement}
+   */
   getTemplateContent() {
     // TODO: check if member present, use generic error as default state instead?
-    // TODO: this.isAMember state
     if (this.isLoading) return this.textTemplate("Loading Orbit data…");
     if (this.hasAuthError) return this.authErrorTemplate();
     if (this.hasError)
@@ -91,6 +100,11 @@ class Widget extends LitElement {
     if (this.isAMember) return this.memberTemplate();
   }
 
+  /**
+   * Generic template to show text
+   *
+   * @returns {HTMLElement}
+   */
   textTemplate(text) {
     return html`
       <span
@@ -101,6 +115,12 @@ class Widget extends LitElement {
     `;
   }
 
+  /**
+   * Shows auth error message, and link to
+   * options page to re-authenticate
+   *
+   * @returns {HTMLElement}
+   */
   authErrorTemplate() {
     return html`
       <span
@@ -118,6 +138,11 @@ class Widget extends LitElement {
     `;
   }
 
+  /**
+   * Shows full member content
+   *
+   * @returns {HTMLElement}
+   */
   memberTemplate() {
     return html`
       <div class="py-1 px-4 truncate" role="menuitem">
@@ -242,6 +267,12 @@ class Widget extends LitElement {
     `;
   }
 
+  /**
+   * Renders any additional data - this is stored as an array of strings,
+   * so this iterates over & prints each one
+   *
+   * @returns {HTMLElement}
+   */
   additionalDataTemplate() {
     return html`${this.isAMember
         ? html`<hr
@@ -254,6 +285,13 @@ class Widget extends LitElement {
       </section> `;
   }
 
+  /**
+   * Renders actions to show at the bottom of the widget
+   * If member exists, "view profile on orbit"
+   * Otherwise, "add to orbit"
+   *
+   * @returns {HTMLElement}
+   */
   actionsTemplate() {
     return this.isAMember
       ? html`
@@ -295,6 +333,11 @@ class Widget extends LitElement {
     this.requestUpdate();
   }
 
+  /**
+   * Run on mouseover of widget - loads member data & additional data
+   * via background.js, then re-renders widget with new data.
+   * Uses `hasLoaded` to prevent requests running repeatedly
+   */
   async _loadOrbitData() {
     if (!this.isLoading && !this.hasLoaded) {
       this.isLoading = true;
@@ -311,6 +354,9 @@ class Widget extends LitElement {
     }
   }
 
+  /**
+   * Fetch member data & store it in state
+   */
   async _loadMemberData() {
     const ORBIT_CREDENTIALS = await getOrbitCredentials();
 
@@ -343,6 +389,9 @@ class Widget extends LitElement {
     }
   }
 
+  /**
+   * Fetch additional data & store it in state
+   */
   async _loadAdditionalData() {
     if (this.platform !== "github") return;
     const ORBIT_CREDENTIALS = await getOrbitCredentials();
@@ -385,6 +434,10 @@ class Widget extends LitElement {
     }
   }
 
+  /**
+   * Handler for the "add member" button
+   * Adds member, then updates widget to show the new member
+   */
   async _addMemberToWorkspace() {
     this.isLoading = true;
     this.requestUpdate();

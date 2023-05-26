@@ -32,6 +32,8 @@ describe("obe-widget", () => {
     expect(dropdown.innerHTML).not.toMatch(
       "There was an error fetching Orbit data"
     );
+
+    expect(dropdown.innerHTML).toMatch(/Add .* to .* on Orbit/);
   });
 
   it("responds to click event", () => {
@@ -82,6 +84,46 @@ describe("obe-widget", () => {
     expect(dropdown.innerHTML).toMatch(
       "There was an error fetching Orbit data"
     );
+  });
+
+  it("shows member information if present", async () => {
+    const originalChrome = mockChrome(
+      {},
+      {
+        success: true,
+        status: 200,
+        response: {
+          data: {
+            attributes: {
+              name: "John Doe",
+              title: "Software Engineer",
+              slug: "john_doe",
+              teammate: false,
+              orbit_level: 100,
+              last_activity_occurred_at: "01-01-1970",
+              tags: ["123"],
+            },
+            relationships: {
+              identities: { data: [] },
+              organizations: { data: [] },
+            },
+          },
+          included: [{ id: 123, type: "twitter_identity" }],
+        },
+      }
+    );
+    await element._loadOrbitData();
+    await element.updateComplete;
+
+    const dropdown = element.shadowRoot.querySelector(".obe-dropdown");
+
+    expect(dropdown.innerHTML).toMatch("John Doe");
+    expect(dropdown.innerHTML).toMatch("Software Engineer");
+    expect(dropdown.innerHTML).toMatch("123");
+    expect(dropdown.innerHTML).toMatch("Jan 1, 1970");
+    expect(dropdown.innerHTML).toMatch(/See .* profile on Orbit/);
+
+    global.chrome = originalChrome;
   });
 
   it("sets showAllTags to true when _showAllTags called", () => {
