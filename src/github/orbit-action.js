@@ -1,5 +1,4 @@
 import {
-  getThreshold,
   orbitAPI,
   areCredentialsPresent,
   areCredentialsValid,
@@ -10,6 +9,7 @@ import {
   createTagList,
 } from "./dom-helpers";
 import { ORBIT_API_ROOT_URL } from "../constants";
+import { getThreshold } from "../helpers/widget-helper";
 
 /**
  * Creates the Orbit action button and popover menu for a given username.

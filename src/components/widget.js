@@ -9,7 +9,12 @@ import "./identity";
 import tailwindStylesheet from "bundle-text:../styles/tailwind.global.css";
 import iconCustomer from "bundle-text:../icons/icon-customer.svg";
 import { ORBIT_API_ROOT_URL } from "../constants";
-import { getThreshold, isRepoInOrbitWorkspace } from "../github/orbit-helpers";
+import {
+  buildMemberData,
+  formatDate,
+  isRepoInOrbitWorkspace,
+  getThreshold,
+} from "../helpers/widget-helper";
 
 const TAG_LIMIT = 5;
 
@@ -172,7 +177,7 @@ class Widget extends LitElement {
               this.member.lastActivityOccurredAt &&
               html` <obe-pill
                 name="Last active"
-                value="${this._formatDate(this.member.lastActivityOccurredAt)}"
+                value="${formatDate(this.member.lastActivityOccurredAt)}"
               ></obe-pill>`
             }
           </section>
@@ -290,46 +295,6 @@ class Widget extends LitElement {
     this.requestUpdate();
   }
 
-  _buildMemberData(member, included) {
-    const identities = member.relationships.identities.data.map(
-      ({ id, type }) =>
-        included.find(
-          ({ id: included_id, type: included_type }) =>
-            id === included_id && type === included_type
-        )?.attributes
-    );
-
-    const organizations = member.relationships.organizations.data.map(
-      ({ id, type }) =>
-        included.find(
-          ({ id: included_id, type: included_type }) =>
-            id === included_id && type === included_type
-        )?.attributes
-    );
-
-    const organization = organizations[0] || null;
-
-    return {
-      name: member.attributes.name,
-      jobTitle: member.attributes.title,
-      slug: member.attributes.slug,
-      teammate: member.attributes.teammate,
-      orbitLevel: member.attributes.orbit_level,
-      organization: organization,
-      lastActivityOccurredAt: member.attributes.last_activity_occurred_at,
-      tags: member.attributes.tags,
-      identities: identities,
-    };
-  }
-
-  _formatDate(date) {
-    return new Date(Date.parse(date)).toLocaleDateString("en-EN", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  }
-
   async _loadOrbitData() {
     if (!this.isLoading && !this.hasLoaded) {
       this.isLoading = true;
@@ -374,7 +339,7 @@ class Widget extends LitElement {
       }
 
       this.isAMember = true;
-      this.member = this._buildMemberData(data, included);
+      this.member = buildMemberData(data, included);
     }
   }
 
@@ -395,8 +360,6 @@ class Widget extends LitElement {
       repositoryFullName,
       member: this.member.slug,
     });
-
-    console.log(response);
 
     if (!success || !ok) {
       // TODO: Handle error
@@ -439,7 +402,7 @@ class Widget extends LitElement {
       return;
     } else {
       this.isAMember = true;
-      this.member = this._buildMemberData(response.data, response.included);
+      this.member = buildMemberData(response.data, response.included);
       this.isLoading = false;
       this.requestUpdate();
     }
