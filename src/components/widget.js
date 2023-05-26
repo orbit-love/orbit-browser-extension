@@ -1,7 +1,6 @@
 import { LitElement, html, css, nothing, unsafeCSS } from "lit";
 import { customElement } from "lit/decorators.js";
 import { unsafeSVG } from "lit/directives/unsafe-svg.js";
-import { getOrbitCredentials } from "../oauth-helpers";
 import "./pill";
 import "./tag";
 import "./identity";
@@ -364,16 +363,15 @@ class Widget extends LitElement {
       platform: this.platform,
     });
 
-    // this.workspace = ORBIT_CREDENTIALS.WORKSPACE;
-
     if (status === 401) {
       this.hasAuthError = true;
     } else if (status === 404) {
       this.isAMember = false;
+      this.workspace = response?.workspace;
     } else if (success === false) {
       this.hasError = true;
     } else {
-      const { data, included } = response;
+      const { data, included, workspace } = response;
 
       if (!data) {
         this.isAMember = false;
@@ -381,6 +379,7 @@ class Widget extends LitElement {
         return;
       }
 
+      this.workspace = workspace;
       this.isAMember = true;
       this.member = buildMemberData(data, included);
     }
@@ -391,9 +390,8 @@ class Widget extends LitElement {
    */
   async _loadAdditionalData() {
     if (this.platform !== "github") return;
-    const ORBIT_CREDENTIALS = await getOrbitCredentials();
-    const isRepoInWorkspace = await isRepoInOrbitWorkspace();
 
+    const isRepoInWorkspace = await isRepoInOrbitWorkspace();
     const repositoryFullName = `${window.location.pathname.split("/")[1]}/${
       window.location.pathname.split("/")[2]
     }`;
@@ -402,9 +400,9 @@ class Widget extends LitElement {
       operation: "LOAD_ADDITIONAL_DATA",
       username: this.username,
       platform: this.platform,
-      ORBIT_CREDENTIALS,
       repositoryFullName,
       member: this.member.slug,
+      isRepoInWorkspace: isRepoInWorkspace,
     });
 
     if (!success || !ok) {
@@ -439,12 +437,9 @@ class Widget extends LitElement {
     this.isLoading = true;
     this.requestUpdate();
 
-    const ORBIT_CREDENTIALS = await getOrbitCredentials();
-
     const { success, response, ok } = await chrome.runtime.sendMessage({
       operation: "ADD_MEMBER_TO_WORKSPACE",
       username: this.username,
-      ORBIT_CREDENTIALS,
     });
 
     if (!success || !ok) {

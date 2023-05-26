@@ -152,7 +152,6 @@ const refreshOAuthToken = async ({ refreshToken }) => {
  *
  * @param {String} username from widget
  * @param {String} platform from widget
- * @param {Object} ORBIT_CREDENTIALS fetched from storage
  *
  * @returns {success, response, ok}
  */
@@ -178,7 +177,10 @@ const loadMemberData = async ({ username, platform }) => {
 
     return {
       success: true,
-      response: await response.json(),
+      response: {
+        workspace: ORBIT_CREDENTIALS.WORKSPACE,
+        ...(await response.json()),
+      },
       status: response.status,
     };
   } catch (e) {
@@ -191,11 +193,14 @@ const loadAdditionalData = async ({
   platform,
   repositoryFullName,
   member,
-  ORBIT_CREDENTIALS,
+  isRepoInWorkspace,
 }) => {
   if (platform !== "github") return;
 
   let additionalData = {};
+  const ORBIT_CREDENTIALS = await getOrbitCredentials(
+    (refreshCallback = refreshOAuthToken)
+  );
 
   const url = new URL(
     `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/identities/github/${username}`
@@ -217,15 +222,13 @@ const loadAdditionalData = async ({
       ok: response.ok,
     };
   } catch (err) {
-    return {
+    additionalData = {
       success: false,
       response: err.message,
     };
   }
 
-  // IE, if repository exists in this workspace
-  // FIXME: 404 set as output of fetchOrbitData :|
-  if (additionalData.status !== 404) {
+  if (isRepoInWorkspace) {
     const url = new URL(
       `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/activities`
     );
@@ -253,6 +256,7 @@ const loadAdditionalData = async ({
     }
   }
 
+  console.log(additionalData);
   return additionalData;
 };
 
@@ -264,7 +268,10 @@ const loadAdditionalData = async ({
  *
  * @returns {success, response, ok}
  */
-const addMemberToWorkspace = async ({ username, ORBIT_CREDENTIALS }) => {
+const addMemberToWorkspace = async ({ username }) => {
+  const ORBIT_CREDENTIALS = await getOrbitCredentials(
+    (refreshCallback = refreshOAuthToken)
+  );
   const url = new URL(
     `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members`
   );
