@@ -163,10 +163,17 @@ const loadMemberData = async ({ username, platform }) => {
     `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/find`
   );
 
-  const { params, headers } = configureRequest(ORBIT_CREDENTIALS, {
-    source: platform,
-    username: username,
-  });
+  let payload;
+  switch(platform) {
+    case 'gmail':
+      payload = { source: 'email', email: username }
+      break;
+    default:
+      payload = { source: platform, username }
+      break;
+  }
+
+  const { params, headers } = configureRequest(ORBIT_CREDENTIALS, payload);
 
   url.search = params.toString();
 

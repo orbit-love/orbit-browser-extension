@@ -3,6 +3,7 @@ import "../components/widget";
 import "../components/githubButton";
 import "../components/twitterButton";
 import "../components/linkedinButton";
+import "../components/gmailButton";
 
 export default class WidgetOrchestrator {
   /**
@@ -27,19 +28,23 @@ export default class WidgetOrchestrator {
     const widgetZones = page.findWidgetZones();
 
     for (const widgetZone of widgetZones) {
-      if (widgetZone.querySelector('obe-widget')) {
-        return;
+      // If a widget already exists for this widgetZone, remove it.
+      // This fixes an issue with SPAs like LinkedIn, where the first widget
+      // that was injected remained on other pages.
+      const existingWidget = widgetZone.querySelector('obe-widget');
+      if (existingWidget) {
+        existingWidget.remove();
       }
 
-      if (!page.validateWidgetZone(widgetZone)) break;
+      if (!page.validateWidgetZone(widgetZone)) continue;
 
       page.applyCSSPatch(widgetZone);
 
       const username = page.findUsername(widgetZone);
-      if (!username) return;
+      if (!username) continue;
 
       const insertionPoint = page.findInsertionPoint(widgetZone);
-      if (!insertionPoint) return;
+      if (!insertionPoint) continue;
 
       const widgetElement = this.addWidgetElement(username, platform);
       this.addOrbitButton(widgetElement, platform);
