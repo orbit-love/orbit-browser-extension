@@ -162,7 +162,7 @@ class Widget extends LitElement {
           ${
             this.member.organization &&
             html`
-            <div class="flex flex-row justify-start items-center mt-1 mb-3">
+            <div class="flex flex-row justify-start items-center mt-1">
               ${
                 this.member.organization.logo_url &&
                 html` <img
@@ -189,7 +189,7 @@ class Widget extends LitElement {
 
           <!-- Pills -->
           <section
-            class="flex flex-row justify-start items-center mb-3 space-x-1"
+            class="flex flex-row justify-start items-center mt-1 space-x-1"
           >
             ${
               this.member.teammate
@@ -211,7 +211,7 @@ class Widget extends LitElement {
           <!-- Identities -->
           ${
             !!this.member.identities &&
-            html` <section class="mb-3">
+            html` <section class="mt-3">
               <p class="block text-sm text-gray-500 uppercase truncate">
                 Linked profiles & emails
                 <span class="ml-1 text-gray-900"
@@ -232,7 +232,7 @@ class Widget extends LitElement {
           <!-- Tags -->
           ${
             !!this.member.tags &&
-            html` <section class="mb-3">
+            html` <section class="mt-3">
               <p class="block text-sm text-gray-500 uppercase truncate">
                 Tags
                 <span class="ml-1 text-gray-900"
@@ -279,12 +279,9 @@ class Widget extends LitElement {
    */
   additionalDataTemplate() {
     return html`${this.isAMember
-        ? html`<hr
-            class="block border-t border-[#d0d7de] my-[6px]"
-            role="none"
-          />`
+        ? html`<hr class="block border-t border-[#d0d7de]" role="none" />`
         : nothing}
-      <section class="flex flex-col gap-2 py-1 px-4 truncate">
+      <section class="flex flex-col gap-2 py-2 px-4 truncate">
         ${this.hasAdditionalDataError
           ? html`<p>There was an error fetching data</p>`
           : this.additionalData.map((datum) => html`<p>${datum}</p>`)}
@@ -301,18 +298,18 @@ class Widget extends LitElement {
   actionsTemplate() {
     if (this.hasActionsError) {
       return html`
-        <hr class="block border-t border-[#d0d7de] mt-[6px]" role="none" />
-        <p class="py-1 px-4">There was an error performing this action</p>
+        <hr class="block border-t border-[#d0d7de]" role="none" />
+        <p class="py-2 px-4">There was an error performing this action</p>
       `;
     } else if (this.isAMember) {
       return html`
-        <hr class="block border-t border-[#d0d7de] mt-[6px]" role="none" />
+        <hr class="block border-t border-[#d0d7de]" role="none" />
         <a
           target="_blank"
           rel="noreferrer noopener"
           href="${ORBIT_API_ROOT_URL}/${this.workspace}/members/${this.member
             .slug}"
-          class="block py-2 px-4 w-full text-sm text-left text-gray-700 truncate bg-gray-50 rounded-md hover:bg-gray-100 focus:bg-gray-100"
+          class="block py-2 px-4 w-full text-sm text-left text-gray-700 truncate bg-gray-50 rounded-b-md hover:bg-gray-100 focus:bg-gray-100"
           role="menuitem"
         >
           See ${this.username}’s profile on Orbit
@@ -321,13 +318,10 @@ class Widget extends LitElement {
     } else {
       return html`
         ${this.additionalData.length > 0
-          ? html`<hr
-              class="block border-t border-[#d0d7de] mt-[6px]"
-              role="none"
-            />`
+          ? html`<hr class="block border-t border-[#d0d7de]" role="none" />`
           : nothing}
         <button
-          class="block py-2 px-4 w-full text-sm text-left text-gray-700 truncate bg-gray-50 rounded-md hover:bg-gray-100 focus:bg-gray-100"
+          class="block py-2 px-4 w-full text-sm text-left text-gray-700 truncate bg-gray-50 rounded-b-md hover:bg-gray-100 focus:bg-gray-100"
           role="menuitem"
           @click="${this._addMemberToWorkspace}"
         >
