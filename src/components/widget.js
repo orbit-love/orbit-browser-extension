@@ -259,7 +259,10 @@ class Widget extends LitElement {
                   }
 
                   // Otherwise, render tag
-                  return html`<obe-tag tag=${tag}></obe-tag>`;
+                  return html`<obe-tag
+                    tag=${tag}
+                    workspace=${this.workspace}
+                  ></obe-tag>`;
                 })}
               </div>
             </section>`

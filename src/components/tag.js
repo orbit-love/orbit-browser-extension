@@ -20,7 +20,7 @@ class Tag extends LitElement {
     return html`
       <a
         href="${ORBIT_API_ROOT_URL}/${this
-          .workspace}/members/tags_contains_any_of[]=${this.tag}"
+          .workspace}/members?tags_contains_any_of[]=${this.tag}"
         title="View all members tagged ${this.tag} in Orbit"
         target="_blank"
         rel="noreferrer"
