@@ -451,6 +451,7 @@ class Widget extends LitElement {
     const { success, response, ok } = await chrome.runtime.sendMessage({
       operation: "ADD_MEMBER_TO_WORKSPACE",
       username: this.username,
+      platform: this.platform,
     });
 
     if (!success || !ok) {

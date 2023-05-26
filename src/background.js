@@ -303,7 +303,7 @@ const loadAdditionalData = async ({
  *
  * @returns {success, response, ok}
  */
-const addMemberToWorkspace = async ({ username }) => {
+const addMemberToWorkspace = async ({ username, platform }) => {
   const ORBIT_CREDENTIALS = await getOrbitCredentials(
     (refreshCallback = refreshOAuthToken)
   );
@@ -325,7 +325,7 @@ const addMemberToWorkspace = async ({ username }) => {
       method: "POST",
       body: JSON.stringify({
         member: {
-          github: username,
+          [platform]: username,
         },
       }),
     });
