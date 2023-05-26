@@ -71,12 +71,12 @@ export function getThreshold(number) {
       return "50+";
     case number <= 200:
       return "100+";
-    case number <= 500:
-      return "200+";
     case number <= 1000:
-      return "5000+";
-    case Number.isInteger(number):
+      return "200+";
+    case number <= 5000:
       return "1000+";
+    case Number.isInteger(number):
+      return "5000+";
     default:
       console.error(`[Orbit Browser Extension] ${number} is not a number`);
       return "NaN";
