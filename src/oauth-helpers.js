@@ -7,7 +7,9 @@ import { ORBIT_HEADERS } from "./constants";
  *
  * @returns {Object} API_TOKEN WORKSPACE ACCESS_TOKEN REFRESH_TOKEN EXPIRES_AT
  */
-export async function getOrbitCredentials() {
+export async function getOrbitCredentials(
+  refreshCallback = chrome.runtime.sendMessage
+) {
   const items = await chrome.storage.sync.get({
     token: "",
     workspace: "",
@@ -23,7 +25,8 @@ export async function getOrbitCredentials() {
     _isOAuthTokenExpired(items.authentication.expiresAt)
   ) {
     const refreshedCredentials = await _refreshAuthTokens(
-      items.authentication.refreshToken
+      items.authentication.refreshToken,
+      refreshCallback
     );
     return {
       API_TOKEN: items.token,
@@ -101,8 +104,11 @@ export function _isOAuthTokenExpired(expirationTime) {
  *
  * @returns {Object} refreshed tokens for accessToken, refreshToken, expiresAt
  */
-export async function _refreshAuthTokens(refreshToken) {
-  const { response, success } = await chrome.runtime.sendMessage({
+export async function _refreshAuthTokens(
+  refreshToken,
+  refreshCallback = chrome.runtime.sendMessage
+) {
+  const { response, success } = await refreshCallback({
     operation: "REFRESH_OAUTH_TOKEN",
     refreshToken: refreshToken,
   });

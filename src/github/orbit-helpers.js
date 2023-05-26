@@ -1,34 +1,6 @@
 import { ORBIT_API_ROOT_URL } from "../constants";
+import { getRepositoryFullName } from "../helpers/widget-helper";
 import { configureRequest } from "../oauth-helpers";
-
-export async function isRepoInOrbitWorkspace() {
-  const repositories = await _fetchRepositories();
-  return repositories.includes(_getRepositoryFullName());
-}
-
-export function getThreshold(number) {
-  switch (true) {
-    case number <= 10:
-      return number;
-    case number <= 20:
-      return "10+";
-    case number <= 50:
-      return "20+";
-    case number <= 100:
-      return "50+";
-    case number <= 200:
-      return "100+";
-    case number <= 500:
-      return "200+";
-    case number <= 1000:
-      return "5000+";
-    case Number.isInteger(number):
-      return "1000+";
-    default:
-      console.error(`[Orbit Browser Extension] ${number} is not a number`);
-      return "NaN";
-  }
-}
 
 /**
  * Helper object containing methods to call specific API endlove:
@@ -102,7 +74,7 @@ export const orbitAPI = {
    * @returns {is_a_member, contributions_on_this_repo_total}
    */
   async getMemberActivitiesOnThisRepo(ORBIT_CREDENTIALS, member) {
-    const repositoryFullName = _getRepositoryFullName();
+    const repositoryFullName = getRepositoryFullName();
     const url = new URL(
       `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/activities`
     );
@@ -242,53 +214,4 @@ export function areCredentialsValid(ORBIT_CREDENTIALS) {
 
   // Only one of the API token & the OAuth token is required for this to be "valid".
   return !!ORBIT_CREDENTIALS.ACCESS_TOKEN || !!ORBIT_CREDENTIALS.API_TOKEN;
-}
-
-/**
- * Returns the current repository full name based on the current URL.
- *
- * window.location.pathname looks like “/orbit-love/orbit-model/pull/3”
- * This would return `orbit-love/orbit-model`
- */
-export function _getRepositoryFullName() {
-  return `${window.location.pathname.split("/")[1]}/${
-    window.location.pathname.split("/")[2]
-  }`;
-}
-
-/**
- * Fetches chunked repositories from chrome storage
- *
- * @returns Array<String> a 1d array of all repsoitory names, ie ["repo-1", "repo-2"]
- */
-export async function _fetchRepositories() {
-  const { repository_keys } = await chrome.storage.sync.get({
-    repository_keys: [],
-  });
-
-  // Backwards compatibility - if we do not have repository keys,
-  //  default to how we used to store them
-  if (repository_keys.length === 0) {
-    const { repositories } = await chrome.storage.sync.get({
-      repositories: [],
-    });
-
-    return repositories;
-  }
-
-  // Map the repositories to an array of "fetch from storage" promises
-  const promises = repository_keys.map((key) => chrome.storage.sync.get(key));
-
-  // Wait for all promises to resolve
-  // This returns repositories in the following structure:
-  // [
-  //  { sally:repositories:1: ["repo-1", "repo-2", ...] },
-  //  { sally:repositories:2: ["repo-101", "repo-102",...] },
-  // ]
-  const repositoryObjects = await Promise.all(promises);
-
-  // Reduce repositories to 1d array, disregarding the keys
-  return repositoryObjects
-    .flatMap((repository_object) => Object.values(repository_object))
-    .flat();
 }

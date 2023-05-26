@@ -1,6 +1,6 @@
 import "chrome-extension-async";
 import { ORBIT_API_ROOT_URL, OAUTH_CLIENT_ID } from "./constants";
-import { configureRequest } from "./oauth-helpers";
+import { configureRequest, getOrbitCredentials } from "./oauth-helpers";
 
 // When clicking on the Orbit extension button, open the options page
 chrome.browserAction.onClicked.addListener(() =>
@@ -43,6 +43,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       break;
     case "LOAD_MEMBER_DATA":
       loadMemberData(request).then(sendResponse);
+      break;
+    case "ADD_MEMBER_TO_WORKSPACE":
+      addMemberToWorkspace(request).then(sendResponse);
+      break;
+    case "LOAD_ADDITIONAL_DATA":
+      loadAdditionalData(request).then(sendResponse);
       break;
 
     default:
@@ -141,18 +147,29 @@ const refreshOAuthToken = async ({ refreshToken }) => {
   }
 };
 
-const loadMemberData = async ({ username, platform, ORBIT_CREDENTIALS }) => {
+/**
+ * Fetch member from Orbit
+ *
+ * @param {String} username from widget
+ * @param {String} platform from widget
+ *
+ * @returns {success, response, ok}
+ */
+const loadMemberData = async ({ username, platform }) => {
+  const ORBIT_CREDENTIALS = await getOrbitCredentials(
+    (refreshCallback = refreshOAuthToken)
+  );
   const url = new URL(
     `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members/find`
   );
 
   let payload;
-  switch(platform) {
-    case 'gmail':
-      payload = { source: 'email', email: username }
+  switch (platform) {
+    case "gmail":
+      payload = { source: "email", email: username };
       break;
     default:
-      payload = { source: platform, username }
+      payload = { source: platform, username };
       break;
   }
 
@@ -167,10 +184,167 @@ const loadMemberData = async ({ username, platform, ORBIT_CREDENTIALS }) => {
 
     return {
       success: true,
-      response: await response.json(),
+      response: {
+        workspace: ORBIT_CREDENTIALS.WORKSPACE,
+        ...(await response.json()),
+      },
       status: response.status,
     };
   } catch (e) {
     return { success: false, response: e.message, status: 500 };
+  }
+};
+
+/**
+ * Fetch "additionalData" from Orbit.
+ * Currently, only supports GitHub so exit out for other platforms;
+ * For GitHub, we need to make two requests:
+ * 1. To fetch the users total number of contributions on GH
+ * 2. If the current repo is in the user's workspace, fetch the number of contributions they've made for this repo
+ *
+ * @param {String} username from widget
+ * @param {String} platform from widget
+ * @param {String} repositoryFullName ie orbit-love/orbit-browser-extension
+ * @param {String} member slug from API
+ * @param {Boolean} isRepoInWorkspace from widget-helper#isWidgetInOrbitWorkspace
+ *
+ * @returns {success, response}
+ */
+const loadAdditionalData = async ({
+  username,
+  platform,
+  repositoryFullName,
+  member,
+  isRepoInWorkspace,
+}) => {
+  if (platform !== "github") return;
+
+  const ORBIT_CREDENTIALS = await getOrbitCredentials(
+    (refreshCallback = refreshOAuthToken)
+  );
+
+  // For external repos, just send the one request
+  if (!isRepoInWorkspace) {
+    const url = new URL(
+      `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/identities/github/${username}`
+    );
+
+    const { params, headers } = configureRequest(ORBIT_CREDENTIALS);
+
+    url.search = params.toString();
+
+    try {
+      const response = await fetch(url, {
+        headers: headers,
+      });
+
+      const { data } = await response.json();
+
+      return {
+        success: true,
+        response: {
+          contributions_total: data.attributes.g_contributions_total,
+        },
+      };
+    } catch (err) {
+      return {
+        success: false,
+        response: err.message,
+      };
+    }
+  }
+
+  // For workspaces we recognise, send additional request
+  const allContributionsUrl = new URL(
+    `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/identities/github/${username}`
+  );
+
+  const repoContributionsUrl = new URL(
+    `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/activities`
+  );
+
+  // These params aren't needed for the first request, but don't do any harm being included.
+  const { params, headers } = configureRequest(ORBIT_CREDENTIALS, {
+    member_id: member,
+    properties: `github_repository:${repositoryFullName}`,
+    items: 25,
+  });
+
+  allContributionsUrl.search = params.toString();
+  repoContributionsUrl.search = params.toString();
+
+  try {
+    // Fetch & read stream for both requests
+    const responses = await Promise.all([
+      fetch(allContributionsUrl, { headers: headers }).then((response) =>
+        response.json()
+      ),
+      fetch(repoContributionsUrl, { headers: headers }).then((response) =>
+        response.json()
+      ),
+    ]);
+
+    const [allContributionsData, repoContributionsData] = responses;
+
+    return {
+      success: true,
+      response: {
+        contributions_total:
+          allContributionsData.data.attributes.g_contributions_total,
+        contributions_on_this_repo_total: repoContributionsData.data.length,
+      },
+    };
+  } catch (err) {
+    return {
+      success: false,
+      response: err.message,
+    };
+  }
+};
+
+/**
+ * Add a member to Orbit
+ *
+ * @param {String} username from widget
+ * @param {Object} ORBIT_CREDENTIALS fetched from storage
+ *
+ * @returns {success, response, ok}
+ */
+const addMemberToWorkspace = async ({ username, platform }) => {
+  const ORBIT_CREDENTIALS = await getOrbitCredentials(
+    (refreshCallback = refreshOAuthToken)
+  );
+  const url = new URL(
+    `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/members`
+  );
+
+  const { params, headers } = configureRequest(
+    ORBIT_CREDENTIALS,
+    {},
+    { "Content-Type": "application/json" }
+  );
+
+  url.search = params.toString();
+
+  let identity;
+  switch (platform) {
+    case "gmail":
+      identity = { source: "email", email: username };
+      break;
+    default:
+      identity = { source: platform, username };
+      break;
+  }
+
+  try {
+    const response = await fetch(url, {
+      headers: headers,
+      method: "POST",
+      body: JSON.stringify({ identity }),
+    });
+
+    return { success: true, response: await response.json(), ok: response.ok };
+  } catch (e) {
+    return { success: false, response: e.message };
   }
 };

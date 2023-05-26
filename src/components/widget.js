@@ -1,13 +1,19 @@
 import { LitElement, html, css, nothing, unsafeCSS } from "lit";
 import { customElement } from "lit/decorators.js";
 import { unsafeSVG } from "lit/directives/unsafe-svg.js";
-import { getOrbitCredentials } from "../oauth-helpers";
 import "./pill";
 import "./tag";
 import "./identity";
 
 import tailwindStylesheet from "bundle-text:../styles/tailwind.global.css";
 import iconCustomer from "bundle-text:../icons/icon-customer.svg";
+import { ORBIT_API_ROOT_URL } from "../constants";
+import {
+  buildMemberData,
+  formatDate,
+  isRepoInOrbitWorkspace,
+  getThreshold,
+} from "../helpers/widget-helper";
 
 const TAG_LIMIT = 5;
 
@@ -25,15 +31,19 @@ class Widget extends LitElement {
     super();
     this.isOpen = false;
     this.isLoading = false;
+    this.hasLoaded = false;
     this.hasAuthError = false;
     this.hasError = false;
+    this.hasAdditionalDataError = false;
+    this.hasActionsError = false;
     this.showAllTags = false;
 
     this.isAMember = false;
 
     this.member = {};
+    this.additionalData = [];
 
-    this.workspace = {};
+    this.workspace = "";
   }
 
   connectedCallback() {
@@ -48,6 +58,8 @@ class Widget extends LitElement {
     });
   }
 
+  // Main template for the widget
+  // Provides common wrapper elements, then chooses which content to show inside
   dropdownTemplate() {
     return html`
       <div
@@ -59,22 +71,41 @@ class Widget extends LitElement {
         tabindex="-1"
         style="visibility: ${this.isOpen ? "visible" : "hidden"}"
       >
-        <div class="py-1" role="none">${this.getTemplateContent()}</div>
+        <div role="none">${this.getTemplateContent()}</div>
+
+        ${this.additionalData.length > 0 || this.hasAdditionalDataError
+          ? this.additionalDataTemplate()
+          : nothing}
+        ${!this.isLoading && !this.hasAuthError && !this.hasOtherError
+          ? this.actionsTemplate()
+          : nothing}
       </div>
     `;
   }
 
+  /**
+   * Decides which content to show inside widget
+   * If loading, show loading state
+   * If any errors present, show relevant error message
+   * If member present, show member
+   *
+   * @returns {HTMLElement}
+   */
   getTemplateContent() {
     // TODO: check if member present, use generic error as default state instead?
-    // TODO: this.isAMember state
     if (this.isLoading) return this.textTemplate("Loading Orbit data…");
     if (this.hasAuthError) return this.authErrorTemplate();
     if (this.hasError)
       return this.textTemplate("There was an error fetching Orbit data.");
 
-    return this.memberTemplate();
+    if (this.isAMember) return this.memberTemplate();
   }
 
+  /**
+   * Generic template to show text
+   *
+   * @returns {HTMLElement}
+   */
   textTemplate(text) {
     return html`
       <span
@@ -85,6 +116,12 @@ class Widget extends LitElement {
     `;
   }
 
+  /**
+   * Shows auth error message, and link to
+   * options page to re-authenticate
+   *
+   * @returns {HTMLElement}
+   */
   authErrorTemplate() {
     return html`
       <span
@@ -102,9 +139,14 @@ class Widget extends LitElement {
     `;
   }
 
+  /**
+   * Shows full member content
+   *
+   * @returns {HTMLElement}
+   */
   memberTemplate() {
     return html`
-      <div class="px-4 truncate" role="menuitem">
+      <div class="py-1 px-4 truncate" role="menuitem">
         <section class="mt-1">
           <!-- Name -->
           <span class="block text-xl font-bold text-gray-900 truncate"
@@ -120,7 +162,7 @@ class Widget extends LitElement {
           ${
             this.member.organization &&
             html`
-            <div class="flex flex-row justify-start items-center mt-1 mb-3">
+            <div class="flex flex-row justify-start items-center mt-1">
               ${
                 this.member.organization.logo_url &&
                 html` <img
@@ -142,80 +184,151 @@ class Widget extends LitElement {
               }
             </div>
           </section>
+          `
+          }
 
           <!-- Pills -->
           <section
-            class="flex flex-row justify-start items-center mb-3 space-x-1"
+            class="flex flex-row justify-start items-center mt-1 space-x-1"
           >
             ${
-              this.member.orbitLevel === null
+              this.member.teammate
                 ? html`<obe-pill value="Teammate"></obe-pill>`
                 : html`<obe-pill
                     name="Orbit Level"
-                    value="${this.member.orbitLevel}"
+                    value="${this.member.orbitLevel || "N/A"}"
                   ></obe-pill>`
             }
             ${
               this.member.lastActivityOccurredAt &&
               html` <obe-pill
                 name="Last active"
-                value="${this._formatDate(this.member.lastActivityOccurredAt)}"
+                value="${formatDate(this.member.lastActivityOccurredAt)}"
               ></obe-pill>`
             }
           </section>
 
           <!-- Identities -->
-          <section class="mb-3">
-            <p class="block text-sm text-gray-500 uppercase truncate">
-              Linked profiles & emails
-              <span class="ml-1 text-gray-900"
-                >${this.member.identities.length}</span
+          ${
+            !!this.member.identities &&
+            html` <section class="mt-3">
+              <p class="block text-sm text-gray-500 uppercase truncate">
+                Linked profiles & emails
+                <span class="ml-1 text-gray-900"
+                  >${this.member.identities.length}</span
+                >
+              </p>
+              <div
+                class="flex flex-row flex-wrap gap-1 justify-start items-center py-1"
               >
-            </p>
-            <div
-              class="flex flex-row flex-wrap gap-1 justify-start items-center py-1"
-            >
-              ${this.member.identities.map(
-                (identity) =>
-                  html`<obe-identity .identity=${identity}></obe-identity>`
-              )}
-            </div>
-          </section>
+                ${this.member.identities.map(
+                  (identity) =>
+                    html`<obe-identity .identity=${identity}></obe-identity>`
+                )}
+              </div>
+            </section>`
+          }
 
           <!-- Tags -->
-          <section class="mb-3">
-            <p class="block text-sm text-gray-500 uppercase truncate">
-              Tags
-              <span class="ml-1 text-gray-900">${this.member.tags.length}</span>
-            </p>
-            <div
-              class="flex flex-row flex-wrap gap-1 justify-start items-center py-1"
-            >
-              ${this.member.tags.map((tag, index) => {
-                // Do not render tags that are above tag limit, unless we are showing all
-                if (!this.showAllTags && index > TAG_LIMIT) {
-                  return;
-                }
+          ${
+            !!this.member.tags &&
+            html` <section class="mt-3">
+              <p class="block text-sm text-gray-500 uppercase truncate">
+                Tags
+                <span class="ml-1 text-gray-900"
+                  >${this.member.tags.length}</span
+                >
+              </p>
+              <div
+                class="flex flex-row flex-wrap gap-1 justify-start items-center py-1"
+              >
+                ${this.member.tags.map((tag, index) => {
+                  // Do not render tags that are above tag limit, unless we are showing all
+                  if (!this.showAllTags && index > TAG_LIMIT) {
+                    return;
+                  }
 
-                // If we have reached limit, show button to show all tags
-                if (!this.showAllTags && index === TAG_LIMIT) {
-                  return html`<button
-                    @click="${this._showAllTags}"
-                    class="text-gray-500 cursor-pointer"
-                  >
-                    Show ${this.member.tags.length - TAG_LIMIT} more tags
-                  </button>`;
-                }
+                  // If we have reached limit, show button to show all tags
+                  if (!this.showAllTags && index === TAG_LIMIT) {
+                    return html`<button
+                      @click="${this._showAllTags}"
+                      class="text-gray-500 cursor-pointer"
+                    >
+                      Show ${this.member.tags.length - TAG_LIMIT} more tags
+                    </button>`;
+                  }
 
-                // Otherwise, render tag
-                return html`<obe-tag tag=${tag}></obe-tag>`;
-              })}
-            </div>
-          </section>
-        `
+                  // Otherwise, render tag
+                  return html`<obe-tag
+                    tag=${tag}
+                    workspace=${this.workspace}
+                  ></obe-tag>`;
+                })}
+              </div>
+            </section>`
           }
       </div>
     `;
+  }
+
+  /**
+   * Renders any additional data - this is stored as an array of strings,
+   * so this iterates over & prints each one
+   *
+   * @returns {HTMLElement}
+   */
+  additionalDataTemplate() {
+    return html`${this.isAMember
+        ? html`<hr class="block border-t border-[#d0d7de]" role="none" />`
+        : nothing}
+      <section class="flex flex-col gap-2 py-2 px-4 truncate">
+        ${this.hasAdditionalDataError
+          ? html`<p>There was an error fetching data</p>`
+          : this.additionalData.map((datum) => html`<p>${datum}</p>`)}
+      </section> `;
+  }
+
+  /**
+   * Renders actions to show at the bottom of the widget
+   * If member exists, "view profile on orbit"
+   * Otherwise, "add to orbit"
+   *
+   * @returns {HTMLElement}
+   */
+  actionsTemplate() {
+    if (this.hasActionsError) {
+      return html`
+        <hr class="block border-t border-[#d0d7de]" role="none" />
+        <p class="py-2 px-4">There was an error performing this action</p>
+      `;
+    } else if (this.isAMember) {
+      return html`
+        <hr class="block border-t border-[#d0d7de]" role="none" />
+        <a
+          target="_blank"
+          rel="noreferrer noopener"
+          href="${ORBIT_API_ROOT_URL}/${this.workspace}/members/${this.member
+            .slug}"
+          class="block py-2 px-4 w-full text-sm text-left text-gray-700 truncate bg-gray-50 rounded-b-md hover:bg-gray-100 focus:bg-gray-100"
+          role="menuitem"
+        >
+          See ${this.username}’s profile on Orbit
+        </a>
+      `;
+    } else {
+      return html`
+        ${this.additionalData.length > 0
+          ? html`<hr class="block border-t border-[#d0d7de]" role="none" />`
+          : nothing}
+        <button
+          class="block py-2 px-4 w-full text-sm text-left text-gray-700 truncate bg-gray-50 rounded-b-md hover:bg-gray-100 focus:bg-gray-100"
+          role="menuitem"
+          @click="${this._addMemberToWorkspace}"
+        >
+          Add ${this.username} to ${this.workspace} on Orbit
+        </button>
+      `;
+    }
   }
 
   _toggle() {
@@ -227,80 +340,125 @@ class Widget extends LitElement {
     this.requestUpdate();
   }
 
-  _formatDate(date) {
-    return new Date(Date.parse(date)).toLocaleDateString("en-EN", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
+  /**
+   * Run on mouseover of widget - loads member data & additional data
+   * via background.js, then re-renders widget with new data.
+   * Uses `hasLoaded` to prevent requests running repeatedly
+   */
+  async _loadOrbitData() {
+    if (!this.isLoading && !this.hasLoaded) {
+      this.isLoading = true;
+      this.requestUpdate();
+
+      // Perform requests sequentially instead of using Promise.all, as
+      // _loadAdditionalData relies on the member retrieved from _loadMemberData.
+      await this._loadMemberData();
+      await this._loadAdditionalData();
+
+      this.isLoading = false;
+      this.hasLoaded = true;
+      this.requestUpdate();
+    }
   }
 
-  async _loadOrbitData() {
-    if (!this.isLoading) {
-      this.isLoading = true;
+  /**
+   * Fetch member data & store it in state
+   */
+  async _loadMemberData() {
+    const { status, success, response } = await chrome.runtime.sendMessage({
+      operation: "LOAD_MEMBER_DATA",
+      username: this.username,
+      platform: this.platform,
+    });
 
-      const ORBIT_CREDENTIALS = await getOrbitCredentials();
+    if (status === 401) {
+      this.hasAuthError = true;
+    } else if (status === 404) {
+      this.isAMember = false;
+      this.workspace = response?.workspace;
+    } else if (success === false) {
+      this.hasError = true;
+    } else {
+      const { data, included, workspace } = response;
 
-      const { status, success, response } = await chrome.runtime.sendMessage({
-        operation: "LOAD_MEMBER_DATA",
-        username: this.username,
-        platform: this.platform,
-        ORBIT_CREDENTIALS,
-      });
-
-      this.workspace = ORBIT_CREDENTIALS.WORKSPACE;
-
-      if (status === 401) {
-        this.hasAuthError = true;
-      } else if (status === 404) {
+      if (!data) {
         this.isAMember = false;
-      } else if (success === false) {
         this.hasError = true;
-      } else {
-        const { data, included } = response;
-
-        if (!data) {
-          this.isAMember = false;
-          this.hasError = true;
-          this.isLoading = false;
-
-          this.requestUpdate();
-          return;
-        }
-
-        this.isAMember = true;
-
-        const identities = data.relationships.identities.data.map(
-          ({ id, type }) =>
-            included.find(
-              ({ id: included_id, type: included_type }) =>
-                id === included_id && type === included_type
-            )?.attributes
-        );
-
-        const organizations = data.relationships.organizations.data.map(
-          ({ id, type }) =>
-            included.find(
-              ({ id: included_id, type: included_type }) =>
-                id === included_id && type === included_type
-            )?.attributes
-        );
-
-        const organization = organizations[0] || null;
-
-        this.member = {
-          name: data.attributes.name,
-          jobTitle: data.attributes.title,
-          slug: data.attributes.slug,
-          teammate: data.attributes.teammate,
-          orbitLevel: data.attributes.orbit_level,
-          organization: organization,
-          lastActivityOccurredAt: data.attributes.last_activity_occurred_at,
-          tags: data.attributes.tags,
-          identities: identities,
-        };
+        return;
       }
 
+      this.workspace = workspace;
+      this.isAMember = true;
+      this.member = buildMemberData(data, included);
+    }
+  }
+
+  /**
+   * Fetch additional data & store it in state
+   */
+  async _loadAdditionalData() {
+    if (this.platform !== "github") return;
+
+    const isRepoInWorkspace = await isRepoInOrbitWorkspace();
+    const repositoryFullName = `${window.location.pathname.split("/")[1]}/${
+      window.location.pathname.split("/")[2]
+    }`;
+
+    const { success, response } = await chrome.runtime.sendMessage({
+      operation: "LOAD_ADDITIONAL_DATA",
+      username: this.username,
+      platform: this.platform,
+      repositoryFullName,
+      member: this.member.slug,
+      isRepoInWorkspace: isRepoInWorkspace,
+    });
+
+    if (!success) {
+      this.hasAdditionalDataError = true;
+      return;
+    }
+
+    this.additionalData = [
+      `Contributed ${getThreshold(
+        response.contributions_total
+      )} times on GitHub`,
+    ];
+
+    if (response.contributions_on_this_repo_total === 1) {
+      this.additionalData.push("First contribution to this repository");
+    } else if (!isRepoInWorkspace) {
+      return;
+    } else {
+      this.additionalData.push(
+        `Contributed ${getThreshold(
+          response.contributions_on_this_repo_total
+        )} times to this repository`
+      );
+    }
+  }
+
+  /**
+   * Handler for the "add member" button
+   * Adds member, then updates widget to show the new member
+   */
+  async _addMemberToWorkspace() {
+    this.isLoading = true;
+    this.requestUpdate();
+
+    const { success, response, ok } = await chrome.runtime.sendMessage({
+      operation: "ADD_MEMBER_TO_WORKSPACE",
+      username: this.username,
+      platform: this.platform,
+    });
+
+    if (!success || !ok) {
+      this.hasActionsError = true;
+      this.isLoading = false;
+      this.requestUpdate();
+      return;
+    } else {
+      this.isAMember = true;
+      this.member = buildMemberData(response.data, response.included);
       this.isLoading = false;
       this.requestUpdate();
     }
@@ -312,7 +470,7 @@ class Widget extends LitElement {
       :host:not(:defined) {
         display: none;
       }
-    `
+    `,
   ];
 
   render() {
