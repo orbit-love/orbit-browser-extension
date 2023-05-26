@@ -34,6 +34,8 @@ class Widget extends LitElement {
     this.hasLoaded = false;
     this.hasAuthError = false;
     this.hasError = false;
+    this.hasAdditionalDataError = false;
+    this.hasActionsError = false;
     this.showAllTags = false;
 
     this.isAMember = false;
@@ -71,7 +73,7 @@ class Widget extends LitElement {
       >
         <div role="none">${this.getTemplateContent()}</div>
 
-        ${this.additionalData.length > 0
+        ${this.additionalData.length > 0 || this.hasAdditionalDataError
           ? this.additionalDataTemplate()
           : nothing}
         ${!this.isLoading && !this.hasAuthError && !this.hasOtherError
@@ -280,7 +282,9 @@ class Widget extends LitElement {
           />`
         : nothing}
       <section class="flex flex-col gap-2 py-1 px-4 truncate">
-        ${this.additionalData.map((datum) => html`<p>${datum}</p>`)}
+        ${this.hasAdditionalDataError
+          ? html`<p>There was an error fetching data</p>`
+          : this.additionalData.map((datum) => html`<p>${datum}</p>`)}
       </section> `;
   }
 
@@ -292,35 +296,42 @@ class Widget extends LitElement {
    * @returns {HTMLElement}
    */
   actionsTemplate() {
-    return this.isAMember
-      ? html`
-          <hr class="block border-t border-[#d0d7de] mt-[6px]" role="none" />
-          <a
-            target="_blank"
-            rel="noreferrer noopener"
-            href="${ORBIT_API_ROOT_URL}/${this.workspace}/members/${this.member
-              .slug}"
-            class="block py-2 px-4 w-full text-sm text-left text-gray-700 truncate bg-gray-50 rounded-md hover:bg-gray-100 focus:bg-gray-100"
-            role="menuitem"
-          >
-            See ${this.username}’s profile on Orbit
-          </a>
-        `
-      : html`
-          ${this.additionalData.length > 0
-            ? html`<hr
-                class="block border-t border-[#d0d7de] mt-[6px]"
-                role="none"
-              />`
-            : nothing}
-          <button
-            class="block py-2 px-4 w-full text-sm text-left text-gray-700 truncate bg-gray-50 rounded-md hover:bg-gray-100 focus:bg-gray-100"
-            role="menuitem"
-            @click="${this._addMemberToWorkspace}"
-          >
-            Add ${this.username} to ${this.workspace} on Orbit
-          </button>
-        `;
+    if (this.hasActionsError) {
+      return html`
+        <hr class="block border-t border-[#d0d7de] mt-[6px]" role="none" />
+        <p class="py-1 px-4">There was an error performing this action</p>
+      `;
+    } else if (this.isAMember) {
+      return html`
+        <hr class="block border-t border-[#d0d7de] mt-[6px]" role="none" />
+        <a
+          target="_blank"
+          rel="noreferrer noopener"
+          href="${ORBIT_API_ROOT_URL}/${this.workspace}/members/${this.member
+            .slug}"
+          class="block py-2 px-4 w-full text-sm text-left text-gray-700 truncate bg-gray-50 rounded-md hover:bg-gray-100 focus:bg-gray-100"
+          role="menuitem"
+        >
+          See ${this.username}’s profile on Orbit
+        </a>
+      `;
+    } else {
+      return html`
+        ${this.additionalData.length > 0
+          ? html`<hr
+              class="block border-t border-[#d0d7de] mt-[6px]"
+              role="none"
+            />`
+          : nothing}
+        <button
+          class="block py-2 px-4 w-full text-sm text-left text-gray-700 truncate bg-gray-50 rounded-md hover:bg-gray-100 focus:bg-gray-100"
+          role="menuitem"
+          @click="${this._addMemberToWorkspace}"
+        >
+          Add ${this.username} to ${this.workspace} on Orbit
+        </button>
+      `;
+    }
   }
 
   _toggle() {
@@ -405,10 +416,8 @@ class Widget extends LitElement {
       isRepoInWorkspace: isRepoInWorkspace,
     });
 
-    console.log(response, success);
-
     if (!success) {
-      // TODO: Handle error
+      this.hasAdditionalDataError = true;
       return;
     }
 
@@ -445,7 +454,9 @@ class Widget extends LitElement {
     });
 
     if (!success || !ok) {
-      // FIXME: Error state
+      this.hasActionsError = true;
+      this.isLoading = false;
+      this.requestUpdate();
       return;
     } else {
       this.isAMember = true;

@@ -18,6 +18,8 @@ describe("obe-widget", () => {
     expect(element.isLoading).toBe(false);
     expect(element.hasAuthError).toBe(false);
     expect(element.hasError).toBe(false);
+    expect(element.hasAdditionalDataError).toBe(false);
+    expect(element.hasActionsError).toBe(false);
     expect(element.showAllTags).toBe(false);
     expect(element.isAMember).toBe(false);
     expect(element.member).toEqual({});
@@ -83,6 +85,22 @@ describe("obe-widget", () => {
     const dropdown = element.shadowRoot.querySelector(".obe-dropdown");
     expect(dropdown.innerHTML).toMatch(
       "There was an error fetching Orbit data"
+    );
+  });
+
+  it("renders additional data error state when hasAdditionalDataError is true", () => {
+    element.hasAdditionalDataError = true;
+    element.update();
+    const dropdown = element.shadowRoot.querySelector(".obe-dropdown");
+    expect(dropdown.innerHTML).toMatch("There was an error fetching data");
+  });
+
+  it("renders actions error state when hasActionsError is true", () => {
+    element.hasActionsError = true;
+    element.update();
+    const dropdown = element.shadowRoot.querySelector(".obe-dropdown");
+    expect(dropdown.innerHTML).toMatch(
+      "There was an error performing this action"
     );
   });
 
