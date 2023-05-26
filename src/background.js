@@ -325,7 +325,12 @@ const addMemberToWorkspace = async ({ username, platform }) => {
       method: "POST",
       body: JSON.stringify({
         member: {
+          name: username,
           [platform]: username,
+        },
+        identity: {
+          source: platform,
+          userame: username,
         },
       }),
     });
