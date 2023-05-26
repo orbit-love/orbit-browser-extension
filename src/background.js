@@ -188,6 +188,21 @@ const loadMemberData = async ({ username, platform }) => {
   }
 };
 
+/**
+ * Fetch "additionalData" from Orbit.
+ * Currently, only supports GitHub so exit out for other platforms;
+ * For GitHub, we need to make two requests:
+ * 1. To fetch the users total number of contributions on GH
+ * 2. If the current repo is in the user's workspace, fetch the number of contributions they've made for this repo
+ *
+ * @param {String} username from widget
+ * @param {String} platform from widget
+ * @param {String} repositoryFullName ie orbit-love/orbit-browser-extension
+ * @param {String} member slug from API
+ * @param {Boolean} isRepoInWorkspace from widget-helper#isWidgetInOrbitWorkspace
+ *
+ * @returns {success, response}
+ */
 const loadAdditionalData = async ({
   username,
   platform,
@@ -197,47 +212,17 @@ const loadAdditionalData = async ({
 }) => {
   if (platform !== "github") return;
 
-  let additionalData = {};
   const ORBIT_CREDENTIALS = await getOrbitCredentials(
     (refreshCallback = refreshOAuthToken)
   );
 
-  const url = new URL(
-    `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/identities/github/${username}`
-  );
-
-  const { params, headers } = configureRequest(ORBIT_CREDENTIALS);
-  url.search = params.toString();
-
-  try {
-    const response = await fetch(url, {
-      headers: headers,
-    });
-
-    const { data } = await response.json();
-
-    additionalData = {
-      success: true,
-      response: { contributions_total: data.attributes.g_contributions_total },
-      ok: response.ok,
-    };
-  } catch (err) {
-    additionalData = {
-      success: false,
-      response: err.message,
-    };
-  }
-
-  if (isRepoInWorkspace) {
+  // For external repos, just send the one request
+  if (!isRepoInWorkspace) {
     const url = new URL(
-      `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/activities`
+      `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/identities/github/${username}`
     );
 
-    const { params, headers } = configureRequest(ORBIT_CREDENTIALS, {
-      member_id: member,
-      properties: `github_repository:${repositoryFullName}`,
-      items: 25,
-    });
+    const { params, headers } = configureRequest(ORBIT_CREDENTIALS);
 
     url.search = params.toString();
 
@@ -247,7 +232,13 @@ const loadAdditionalData = async ({
       });
 
       const { data } = await response.json();
-      additionalData.response.contributions_on_this_repo_total = data.length;
+
+      return {
+        success: true,
+        response: {
+          contributions_total: data.attributes.g_contributions_total,
+        },
+      };
     } catch (err) {
       return {
         success: false,
@@ -256,8 +247,52 @@ const loadAdditionalData = async ({
     }
   }
 
-  console.log(additionalData);
-  return additionalData;
+  // For workspaces we recognise, send additional request
+  const allContributionsUrl = new URL(
+    `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/identities/github/${username}`
+  );
+
+  const repoContributionsUrl = new URL(
+    `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/activities`
+  );
+
+  // These params aren't needed for the first request, but don't do any harm being included.
+  const { params, headers } = configureRequest(ORBIT_CREDENTIALS, {
+    member_id: member,
+    properties: `github_repository:${repositoryFullName}`,
+    items: 25,
+  });
+
+  allContributionsUrl.search = params.toString();
+  repoContributionsUrl.search = params.toString();
+
+  try {
+    // Fetch & read stream for both requests
+    const responses = await Promise.all([
+      fetch(allContributionsUrl, { headers: headers }).then((response) =>
+        response.json()
+      ),
+      fetch(repoContributionsUrl, { headers: headers }).then((response) =>
+        response.json()
+      ),
+    ]);
+
+    const [allContributionsData, repoContributionsData] = responses;
+
+    return {
+      success: true,
+      response: {
+        contributions_total:
+          allContributionsData.data.attributes.g_contributions_total,
+        contributions_on_this_repo_total: repoContributionsData.data.length,
+      },
+    };
+  } catch (err) {
+    return {
+      success: false,
+      response: err.message,
+    };
+  }
 };
 
 /**

@@ -396,7 +396,7 @@ class Widget extends LitElement {
       window.location.pathname.split("/")[2]
     }`;
 
-    const { success, response, ok } = await chrome.runtime.sendMessage({
+    const { success, response } = await chrome.runtime.sendMessage({
       operation: "LOAD_ADDITIONAL_DATA",
       username: this.username,
       platform: this.platform,
@@ -405,7 +405,9 @@ class Widget extends LitElement {
       isRepoInWorkspace: isRepoInWorkspace,
     });
 
-    if (!success || !ok) {
+    console.log(response, success);
+
+    if (!success) {
       // TODO: Handle error
       return;
     }
