@@ -27,8 +27,12 @@ export default class WidgetOrchestrator {
     const widgetZones = page.findWidgetZones();
 
     for (const widgetZone of widgetZones) {
-      if (widgetZone.querySelector('obe-widget')) {
-        return;
+      // If a widget already exists for this widgetZone, remove it.
+      // This fixes an issue with SPAs like LinkedIn, where the first widget
+      // that was injected remained on other pages.
+      const existingWidget = widgetZone.querySelector('obe-widget');
+      if (existingWidget) {
+        existingWidget.remove();
       }
 
       if (!page.validateWidgetZone(widgetZone)) break;
