@@ -358,16 +358,13 @@ class Widget extends LitElement {
    * Fetch member data & store it in state
    */
   async _loadMemberData() {
-    const ORBIT_CREDENTIALS = await getOrbitCredentials();
-
     const { status, success, response } = await chrome.runtime.sendMessage({
       operation: "LOAD_MEMBER_DATA",
       username: this.username,
       platform: this.platform,
-      ORBIT_CREDENTIALS,
     });
 
-    this.workspace = ORBIT_CREDENTIALS.WORKSPACE;
+    // this.workspace = ORBIT_CREDENTIALS.WORKSPACE;
 
     if (status === 401) {
       this.hasAuthError = true;
