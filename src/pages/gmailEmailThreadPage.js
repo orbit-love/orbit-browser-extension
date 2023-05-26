@@ -13,7 +13,7 @@ export default class GmailEmailThreadPage extends Page {
   }
 
   findWidgetZones() {
-    return window.document.querySelectorAll("[role='listitem'][aria-expanded='true'] [data-message-id]");
+    return window.document.querySelectorAll("[role='listitem'] [data-message-id]");
   }
 
   validateWidgetZone(_expandedEmail) {
@@ -23,7 +23,7 @@ export default class GmailEmailThreadPage extends Page {
   applyCSSPatch(_expandedEmail) {}
 
   findUsername(expandedEmail) {
-    return expandedEmail.querySelector("span[email]").getAttribute("email");
+    return expandedEmail.querySelector("span[email]")?.getAttribute("email");
   }
 
   findInsertionPoint(expandedEmail) {
