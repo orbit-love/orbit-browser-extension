@@ -1,5 +1,5 @@
 import { ORBIT_API_ROOT_URL } from "../constants";
-import { _getRepositoryFullName } from "../helpers/widget-helper";
+import { getRepositoryFullName } from "../helpers/widget-helper";
 import { configureRequest } from "../oauth-helpers";
 
 /**
@@ -74,7 +74,7 @@ export const orbitAPI = {
    * @returns {is_a_member, contributions_on_this_repo_total}
    */
   async getMemberActivitiesOnThisRepo(ORBIT_CREDENTIALS, member) {
-    const repositoryFullName = _getRepositoryFullName();
+    const repositoryFullName = getRepositoryFullName();
     const url = new URL(
       `${ORBIT_API_ROOT_URL}/${ORBIT_CREDENTIALS.WORKSPACE}/activities`
     );

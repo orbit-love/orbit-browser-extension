@@ -1,7 +1,7 @@
 import { _refreshAuthTokens, _isOAuthTokenExpired } from "../oauth-helpers";
 import {
-  _getRepositoryFullName,
-  _fetchRepositories,
+  getRepositoryFullName,
+  fetchRepositories,
   areCredentialsValid,
 } from "./orbit-helpers";
 

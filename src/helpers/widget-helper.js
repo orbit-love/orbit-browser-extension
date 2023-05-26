@@ -89,8 +89,8 @@ export function getThreshold(number) {
  * @returns {Boolean}
  */
 export async function isRepoInOrbitWorkspace() {
-  const repositories = await _fetchRepositories();
-  return repositories.includes(_getRepositoryFullName());
+  const repositories = await fetchRepositories();
+  return repositories.includes(getRepositoryFullName());
 }
 
 /**
@@ -99,7 +99,7 @@ export async function isRepoInOrbitWorkspace() {
  * window.location.pathname looks like “/orbit-love/orbit-model/pull/3”
  * This would return `orbit-love/orbit-model`
  */
-export function _getRepositoryFullName() {
+export function getRepositoryFullName() {
   return `${window.location.pathname.split("/")[1]}/${
     window.location.pathname.split("/")[2]
   }`;
@@ -110,7 +110,7 @@ export function _getRepositoryFullName() {
  *
  * @returns Array<String> a 1d array of all repsoitory names, ie ["repo-1", "repo-2"]
  */
-export async function _fetchRepositories() {
+export async function fetchRepositories() {
   const { repository_keys } = await chrome.storage.sync.get({
     repository_keys: [],
   });
