@@ -164,12 +164,12 @@ const loadMemberData = async ({ username, platform }) => {
   );
 
   let payload;
-  switch(platform) {
-    case 'gmail':
-      payload = { source: 'email', email: username }
+  switch (platform) {
+    case "gmail":
+      payload = { source: "email", email: username };
       break;
     default:
-      payload = { source: platform, username }
+      payload = { source: platform, username };
       break;
   }
 
@@ -326,20 +326,21 @@ const addMemberToWorkspace = async ({ username, platform }) => {
 
   url.search = params.toString();
 
+  let identity;
+  switch (platform) {
+    case "gmail":
+      identity = { source: "email", email: username };
+      break;
+    default:
+      identity = { source: platform, username };
+      break;
+  }
+
   try {
     const response = await fetch(url, {
       headers: headers,
       method: "POST",
-      body: JSON.stringify({
-        member: {
-          name: username,
-          [platform]: username,
-        },
-        identity: {
-          source: platform,
-          userame: username,
-        },
-      }),
+      body: JSON.stringify({ identity }),
     });
 
     return { success: true, response: await response.json(), ok: response.ok };
