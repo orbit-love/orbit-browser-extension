@@ -3,6 +3,7 @@ import "../components/widget";
 import "../components/githubButton";
 import "../components/twitterButton";
 import "../components/linkedinButton";
+import "../components/gmailButton";
 
 export default class WidgetOrchestrator {
   /**
@@ -35,15 +36,15 @@ export default class WidgetOrchestrator {
         existingWidget.remove();
       }
 
-      if (!page.validateWidgetZone(widgetZone)) break;
+      if (!page.validateWidgetZone(widgetZone)) continue;
 
       page.applyCSSPatch(widgetZone);
 
       const username = page.findUsername(widgetZone);
-      if (!username) return;
+      if (!username) continue;
 
       const insertionPoint = page.findInsertionPoint(widgetZone);
-      if (!insertionPoint) return;
+      if (!insertionPoint) continue;
 
       const widgetElement = this.addWidgetElement(username, platform);
       this.addOrbitButton(widgetElement, platform);
