@@ -6,7 +6,87 @@ import {
   formatDate,
   getThreshold,
   isRepoInOrbitWorkspace,
+  buildMemberData,
 } from "./widget-helper";
+
+describe("#buildMemberData", () => {
+  const member = {
+    attributes: {
+      name: "John Doe",
+      title: "Software Engineer",
+      slug: "john_doe",
+      teammate: false,
+      orbit_level: 1,
+      last_activity_occurred_at: "2023-06-15",
+      tags: ["tag1", "tag2"],
+    },
+    relationships: {
+      identities: {
+        data: [
+          { id: "1", type: "identity" },
+          { id: "2", type: "identity" },
+        ],
+      },
+      organizations: {
+        data: [{ id: "1", type: "organization" }],
+      },
+    },
+  };
+
+  const included = [
+    {
+      id: "1",
+      type: "identity",
+      attributes: {
+        source: "github",
+        username: "johndoe",
+        url: "https://github.com/johndoe",
+      },
+    },
+    {
+      id: "2",
+      type: "identity",
+      attributes: {
+        source: "twitter",
+        username: "johndoe",
+        url: "https://twitter.com/johndoe",
+      },
+    },
+    {
+      id: "1",
+      type: "organization",
+      attributes: {
+        name: "orbit",
+        url: "https://orbit.love",
+      },
+    },
+  ];
+
+  it("correctly formats member object", () => {
+    expect(buildMemberData(member, included)).toEqual({
+      name: "John Doe",
+      jobTitle: "Software Engineer",
+      slug: "john_doe",
+      teammate: false,
+      orbitLevel: 1,
+      organization: { name: "orbit", url: "https://orbit.love" },
+      lastActivityOccurredAt: "2023-06-15",
+      tags: ["tag1", "tag2"],
+      identities: [
+        {
+          source: "github",
+          username: "johndoe",
+          url: "https://github.com/johndoe",
+        },
+        {
+          source: "twitter",
+          username: "johndoe",
+          url: "https://twitter.com/johndoe",
+        },
+      ],
+    });
+  });
+});
 
 it("formatDate formats date correctly", () => {
   const stringDate = "2023-05-19T21:37:51.000Z";
