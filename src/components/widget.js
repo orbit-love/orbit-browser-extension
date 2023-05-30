@@ -16,6 +16,7 @@ import {
 } from "../helpers/widget-helper";
 
 const TAG_LIMIT = 5;
+const IDENTITY_LIMIT = 7;
 
 @customElement("obe-widget")
 class Widget extends LitElement {
@@ -33,10 +34,13 @@ class Widget extends LitElement {
     this.isLoading = false;
     this.hasLoaded = false;
     this.hasAuthError = false;
+
     this.hasError = false;
     this.hasAdditionalDataError = false;
     this.hasActionsError = false;
+
     this.showAllTags = false;
+    this.showAllIdentities = false;
 
     this.isAMember = false;
 
@@ -221,10 +225,28 @@ class Widget extends LitElement {
               <div
                 class="flex flex-row flex-wrap gap-1 justify-start items-center py-1"
               >
-                ${this.member.identities.map(
-                  (identity) =>
-                    html`<obe-identity .identity=${identity}></obe-identity>`
-                )}
+                ${this.member.identities.map((identity, index) => {
+                  // Do not render identities that are above identity limit, unless we are showing all
+                  if (!this.showAllIdentities && index > IDENTITY_LIMIT) {
+                    return;
+                  }
+
+                  // If we have reached limit, show button to show all identities
+                  if (!this.showAllIdentities && index === IDENTITY_LIMIT) {
+                    return html`<button
+                      @click="${this._showAllIdentities}"
+                      class="text-gray-500 cursor-pointer"
+                    >
+                      Show ${this.member.identities.length - IDENTITY_LIMIT}
+                      more linked profiles
+                    </button>`;
+                  }
+
+                  // Otherwise, render identity
+                  return html`<obe-identity
+                    .identity=${identity}
+                  ></obe-identity>`;
+                })}
               </div>
             </section>`
           }
@@ -337,6 +359,11 @@ class Widget extends LitElement {
 
   _showAllTags() {
     this.showAllTags = true;
+    this.requestUpdate();
+  }
+
+  _showAllIdentities() {
+    this.showAllIdentities = true;
     this.requestUpdate();
   }
 
