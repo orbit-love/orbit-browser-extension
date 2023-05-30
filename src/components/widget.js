@@ -234,7 +234,7 @@ class Widget extends LitElement {
                   // If we have reached limit, show button to show all identities
                   if (!this.showAllIdentities && index === IDENTITY_LIMIT) {
                     return html`<button
-                      @click="${this._showAllIdentities}"
+                      @click="${this._toggleIdentities}"
                       class="text-gray-500 cursor-pointer"
                     >
                       Show ${this.member.identities.length - IDENTITY_LIMIT}
@@ -247,6 +247,16 @@ class Widget extends LitElement {
                     .identity=${identity}
                   ></obe-identity>`;
                 })}
+
+                <!-- If identities are expanded, show option to hide extras -->
+                ${this.showAllIdentities
+                  ? html`<button
+                      @click="${() => this._toggleIdentities(false)}"
+                      class="text-gray-500 cursor-pointer"
+                    >
+                      Show fewer
+                    </button>`
+                  : nothing}
               </div>
             </section>`
           }
@@ -273,7 +283,7 @@ class Widget extends LitElement {
                   // If we have reached limit, show button to show all tags
                   if (!this.showAllTags && index === TAG_LIMIT) {
                     return html`<button
-                      @click="${this._showAllTags}"
+                      @click="${this._toggleTags}"
                       class="text-gray-500 cursor-pointer"
                     >
                       Show ${this.member.tags.length - TAG_LIMIT} more tags
@@ -286,6 +296,16 @@ class Widget extends LitElement {
                     workspace=${this.workspace}
                   ></obe-tag>`;
                 })}
+
+                <!-- If tags are expanded, show option to hide extras -->
+                ${this.showAllTags
+                  ? html`<button
+                      @click="${() => this._toggleTags(false)}"
+                      class="text-gray-500 cursor-pointer"
+                    >
+                      Show fewer
+                    </button>`
+                  : nothing}
               </div>
             </section>`
           }
@@ -357,13 +377,13 @@ class Widget extends LitElement {
     this.isOpen = !this.isOpen;
   }
 
-  _showAllTags() {
-    this.showAllTags = true;
+  _toggleTags(showTags = true) {
+    this.showAllTags = showTags;
     this.requestUpdate();
   }
 
-  _showAllIdentities() {
-    this.showAllIdentities = true;
+  _toggleIdentities(showIdentities = true) {
+    this.showAllIdentities = showIdentities;
     this.requestUpdate();
   }
 
