@@ -174,8 +174,14 @@ class Widget extends LitElement {
                   src="${this.member.organization.logo_url}"
                 />`
               }
+              <!-- If organisation doesn't include a protocol (ie https://),
+              prepend it with // so it's treated as absolute regardless -->
               <a
-                href="${this.member.organization.website}"
+                href="${
+                  this.member.organization.website.match("//")
+                    ? this.member.organization.website
+                    : `//${this.member.organization.website}`
+                }"
                 target="_blank"
                 rel="noreferrer"
                 class="mr-2 text-sm text-blue-500 hover:underline"
