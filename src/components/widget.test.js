@@ -443,5 +443,61 @@ describe("obe-widget", () => {
 
       global.chrome = originalChrome;
     });
+
+    describe("organisation", () => {
+      it("makes link absolute if it is relative", () => {
+        element.isAMember = true;
+        element.member = {
+          identities: [],
+          jobTitle: "CEO",
+          lastActivityOccurredAt: 1234,
+          name: "Delete",
+          orbitLevel: 100,
+          organization: {
+            website: "faker.com",
+            name: "Test org",
+          },
+          slug: "delete",
+          tags: ["tag-1", "tag-2", "tag-3", "tag-4", "tag-5", "tag-6"],
+          teammate: false,
+        };
+
+        element.update();
+
+        const dropdown = element.shadowRoot.querySelector(".obe-dropdown");
+
+        expect(dropdown.querySelector("[href='//faker.com']")).not.toBe(null);
+        expect(dropdown.querySelector("[href='faker.com']")).toBe(null);
+      });
+
+      it("leaves absolute links untouched", () => {
+        element.isAMember = true;
+        element.member = {
+          identities: [],
+          jobTitle: "CEO",
+          lastActivityOccurredAt: 1234,
+          name: "Delete",
+          orbitLevel: 100,
+          organization: {
+            website: "https://www.faker.com",
+            name: "Test org",
+          },
+          slug: "delete",
+          tags: ["tag-1", "tag-2", "tag-3", "tag-4", "tag-5", "tag-6"],
+          teammate: false,
+        };
+
+        element.update();
+
+        const dropdown = element.shadowRoot.querySelector(".obe-dropdown");
+
+        expect(
+          dropdown.querySelector("[href='https://www.faker.com']")
+        ).not.toBe(null);
+        expect(dropdown.querySelector("[href='//https://www.faker.com']")).toBe(
+          null
+        );
+      });
+    });
   });
 });
