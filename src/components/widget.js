@@ -164,12 +164,12 @@ class Widget extends LitElement {
 
           <!-- Organization -->
           ${
-            this.member.organization &&
-            html`
+            !!this.member.organization
+              ? html`
             <div class="flex flex-row justify-start items-center mt-1">
               ${
                 this.member.organization.logo_url &&
-                html` <img
+                html`<img
                   class="mr-1 w-5 h-5"
                   src="${this.member.organization.logo_url}"
                 />`
@@ -195,6 +195,8 @@ class Widget extends LitElement {
             </div>
           </section>
           `
+              : // Just used for spacing when the organisation is not present
+                html`<div class="mt-2"></div>`
           }
 
           <!-- Pills -->
