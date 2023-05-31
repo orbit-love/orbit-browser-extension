@@ -273,16 +273,16 @@ describe("obe-widget", () => {
       const dropdown = element.shadowRoot.querySelector(".obe-dropdown");
 
       expect(dropdown.querySelectorAll("obe-identity").length).toEqual(7);
-      expect(dropdown.innerHTML).toMatch(/Show .*1/);
-      expect(dropdown.innerHTML).toMatch("more linked profiles");
+      expect(dropdown.innerHTML).toMatch(/Show .*1 more/);
+      expect(dropdown.innerHTML).toMatch("linked profiles");
       expect(dropdown.innerHTML).not.toMatch("Show fewer");
 
       element._toggleIdentities();
       await element.updateComplete;
 
       expect(dropdown.querySelectorAll("obe-identity").length).toEqual(8);
-      expect(dropdown.innerHTML).not.toMatch(/Show .*1/);
-      expect(dropdown.innerHTML).not.toMatch("more linked profiles");
+      expect(dropdown.innerHTML).not.toMatch(/Show .*1 more/);
+      expect(dropdown.innerHTML).not.toMatch("linked profiles");
       expect(dropdown.innerHTML).toMatch("Show fewer");
     });
   });

@@ -150,172 +150,166 @@ class Widget extends LitElement {
    */
   memberTemplate() {
     return html`
-      <div class="py-1 px-4 truncate" role="menuitem">
-        <section class="mt-1">
-          <!-- Name -->
-          <span class="block text-xl font-bold text-gray-900 truncate"
-            >${this.member.name}</span
-          >
+      <div class="p-4 truncate" role="menuitem">
+        <section class="flex gap-4">
+          <!-- Avatar -->
+          ${this.member.avatarUrl &&
+          html`<img
+            class="w-14 h-14 rounded-full"
+            src="${this.member.avatarUrl}"
+          />`}
 
-          <!-- Title -->
-          <span class="block text-sm text-gray-500 truncate"
-            >${this.member.jobTitle}</span
-          >
+          <div class="flex flex-col">
+            <!-- Name -->
+            <span
+              class="block text-lg font-semibold leading-5 text-gray-900 truncate"
+              >${this.member.name}</span
+            >
 
-          <!-- Organization -->
-          ${
-            !!this.member.organization
+            <!-- Title -->
+            <span class="block text-sm leading-5 text-gray-500 truncate"
+              >${this.member.jobTitle}</span
+            >
+
+            <!-- Organization -->
+            ${!!this.member.organization
               ? html`
-            <div class="flex flex-row justify-start items-center mt-1">
-              ${
-                this.member.organization.logo_url &&
-                html`<img
-                  class="mr-1 w-5 h-5"
-                  src="${this.member.organization.logo_url}"
-                />`
-              }
-              <!-- If organisation doesn't include a protocol (ie https://), add one so it's treated as absolute -->
-              <a
-                href="${
-                  this.member.organization.website.match(/https?:\/\//)
-                    ? this.member.organization.website
-                    : `https://${this.member.organization.website}`
-                }"
-                target="_blank"
-                rel="noreferrer"
-                class="mr-2 text-sm text-blue-500 hover:underline"
-                >${this.member.organization.name}</a
-              >
-              ${
-                this.member.organization.lifecycle_stage === "customer"
-                  ? unsafeSVG(iconCustomer)
-                  : nothing
-              }
-            </div>
-          </section>
-          `
+                  <div
+                    class="flex flex-row justify-start items-center mt-1 leading-5"
+                  >
+                    ${this.member.organization.logo_url &&
+                    html`<img
+                      class="mr-1 w-5 h-5"
+                      src="${this.member.organization.logo_url}"
+                    />`}
+                    <!-- If organisation doesn't include a protocol (ie https://), add one so it's treated as absolute -->
+                    <a
+                      href="${this.member.organization.website.match(
+                        /https?:\/\//
+                      )
+                        ? this.member.organization.website
+                        : `https://${this.member.organization.website}`}"
+                      target="_blank"
+                      rel="noreferrer"
+                      class="mr-2 text-sm text-blue-500 hover:underline"
+                      >${this.member.organization.name}</a
+                    >
+                    ${this.member.organization.lifecycle_stage === "customer"
+                      ? unsafeSVG(iconCustomer)
+                      : nothing}
+                  </div>
+                `
               : // Just used for spacing when the organisation is not present
-                html`<div class="mt-2"></div>`
-          }
+                html`<div class="mt-2"></div>`}
+          </div>
+        </section>
 
-          <!-- Pills -->
-          <section
-            class="flex flex-row justify-start items-center mt-1 space-x-1"
+        <!-- Pills -->
+        <section
+          class="flex flex-row justify-start items-center mt-1 space-x-1"
+        >
+          ${this.member.teammate
+            ? html`<obe-pill value="Teammate"></obe-pill>`
+            : html`<obe-pill
+                name="Orbit Level"
+                value="${this.member.orbitLevel || "N/A"}"
+              ></obe-pill>`}
+          ${this.member.lastActivityOccurredAt &&
+          html` <obe-pill
+            name="Last active"
+            value="${formatDate(this.member.lastActivityOccurredAt)}"
+          ></obe-pill>`}
+        </section>
+
+        <!-- Identities -->
+        ${!!this.member.identities &&
+        html` <section class="mt-3">
+          <p class="block text-sm text-gray-500 uppercase truncate">
+            Linked profiles & emails
+            <span class="ml-1 text-gray-900"
+              >${this.member.identities.length}</span
+            >
+          </p>
+          <div
+            class="flex flex-row flex-wrap gap-1 justify-start items-center py-1"
           >
-            ${
-              this.member.teammate
-                ? html`<obe-pill value="Teammate"></obe-pill>`
-                : html`<obe-pill
-                    name="Orbit Level"
-                    value="${this.member.orbitLevel || "N/A"}"
-                  ></obe-pill>`
-            }
-            ${
-              this.member.lastActivityOccurredAt &&
-              html` <obe-pill
-                name="Last active"
-                value="${formatDate(this.member.lastActivityOccurredAt)}"
-              ></obe-pill>`
-            }
-          </section>
+            ${this.member.identities.map((identity, index) => {
+              // Do not render identities that are above identity limit, unless we are showing all
+              if (!this.showAllIdentities && index > IDENTITY_LIMIT) {
+                return;
+              }
 
-          <!-- Identities -->
-          ${
-            !!this.member.identities &&
-            html` <section class="mt-3">
-              <p class="block text-sm text-gray-500 uppercase truncate">
-                Linked profiles & emails
-                <span class="ml-1 text-gray-900"
-                  >${this.member.identities.length}</span
+              // If we have reached limit, show button to show all identities
+              if (!this.showAllIdentities && index === IDENTITY_LIMIT) {
+                return html`<button
+                  @click="${this._toggleIdentities}"
+                  class="text-gray-500 cursor-pointer"
                 >
-              </p>
-              <div
-                class="flex flex-row flex-wrap gap-1 justify-start items-center py-1"
-              >
-                ${this.member.identities.map((identity, index) => {
-                  // Do not render identities that are above identity limit, unless we are showing all
-                  if (!this.showAllIdentities && index > IDENTITY_LIMIT) {
-                    return;
-                  }
+                  Show ${this.member.identities.length - IDENTITY_LIMIT} more
+                  linked profiles
+                </button>`;
+              }
 
-                  // If we have reached limit, show button to show all identities
-                  if (!this.showAllIdentities && index === IDENTITY_LIMIT) {
-                    return html`<button
-                      @click="${this._toggleIdentities}"
-                      class="text-gray-500 cursor-pointer"
-                    >
-                      Show ${this.member.identities.length - IDENTITY_LIMIT}
-                      more linked profiles
-                    </button>`;
-                  }
+              // Otherwise, render identity
+              return html`<obe-identity .identity=${identity}></obe-identity>`;
+            })}
 
-                  // Otherwise, render identity
-                  return html`<obe-identity
-                    .identity=${identity}
-                  ></obe-identity>`;
-                })}
-
-                <!-- If identities are expanded, show option to hide extras -->
-                ${this.showAllIdentities
-                  ? html`<button
-                      @click="${() => this._toggleIdentities(false)}"
-                      class="text-gray-500 cursor-pointer"
-                    >
-                      Show fewer
-                    </button>`
-                  : nothing}
-              </div>
-            </section>`
-          }
-
-          <!-- Tags -->
-          ${
-            !!this.member.tags &&
-            html` <section class="mt-3">
-              <p class="block text-sm text-gray-500 uppercase truncate">
-                Tags
-                <span class="ml-1 text-gray-900"
-                  >${this.member.tags.length}</span
+            <!-- If identities are expanded, show option to hide extras -->
+            ${this.showAllIdentities
+              ? html`<button
+                  @click="${() => this._toggleIdentities(false)}"
+                  class="text-gray-500 cursor-pointer"
                 >
-              </p>
-              <div
-                class="flex flex-row flex-wrap gap-1 justify-start items-center py-1"
-              >
-                ${this.member.tags.map((tag, index) => {
-                  // Do not render tags that are above tag limit, unless we are showing all
-                  if (!this.showAllTags && index > TAG_LIMIT) {
-                    return;
-                  }
+                  Show fewer
+                </button>`
+              : nothing}
+          </div>
+        </section>`}
 
-                  // If we have reached limit, show button to show all tags
-                  if (!this.showAllTags && index === TAG_LIMIT) {
-                    return html`<button
-                      @click="${this._toggleTags}"
-                      class="text-gray-500 cursor-pointer"
-                    >
-                      Show ${this.member.tags.length - TAG_LIMIT} more tags
-                    </button>`;
-                  }
+        <!-- Tags -->
+        ${!!this.member.tags &&
+        html` <section class="mt-3">
+          <p class="block text-sm text-gray-500 uppercase truncate">
+            Tags
+            <span class="ml-1 text-gray-900">${this.member.tags.length}</span>
+          </p>
+          <div
+            class="flex flex-row flex-wrap gap-1 justify-start items-center pt-1"
+          >
+            ${this.member.tags.map((tag, index) => {
+              // Do not render tags that are above tag limit, unless we are showing all
+              if (!this.showAllTags && index > TAG_LIMIT) {
+                return;
+              }
 
-                  // Otherwise, render tag
-                  return html`<obe-tag
-                    tag=${tag}
-                    workspace=${this.workspace}
-                  ></obe-tag>`;
-                })}
+              // If we have reached limit, show button to show all tags
+              if (!this.showAllTags && index === TAG_LIMIT) {
+                return html`<button
+                  @click="${this._toggleTags}"
+                  class="text-gray-500 cursor-pointer"
+                >
+                  Show ${this.member.tags.length - TAG_LIMIT} more tags
+                </button>`;
+              }
 
-                <!-- If tags are expanded, show option to hide extras -->
-                ${this.showAllTags
-                  ? html`<button
-                      @click="${() => this._toggleTags(false)}"
-                      class="text-gray-500 cursor-pointer"
-                    >
-                      Show fewer
-                    </button>`
-                  : nothing}
-              </div>
-            </section>`
-          }
+              // Otherwise, render tag
+              return html`<obe-tag
+                tag=${tag}
+                workspace=${this.workspace}
+              ></obe-tag>`;
+            })}
+
+            <!-- If tags are expanded, show option to hide extras -->
+            ${this.showAllTags
+              ? html`<button
+                  @click="${() => this._toggleTags(false)}"
+                  class="text-gray-500 cursor-pointer"
+                >
+                  Show fewer
+                </button>`
+              : nothing}
+          </div>
+        </section>`}
       </div>
     `;
   }

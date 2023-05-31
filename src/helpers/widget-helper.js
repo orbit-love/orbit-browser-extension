@@ -26,6 +26,7 @@ export function buildMemberData(member, included) {
   const organization = organizations[0] || null;
 
   return {
+    avatarUrl: member.attributes.avatar_url,
     name: member.attributes.name,
     jobTitle: member.attributes.title,
     slug: member.attributes.slug,
