@@ -114,9 +114,7 @@ class Widget extends LitElement {
    */
   textTemplate(text) {
     return html`
-      <span class="block py-1 px-4 text-sm text-gray-500 truncate"
-        >${text}</span
-      >
+      <span class="block px-4 py-5 text-gray-900 truncate">${text}</span>
     `;
   }
 
@@ -128,14 +126,14 @@ class Widget extends LitElement {
    */
   authErrorTemplate() {
     return html`
-      <span class="block py-1 px-4 text-sm text-gray-500 truncate"
+      <span class="block px-4 py-5 text-sm text-gray-900 truncate"
         >Authentication error: API token or workspace is missing or
         invalid</span
       >
       <span
         @click=${() => chrome.runtime.sendMessage("showOptions")}
-        class="block py-1 px-4 text-sm text-gray-500 cursor-pointer"
-        >Click here or on the extension icon to authenticate.</span
+        class="block py-5 px-4 w-full rounded-b-md text-left text-[#6C4DF6] font-semibold cursor-pointer hover:bg-gray-100 focus:bg-gray-100"
+        >Click here or on the extension icon to authenticate &rarr;</span
       >
     `;
   }
@@ -321,19 +319,23 @@ class Widget extends LitElement {
    */
   additionalDataTemplate() {
     return html`${this.isAMember
-        ? html`<hr class="block border-t border-gray-100" role="none" />`
-        : nothing}
-      <section class="flex flex-col gap-2 px-4 py-5">
-        ${this.hasAdditionalDataError
-          ? html`<p>There was an error fetching data</p>`
-          : this.additionalData.map(
-              (datum) =>
-                html`<obe-additional-data
-                  value="${datum}"
-                  platform="${this.platform}"
-                ></obe-additional-data>`
-            )}
-      </section> `;
+      ? html`<hr class="block border-t border-gray-100" role="none" />`
+      : nothing}
+    ${this.hasAuthError
+      ? nothing
+      : html`<section class="flex flex-col gap-2 px-4 py-5">
+          ${this.hasAdditionalDataError
+            ? html`<p class="text-gray-900">
+                There was an error fetching data
+              </p>`
+            : this.additionalData.map(
+                (datum) =>
+                  html`<obe-additional-data
+                    value="${datum}"
+                    platform="${this.platform}"
+                  ></obe-additional-data>`
+              )}
+        </section>`} `;
   }
 
   /**
