@@ -2,9 +2,9 @@ import "chrome-extension-async";
 import gitHubInjection from "github-injection";
 
 import { getOrbitCredentials } from "../oauth-helpers";
-import { isRepoInOrbitWorkspace } from "./orbit-helpers";
 import { createOrbitDetailsElement } from "./orbit-action";
 import { getPageType } from "./page-helpers";
+import { isRepoInOrbitWorkspace } from "../helpers/widget-helper";
 
 document.addEventListener("DOMContentLoaded", async () => {
   /**

@@ -16,6 +16,7 @@ import {
 } from "../helpers/widget-helper";
 
 const TAG_LIMIT = 5;
+const IDENTITY_LIMIT = 7;
 
 @customElement("obe-widget")
 class Widget extends LitElement {
@@ -33,10 +34,13 @@ class Widget extends LitElement {
     this.isLoading = false;
     this.hasLoaded = false;
     this.hasAuthError = false;
+
     this.hasError = false;
     this.hasAdditionalDataError = false;
     this.hasActionsError = false;
+
     this.showAllTags = false;
+    this.showAllIdentities = false;
 
     this.isAMember = false;
 
@@ -160,18 +164,23 @@ class Widget extends LitElement {
 
           <!-- Organization -->
           ${
-            this.member.organization &&
-            html`
+            !!this.member.organization
+              ? html`
             <div class="flex flex-row justify-start items-center mt-1">
               ${
                 this.member.organization.logo_url &&
-                html` <img
+                html`<img
                   class="mr-1 w-5 h-5"
                   src="${this.member.organization.logo_url}"
                 />`
               }
+              <!-- If organisation doesn't include a protocol (ie https://), add one so it's treated as absolute -->
               <a
-                href="${this.member.organization.website}"
+                href="${
+                  this.member.organization.website.match(/https?:\/\//)
+                    ? this.member.organization.website
+                    : `https://${this.member.organization.website}`
+                }"
                 target="_blank"
                 rel="noreferrer"
                 class="mr-2 text-sm text-blue-500 hover:underline"
@@ -185,6 +194,8 @@ class Widget extends LitElement {
             </div>
           </section>
           `
+              : // Just used for spacing when the organisation is not present
+                html`<div class="mt-2"></div>`
           }
 
           <!-- Pills -->
@@ -221,10 +232,38 @@ class Widget extends LitElement {
               <div
                 class="flex flex-row flex-wrap gap-1 justify-start items-center py-1"
               >
-                ${this.member.identities.map(
-                  (identity) =>
-                    html`<obe-identity .identity=${identity}></obe-identity>`
-                )}
+                ${this.member.identities.map((identity, index) => {
+                  // Do not render identities that are above identity limit, unless we are showing all
+                  if (!this.showAllIdentities && index > IDENTITY_LIMIT) {
+                    return;
+                  }
+
+                  // If we have reached limit, show button to show all identities
+                  if (!this.showAllIdentities && index === IDENTITY_LIMIT) {
+                    return html`<button
+                      @click="${this._toggleIdentities}"
+                      class="text-gray-500 cursor-pointer"
+                    >
+                      Show ${this.member.identities.length - IDENTITY_LIMIT}
+                      more linked profiles
+                    </button>`;
+                  }
+
+                  // Otherwise, render identity
+                  return html`<obe-identity
+                    .identity=${identity}
+                  ></obe-identity>`;
+                })}
+
+                <!-- If identities are expanded, show option to hide extras -->
+                ${this.showAllIdentities
+                  ? html`<button
+                      @click="${() => this._toggleIdentities(false)}"
+                      class="text-gray-500 cursor-pointer"
+                    >
+                      Show fewer
+                    </button>`
+                  : nothing}
               </div>
             </section>`
           }
@@ -251,7 +290,7 @@ class Widget extends LitElement {
                   // If we have reached limit, show button to show all tags
                   if (!this.showAllTags && index === TAG_LIMIT) {
                     return html`<button
-                      @click="${this._showAllTags}"
+                      @click="${this._toggleTags}"
                       class="text-gray-500 cursor-pointer"
                     >
                       Show ${this.member.tags.length - TAG_LIMIT} more tags
@@ -264,6 +303,16 @@ class Widget extends LitElement {
                     workspace=${this.workspace}
                   ></obe-tag>`;
                 })}
+
+                <!-- If tags are expanded, show option to hide extras -->
+                ${this.showAllTags
+                  ? html`<button
+                      @click="${() => this._toggleTags(false)}"
+                      class="text-gray-500 cursor-pointer"
+                    >
+                      Show fewer
+                    </button>`
+                  : nothing}
               </div>
             </section>`
           }
@@ -335,8 +384,13 @@ class Widget extends LitElement {
     this.isOpen = !this.isOpen;
   }
 
-  _showAllTags() {
-    this.showAllTags = true;
+  _toggleTags(showTags = true) {
+    this.showAllTags = showTags;
+    this.requestUpdate();
+  }
+
+  _toggleIdentities(showIdentities = true) {
+    this.showAllIdentities = showIdentities;
     this.requestUpdate();
   }
 

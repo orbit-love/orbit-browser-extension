@@ -144,10 +144,147 @@ describe("obe-widget", () => {
     global.chrome = originalChrome;
   });
 
-  it("sets showAllTags to true when _showAllTags called", () => {
-    expect(element.showAllTags).toBe(false);
-    element._showAllTags();
-    expect(element.showAllTags).toBe(true);
+  describe("'_toggleTags", () => {
+    it("sets showAllTags to true by default", () => {
+      expect(element.showAllTags).toBe(false);
+      element._toggleTags();
+      expect(element.showAllTags).toBe(true);
+    });
+
+    it("sets showAllTags to false if specified", () => {
+      element.showAllTags = true;
+      expect(element.showAllTags).toBe(true);
+      element._toggleTags(false);
+      expect(element.showAllTags).toBe(false);
+    });
+
+    it("correctly responds to showAllTags", async () => {
+      element.isAMember = true;
+      element.member = {
+        identities: [],
+        jobTitle: "CEO",
+        lastActivityOccurredAt: 1234,
+        name: "Delete",
+        orbitLevel: 100,
+        organization: null,
+        slug: "delete",
+        tags: ["tag-1", "tag-2", "tag-3", "tag-4", "tag-5", "tag-6"],
+        teammate: false,
+      };
+
+      element.update();
+
+      const dropdown = element.shadowRoot.querySelector(".obe-dropdown");
+
+      expect(dropdown.innerHTML).toMatch("tag-1");
+      expect(dropdown.innerHTML).toMatch("tag-2");
+      expect(dropdown.innerHTML).toMatch("tag-3");
+      expect(dropdown.innerHTML).toMatch("tag-4");
+      expect(dropdown.innerHTML).toMatch("tag-5");
+      expect(dropdown.innerHTML).not.toMatch("tag-6");
+      expect(dropdown.innerHTML).toMatch(/Show .*1 more tags/);
+      expect(dropdown.innerHTML).not.toMatch("Show fewer");
+
+      element._toggleTags();
+      await element.updateComplete;
+
+      expect(dropdown.innerHTML).toMatch("tag-1");
+      expect(dropdown.innerHTML).toMatch("tag-2");
+      expect(dropdown.innerHTML).toMatch("tag-3");
+      expect(dropdown.innerHTML).toMatch("tag-4");
+      expect(dropdown.innerHTML).toMatch("tag-5");
+      expect(dropdown.innerHTML).toMatch("tag-6");
+      expect(dropdown.innerHTML).not.toMatch(/Show .*1 more tags/);
+      expect(dropdown.innerHTML).toMatch("Show fewer");
+    });
+  });
+
+  describe("#_toggleIdentities", () => {
+    it("sets showAllIdentities to true by default", () => {
+      expect(element.showAllIdentities).toBe(false);
+      element._toggleIdentities();
+      expect(element.showAllIdentities).toBe(true);
+    });
+
+    it("sets showAllIdentities to false if specified", () => {
+      element.showAllIdentities = true;
+      expect(element.showAllIdentities).toBe(true);
+      element._toggleIdentities(false);
+      expect(element.showAllIdentities).toBe(false);
+    });
+
+    it("correctly responds to showAllIdentities", async () => {
+      element.isAMember = true;
+      element.member = {
+        identities: [
+          {
+            source: "reddit",
+            username: "identity-1",
+            profile_url: "faker.com",
+          },
+          {
+            source: "reddit",
+            username: "identity-2",
+            profile_url: "faker.com",
+          },
+          {
+            source: "reddit",
+            username: "identity-3",
+            profile_url: "faker.com",
+          },
+          {
+            source: "reddit",
+            username: "identity-4",
+            profile_url: "faker.com",
+          },
+          {
+            source: "reddit",
+            username: "identity-5",
+            profile_url: "faker.com",
+          },
+          {
+            source: "reddit",
+            username: "identity-6",
+            profile_url: "faker.com",
+          },
+          {
+            source: "reddit",
+            username: "identity-7",
+            profile_url: "faker.com",
+          },
+          {
+            source: "reddit",
+            username: "identity-8",
+            profile_url: "faker.com",
+          },
+        ],
+        jobTitle: "CEO",
+        lastActivityOccurredAt: 1234,
+        name: "Delete",
+        orbitLevel: 100,
+        organization: null,
+        slug: "delete",
+        tags: [],
+        teammate: false,
+      };
+
+      element.update();
+
+      const dropdown = element.shadowRoot.querySelector(".obe-dropdown");
+
+      expect(dropdown.querySelectorAll("obe-identity").length).toEqual(7);
+      expect(dropdown.innerHTML).toMatch(/Show .*1/);
+      expect(dropdown.innerHTML).toMatch("more linked profiles");
+      expect(dropdown.innerHTML).not.toMatch("Show fewer");
+
+      element._toggleIdentities();
+      await element.updateComplete;
+
+      expect(dropdown.querySelectorAll("obe-identity").length).toEqual(8);
+      expect(dropdown.innerHTML).not.toMatch(/Show .*1/);
+      expect(dropdown.innerHTML).not.toMatch("more linked profiles");
+      expect(dropdown.innerHTML).toMatch("Show fewer");
+    });
   });
 
   it("shows additionalData if present", () => {
@@ -305,6 +442,64 @@ describe("obe-widget", () => {
       });
 
       global.chrome = originalChrome;
+    });
+
+    describe("organisation", () => {
+      it("makes link absolute if it is relative", () => {
+        element.isAMember = true;
+        element.member = {
+          identities: [],
+          jobTitle: "CEO",
+          lastActivityOccurredAt: 1234,
+          name: "Delete",
+          orbitLevel: 100,
+          organization: {
+            website: "faker.com",
+            name: "Test org",
+          },
+          slug: "delete",
+          tags: ["tag-1", "tag-2", "tag-3", "tag-4", "tag-5", "tag-6"],
+          teammate: false,
+        };
+
+        element.update();
+
+        const dropdown = element.shadowRoot.querySelector(".obe-dropdown");
+
+        expect(dropdown.querySelector("[href='https://faker.com']")).not.toBe(
+          null
+        );
+        expect(dropdown.querySelector("[href='faker.com']")).toBe(null);
+      });
+
+      it("leaves absolute links untouched", () => {
+        element.isAMember = true;
+        element.member = {
+          identities: [],
+          jobTitle: "CEO",
+          lastActivityOccurredAt: 1234,
+          name: "Delete",
+          orbitLevel: 100,
+          organization: {
+            website: "https://www.faker.com",
+            name: "Test org",
+          },
+          slug: "delete",
+          tags: ["tag-1", "tag-2", "tag-3", "tag-4", "tag-5", "tag-6"],
+          teammate: false,
+        };
+
+        element.update();
+
+        const dropdown = element.shadowRoot.querySelector(".obe-dropdown");
+
+        expect(
+          dropdown.querySelector("[href='https://www.faker.com']")
+        ).not.toBe(null);
+        expect(
+          dropdown.querySelector("[href='https://https://www.faker.com']")
+        ).toBe(null);
+      });
     });
   });
 });
