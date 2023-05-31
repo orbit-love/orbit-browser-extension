@@ -4,10 +4,10 @@ export default class TwitterProfilePage extends Page {
   detect() {
     /**
      * Since Twitter doesn't have a specific URL pattern for profile
-     * pages, we look for a header photo instead. Conveniently, they always
-     * seem to link to "/<username>/header_photo"
+     * pages, we look for a main profile picture instead. Conveniently, they always
+     * seem to link to "/<username>/photo"
      */
-    return !!document.querySelector('a[href$="/header_photo"]');
+    return !!document.querySelector('a[href$="/photo"]');
   }
 
   findWidgetZones() {
@@ -50,14 +50,14 @@ export default class TwitterProfilePage extends Page {
 
   findUsername(main) {
     /**
-     * The headerPhoto element here is a link surrounding the, well, header photo,
-     * which links to "/<username>/header_photo"
+     * The headerProfilePhoto element here is a link surrounding the, well, header profile photo,
+     * which links to "/<username>/photo"
      */
-    const headerPhoto = main.querySelector('a[href$="/header_photo"]');
+    const headerProfilePhoto = main.querySelector('a[href$="/photo"]');
 
-    if (!headerPhoto) { return }
+    if (!headerProfilePhoto) { return }
 
-    return headerPhoto.getAttribute('href').split('/')[1];
+    return headerProfilePhoto.getAttribute('href').split('/')[1];
   }
 
   findInsertionPoint(main) {
