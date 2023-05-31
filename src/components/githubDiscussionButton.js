@@ -6,8 +6,8 @@ import { customElement } from "lit/decorators.js";
 import tailwindStylesheet from "bundle-text:../styles/tailwind.global.css";
 import orbitLogo from "bundle-text:../icons/orbit-logo.svg";
 
-@customElement("obe-github-button")
-class GitHubButton extends LitElement {
+@customElement("obe-github-discussion-button")
+class GitHubDiscussionButton extends LitElement {
   static styles = [unsafeCSS(tailwindStylesheet)];
 
   render() {
@@ -15,12 +15,13 @@ class GitHubButton extends LitElement {
       <div>
         <button
           type="button"
-          class="inline-block px-[8px] py-[4px] text-[#656d76] hover:text-[#6c4df6]"
+          class="inline-block rounded px-[4px] py-[8px] text-[#656d76] hover:bg-[#d0d7de52]"
           id="menu-button"
+          aria-expanded="true"
           aria-haspopup="true"
         >
           <span class="sr-only">Open Orbit widget</span>
-          <span aria-hidden="true">${unsafeSVG(orbitLogo)}</span>
+          ${unsafeSVG(orbitLogo)}
         </button>
       </div>
     `;

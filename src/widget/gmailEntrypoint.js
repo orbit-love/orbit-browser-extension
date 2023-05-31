@@ -23,7 +23,7 @@ const initializeWidget = () => {
   const page = orchestrator.detectPage(pages);
   if (!page) return;
 
-  orchestrator.addWidgetElements(page, "gmail");
+  orchestrator.addWidgetElements(page);
 
   // Element id=:1 is the "thread view" on thread pages (and also the "inbox view" for inbox pages)
   const threadElement = document.querySelector('#\\:1');
@@ -33,7 +33,7 @@ const initializeWidget = () => {
   // On changes to the "thread view", rerun the orchestrator again. This is so that we can
   // track when the user expands an email, and add the widget at that time.
   observer = new MutationObserver((_mutationList, _observer) => {
-    orchestrator.addWidgetElements(page, "gmail");
+    orchestrator.addWidgetElements(page);
   });
 
   observer.observe(threadElement, {

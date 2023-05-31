@@ -1,5 +1,13 @@
 export default class Page {
   /**
+   * Returns the standard name of the platform this page belongs to, e.g. "github", "twitter", "gmail".
+   * We use a method rather than internal state to be consistant with this class being an interface.
+   *
+   * @returns {String}
+   */
+  getPlatform() {}
+
+  /**
    * Check if we are currently on this type of page
    *
    * @returns {Boolean}
@@ -47,4 +55,12 @@ export default class Page {
    * @returns {Element|null}
    */
   findInsertionPoint(widgetZone) {}
+
+  /**
+   * Returns the name of the CustomElement of the widget button.
+   * Returns `obe-{platform}-button` by default.
+   *
+   * @returns {String}
+   */
+  getButtonElementName() { return `obe-${this.getPlatform()}-button`; }
 }

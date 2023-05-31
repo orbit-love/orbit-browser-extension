@@ -14,7 +14,7 @@ const initializeWidget = () => {
   const page = orchestrator.detectPage(pages);
   if (!page) return;
 
-  orchestrator.addWidgetElements(page, "linkedin");
+  orchestrator.addWidgetElements(page);
 }
 
 async function setupObserver() {
@@ -22,7 +22,7 @@ async function setupObserver() {
 
   if (!titleElement) { return }
 
-  const observer = new MutationObserver((mutationList, _observer) => {
+  const observer = new MutationObserver((_mutationList, _observer) => {
     initializeWidget();
   });
   

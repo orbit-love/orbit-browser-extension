@@ -1,6 +1,8 @@
 import Page from "./page";
 
 export default class GitHubIssueOrPullRequestPage extends Page {
+  getPlatform() { return 'github' }
+
   detect() {
     const issuePageRegex = /.*\/.*\/issues?\/.*/;
     const pullRequestPageRegex = /.*\/.*\/pulls?\/.*/;
@@ -27,4 +29,6 @@ export default class GitHubIssueOrPullRequestPage extends Page {
   findInsertionPoint(comment) {
     return comment.querySelector(".timeline-comment-actions");
   }
+
+  getButtonElementName() { return 'obe-github-issue-or-pull-request-button' }
 }

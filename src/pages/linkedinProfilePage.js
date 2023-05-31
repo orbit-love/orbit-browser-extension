@@ -1,6 +1,8 @@
 import Page from "./page";
 
 export default class LinkedinProfilePage extends Page {
+  getPlatform() { return 'linkedin' }
+
   detect() {
     const pathname = window.location.pathname;
     return pathname.startsWith("/in/");
