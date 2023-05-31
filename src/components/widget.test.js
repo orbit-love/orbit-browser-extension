@@ -182,7 +182,7 @@ describe("obe-widget", () => {
       expect(dropdown.innerHTML).toMatch("tag-4");
       expect(dropdown.innerHTML).toMatch("tag-5");
       expect(dropdown.innerHTML).not.toMatch("tag-6");
-      expect(dropdown.innerHTML).toMatch(/Show .*1 more tags/);
+      expect(dropdown.innerHTML).toMatch(/\+.*1 more/);
       expect(dropdown.innerHTML).not.toMatch("Show fewer");
 
       element._toggleTags();
@@ -194,7 +194,7 @@ describe("obe-widget", () => {
       expect(dropdown.innerHTML).toMatch("tag-4");
       expect(dropdown.innerHTML).toMatch("tag-5");
       expect(dropdown.innerHTML).toMatch("tag-6");
-      expect(dropdown.innerHTML).not.toMatch(/Show .*1 more tags/);
+      expect(dropdown.innerHTML).not.toMatch(/\+.*1 more/);
       expect(dropdown.innerHTML).toMatch("Show fewer");
     });
   });

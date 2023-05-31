@@ -151,7 +151,7 @@ class Widget extends LitElement {
    */
   memberTemplate() {
     return html`
-      <div class="p-4 truncate" role="menuitem">
+      <div class="px-4 py-5 truncate" role="menuitem">
         <section class="flex gap-4">
           <!-- Avatar -->
           ${this.member.avatarUrl &&
@@ -245,7 +245,7 @@ class Widget extends LitElement {
               if (!this.showAllIdentities && index === IDENTITY_LIMIT) {
                 return html`<button
                   @click="${this._toggleIdentities}"
-                  class="py-0.5 px-1 text-sm text-gray-500 rounded-md ring-1 ring-inset ring-gray-100 cursor-pointer"
+                  class="py-1 px-1.5 text-sm text-gray-500 rounded-md ring-1 ring-inset ring-gray-100 cursor-pointer"
                 >
                   +${this.member.identities.length - IDENTITY_LIMIT} more
                 </button>`;
@@ -259,7 +259,7 @@ class Widget extends LitElement {
             ${this.showAllIdentities
               ? html`<button
                   @click="${() => this._toggleIdentities(false)}"
-                  class="py-0.5 px-1 text-sm text-gray-500 rounded-md ring-1 ring-inset ring-gray-100 cursor-pointer"
+                  class="py-1 px-1.5 text-sm text-gray-500 rounded-md ring-1 ring-inset ring-gray-100 cursor-pointer"
                 >
                   Show fewer
                 </button>`
@@ -269,13 +269,10 @@ class Widget extends LitElement {
 
         <!-- Tags -->
         ${!!this.member.tags &&
-        html` <section class="mt-3">
-          <p class="block text-sm text-gray-500 uppercase truncate">
-            Tags
-            <span class="ml-1 text-gray-900">${this.member.tags.length}</span>
-          </p>
+        html` <section class="mt-5">
+          <p class="sr-only">${this.member.tags.length} tags</p>
           <div
-            class="flex flex-row flex-wrap gap-1 justify-start items-center pt-1"
+            class="flex flex-row flex-wrap gap-x-1 gap-y-1.5 justify-start items-center"
           >
             ${this.member.tags.map((tag, index) => {
               // Do not render tags that are above tag limit, unless we are showing all
@@ -287,9 +284,9 @@ class Widget extends LitElement {
               if (!this.showAllTags && index === TAG_LIMIT) {
                 return html`<button
                   @click="${this._toggleTags}"
-                  class="text-gray-500 cursor-pointer"
+                  class="py-1 px-1.5 text-sm text-gray-500 rounded-md ring-1 ring-inset ring-gray-100 cursor-pointer"
                 >
-                  Show ${this.member.tags.length - TAG_LIMIT} more tags
+                  +${this.member.tags.length - TAG_LIMIT} more
                 </button>`;
               }
 
@@ -304,7 +301,7 @@ class Widget extends LitElement {
             ${this.showAllTags
               ? html`<button
                   @click="${() => this._toggleTags(false)}"
-                  class="text-gray-500 cursor-pointer"
+                  class="py-1 px-1.5 text-sm text-gray-500 rounded-md ring-1 ring-inset ring-gray-100 cursor-pointer"
                 >
                   Show fewer
                 </button>`

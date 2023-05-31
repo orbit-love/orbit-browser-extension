@@ -26,7 +26,7 @@ class Tag extends LitElement {
         rel="noreferrer"
       >
         <span
-          class="ring-purple-700/10 inline-flex items-center py-0.5 px-1.5 text-xs font-medium text-purple-700 bg-purple-50 rounded-md ring-1 ring-inset"
+          class="inline-flex items-center py-1 px-1.5 text-sm text-purple-900 bg-purple-100 rounded-md"
           >${this.tag}</span
         >
       </a>
