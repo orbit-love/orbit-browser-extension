@@ -8,9 +8,9 @@ describe("TwitterProfilePage", () => {
   });
 
   describe("#detect", () => {
-    it("detects header photos", () => {
+    it("detects header profile photos", () => {
       const headerPhoto = document.createElement("a");
-      headerPhoto.setAttribute('href', '/OrbitModel/header_photo');
+      headerPhoto.setAttribute('href', '/OrbitModel/photo');
       document.body.appendChild(headerPhoto);
       expect(page.detect()).toBe(true);
       document.body.removeChild(headerPhoto);
