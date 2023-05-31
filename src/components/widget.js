@@ -70,7 +70,7 @@ class Widget extends LitElement {
     return html`
       <div
         class="obe-dropdown ring-opacity-5 absolute right-0 z-10 mt-2 bg-white rounded-md ring-1 ring-black shadow-lg origin-top-right focus:outline-none"
-        role="menu"
+        role="article"
         aria-orientation="vertical"
         aria-labelledby="menu-button"
         aria-hidden="${!this.isOpen}"
@@ -114,9 +114,7 @@ class Widget extends LitElement {
    */
   textTemplate(text) {
     return html`
-      <span
-        class="block py-1 px-4 text-sm text-gray-500 truncate"
-        role="menuitem"
+      <span class="block py-1 px-4 text-sm text-gray-500 truncate"
         >${text}</span
       >
     `;
@@ -130,16 +128,13 @@ class Widget extends LitElement {
    */
   authErrorTemplate() {
     return html`
-      <span
-        class="block py-1 px-4 text-sm text-gray-500 truncate"
-        role="menuitem"
+      <span class="block py-1 px-4 text-sm text-gray-500 truncate"
         >Authentication error: API token or workspace is missing or
         invalid</span
       >
       <span
         @click=${() => chrome.runtime.sendMessage("showOptions")}
         class="block py-1 px-4 text-sm text-gray-500 cursor-pointer"
-        role="menuitem"
         >Click here or on the extension icon to authenticate.</span
       >
     `;
@@ -152,11 +147,12 @@ class Widget extends LitElement {
    */
   memberTemplate() {
     return html`
-      <div class="px-4 py-5 w-80 truncate" role="menuitem">
+      <div class="px-4 py-5 w-80 truncate">
         <section class="flex gap-4">
           <!-- Avatar -->
           ${this.member.avatarUrl &&
           html`<img
+            alt=""
             class="w-14 h-14 rounded-full"
             src="${this.member.avatarUrl}"
           />`}
@@ -181,6 +177,7 @@ class Widget extends LitElement {
                   >
                     ${this.member.organization.logo_url &&
                     html`<img
+                      alt=""
                       class="mr-1 w-5 h-5"
                       src="${this.member.organization.logo_url}"
                     />`}
@@ -197,7 +194,10 @@ class Widget extends LitElement {
                       >${this.member.organization.name}</a
                     >
                     ${this.member.organization.lifecycle_stage === "customer"
-                      ? unsafeSVG(iconCustomer)
+                      ? html`<span class="sr-only">Customer</span
+                          ><span aria-hidden="true"
+                            >${unsafeSVG(iconCustomer)}</span
+                          >`
                       : nothing}
                   </div>
                 `
@@ -231,11 +231,11 @@ class Widget extends LitElement {
 
         <!-- Identities -->
         ${!!this.member.identities &&
-        html` <section class="mt-3">
+        html`<section>
           <p class="sr-only">
             ${this.member.identities.length} linked profiles & emails
           </p>
-          <div class="flex flex-row flex-wrap gap-1 justify-start items-center">
+          <ul class="flex flex-row flex-wrap gap-1 justify-start items-center">
             ${this.member.identities.map((identity, index) => {
               // Do not render identities that are above identity limit, unless we are showing all
               if (!this.showAllIdentities && index > IDENTITY_LIMIT) {
@@ -265,14 +265,14 @@ class Widget extends LitElement {
                   Show fewer
                 </button>`
               : nothing}
-          </div>
+          </ul>
         </section>`}
 
         <!-- Tags -->
         ${!!this.member.tags &&
-        html` <section class="mt-5">
+        html`<section class="mt-5">
           <p class="sr-only">${this.member.tags.length} tags</p>
-          <div
+          <ul
             class="flex flex-row flex-wrap gap-x-1 gap-y-1.5 justify-start items-center"
           >
             ${this.member.tags.map((tag, index) => {
@@ -307,7 +307,7 @@ class Widget extends LitElement {
                   Show fewer
                 </button>`
               : nothing}
-          </div>
+          </ul>
         </section>`}
       </div>
     `;
@@ -358,7 +358,6 @@ class Widget extends LitElement {
           href="${ORBIT_API_ROOT_URL}/${this.workspace}/members/${this.member
             .slug}"
           class="block py-5 px-4 w-full text-left text-[#6C4DF6] font-semibold truncate rounded-b-md hover:bg-gray-100 focus:bg-gray-100"
-          role="menuitem"
         >
           Go to ${this.username}’s Orbit profile &rarr;
         </a>
@@ -370,7 +369,6 @@ class Widget extends LitElement {
           : nothing}
         <button
           class="block py-5 px-4 w-full text-left text-[#6C4DF6] font-semibold truncate rounded-b-md hover:bg-gray-100 focus:bg-gray-100"
-          role="menuitem"
           @click="${this._addMemberToWorkspace}"
         >
           Add ${this.username} to ${this.workspace} on Orbit
@@ -394,7 +392,7 @@ class Widget extends LitElement {
   }
 
   /**
-   * Run on mouseover of widget - loads member data & additional data
+   * Run on mouseover or focus of widget - loads member data & additional data
    * via background.js, then re-renders widget with new data.
    * Uses `hasLoaded` to prevent requests running repeatedly
    */
@@ -531,6 +529,7 @@ class Widget extends LitElement {
           name="button"
           @click="${this._toggle}"
           @mouseover="${this._loadOrbitData}"
+          @focusin="${this._loadOrbitData}"
         ></slot>
         ${this.dropdownTemplate()}
       </div>

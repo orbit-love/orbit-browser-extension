@@ -18,18 +18,20 @@ class Tag extends LitElement {
 
   render() {
     return html`
-      <a
-        href="${ORBIT_API_ROOT_URL}/${this
-          .workspace}/members?tags_contains_any_of[]=${this.tag}"
-        title="View all members tagged ${this.tag} in Orbit"
-        target="_blank"
-        rel="noreferrer"
-      >
-        <span
-          class="inline-flex items-center py-1 px-2 text-sm text-[#4A35A8] bg-[#EBE7FE] rounded-md"
-          >${this.tag}</span
+      <li>
+        <a
+          href="${ORBIT_API_ROOT_URL}/${this
+            .workspace}/members?tags_contains_any_of[]=${this.tag}"
+          title="View all members tagged ${this.tag} in Orbit"
+          target="_blank"
+          rel="noreferrer"
         >
-      </a>
+          <span
+            class="inline-flex items-center py-1 px-2 text-sm text-[#4A35A8] bg-[#EBE7FE] rounded-md"
+            >${this.tag}</span
+          >
+        </a>
+      </li>
     `;
   }
 }

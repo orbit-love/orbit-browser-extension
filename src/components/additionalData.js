@@ -20,6 +20,7 @@ class additionalData extends LitElement {
       <div class="flex gap-2 items-center">
         <img
           class="w-7 h-7"
+          alt=""
           src="${chrome.runtime.getURL(getIconPath(this.platform))}"
         />
         <span class="text-sm text-gray-900">${this.value}</span>

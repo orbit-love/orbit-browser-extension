@@ -22,7 +22,7 @@ class Pill extends LitElement {
         class="ring-gray-500/10 inline-flex items-center py-0.5 px-1.5 bg-gray-50 rounded-full ring-1 ring-inset"
       >
         ${this.icon &&
-        html`<span class="mr-1 w-4 text-gray-700"
+        html`<span class="mr-1 w-4 text-gray-700" aria-hidden="true"
           >${unsafeSVG(this.icon)}</span
         >`}
         ${this.name &&
