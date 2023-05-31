@@ -1,6 +1,7 @@
 import "chrome-extension-async";
 import { ORBIT_API_ROOT_URL, OAUTH_CLIENT_ID } from "./constants";
 import { configureRequest, getOrbitCredentials } from "./oauth-helpers";
+import { buildMemberData } from "./helpers/widget-helper";
 
 // When clicking on the Orbit extension button, open the options page
 chrome.browserAction.onClicked.addListener(() =>
@@ -81,7 +82,16 @@ const loadWorkspaces = async ({ accessToken, apiKey }) => {
       headers: headers,
     });
 
-    return { success: true, response: await response.json(), ok: response.ok };
+    const { data, included } = await response.json();
+
+    workspaces = data;
+    repositories = included.filter((item) => item.type === "repository");
+
+    return {
+      success: true,
+      ok: response.ok,
+      response: { workspaces, repositories },
+    };
   } catch (e) {
     return { success: false, response: e.message };
   }
@@ -182,11 +192,17 @@ const loadMemberData = async ({ username, platform }) => {
       headers,
     });
 
+    const { data, included } = await response.json();
+
+    if (!data) return { success: false };
+
+    const member = buildMemberData(data, included);
+
     return {
       success: true,
       response: {
         workspace: ORBIT_CREDENTIALS.WORKSPACE,
-        ...(await response.json()),
+        member,
       },
       status: response.status,
     };

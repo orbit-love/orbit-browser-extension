@@ -41,7 +41,7 @@ document.addEventListener("alpine:init", () => {
 
       // If authentication is present, fetch workspaces on page load
       if (!!apiKeyFromStorage || !!accessTokenFromStorage) {
-        const { response, success } = await chrome.runtime.sendMessage({
+        const { success, response } = await chrome.runtime.sendMessage({
           operation: "LOAD_WORKSPACES",
           accessToken: accessTokenFromStorage,
           apiKey: apiKeyFromStorage,
@@ -54,10 +54,9 @@ document.addEventListener("alpine:init", () => {
 
         // Give users with API token chance to switch to OAuth
         if (!!accessTokenFromStorage) this.showLogin = false;
-        const { data, included } = response;
 
-        workspaces = data;
-        repositories = included.filter((item) => item.type === "repository");
+        workspaces = response.workspaces;
+        repositories = response.repositories;
       }
       this.authenticationCheckStatus.status = "success";
       this.token = apiKeyFromStorage;
@@ -89,9 +88,9 @@ document.addEventListener("alpine:init", () => {
           "Failed to authenticate, please try again.";
         return;
       }
-      const { data, included } = response;
-      this.workspaces = data;
-      this.repositories = included.filter((item) => item.type === "repository");
+
+      this.workspaces = response.workspaces;
+      this.repositories = response.repositories;
       this.authenticationCheckStatus.status = "success";
       this.authenticationCheckStatus.message =
         "Signed in successfully. Please select a workspace.";

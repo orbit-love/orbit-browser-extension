@@ -379,17 +379,11 @@ class Widget extends LitElement {
     } else if (success === false) {
       this.hasError = true;
     } else {
-      const { data, included, workspace } = response;
-
-      if (!data) {
-        this.isAMember = false;
-        this.hasError = true;
-        return;
-      }
+      const { workspace, member } = response;
 
       this.workspace = workspace;
       this.isAMember = true;
-      this.member = buildMemberData(data, included);
+      this.member = member;
     }
   }
 
