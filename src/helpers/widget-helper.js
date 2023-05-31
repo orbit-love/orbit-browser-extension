@@ -141,3 +141,22 @@ export async function fetchRepositories() {
     .flatMap((repository_object) => Object.values(repository_object))
     .flat();
 }
+
+export function getIconPath(source) {
+  switch (source.toLowerCase()) {
+    case "email":
+      return "icons/email.svg";
+    case "discord":
+    case "discourse":
+    case "github":
+    case "linkedin":
+    case "reddit":
+    case "slack":
+    case "stack_overflow":
+    case "twitter":
+    case "youtube":
+      return `icons/${source.toLowerCase()}.png`;
+    default:
+      return "icons/custom-identity.svg";
+  }
+}

@@ -4,6 +4,7 @@ import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 import "./pill";
 import "./tag";
 import "./identity";
+import "./additionalData";
 
 import tailwindStylesheet from "bundle-text:../styles/tailwind.global.css";
 import iconCustomer from "bundle-text:../icons/icon-customer.svg";
@@ -151,7 +152,7 @@ class Widget extends LitElement {
    */
   memberTemplate() {
     return html`
-      <div class="px-4 py-5 truncate" role="menuitem">
+      <div class="px-4 py-5 w-80 truncate" role="menuitem">
         <section class="flex gap-4">
           <!-- Avatar -->
           ${this.member.avatarUrl &&
@@ -322,10 +323,16 @@ class Widget extends LitElement {
     return html`${this.isAMember
         ? html`<hr class="block border-t border-gray-100" role="none" />`
         : nothing}
-      <section class="flex flex-col gap-2 py-2 px-4 truncate">
+      <section class="flex flex-col gap-2 px-4 py-5">
         ${this.hasAdditionalDataError
           ? html`<p>There was an error fetching data</p>`
-          : this.additionalData.map((datum) => html`<p>${datum}</p>`)}
+          : this.additionalData.map(
+              (datum) =>
+                html`<obe-additional-data
+                  value="${datum}"
+                  platform="${this.platform}"
+                ></obe-additional-data>`
+            )}
       </section> `;
   }
 
@@ -465,9 +472,7 @@ class Widget extends LitElement {
     }
 
     this.additionalData = [
-      `Contributed ${getThreshold(
-        response.contributions_total
-      )} times on GitHub`,
+      `${getThreshold(response.contributions_total)} GitHub Contributions`,
     ];
 
     if (response.contributions_on_this_repo_total === 1) {
@@ -476,9 +481,9 @@ class Widget extends LitElement {
       return;
     } else {
       this.additionalData.push(
-        `Contributed ${getThreshold(
+        `${getThreshold(
           response.contributions_on_this_repo_total
-        )} times to this repository`
+        )} contributions on this repository`
       );
     }
   }

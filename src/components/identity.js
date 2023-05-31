@@ -2,6 +2,7 @@ import { LitElement, html, unsafeCSS } from "lit";
 import { customElement } from "lit/decorators.js";
 
 import tailwindStylesheet from "bundle-text:../styles/tailwind.global.css";
+import { getIconPath } from "../helpers/widget-helper";
 
 @customElement("obe-identity")
 class IdentityElement extends LitElement {
@@ -9,25 +10,6 @@ class IdentityElement extends LitElement {
     return {
       identity: { type: Object },
     };
-  }
-
-  getIconPath() {
-    switch (this.identity.source.toLowerCase()) {
-      case "email":
-        return "icons/email.svg";
-      case "discord":
-      case "discourse":
-      case "github":
-      case "linkedin":
-      case "reddit":
-      case "slack":
-      case "stack_overflow":
-      case "twitter":
-      case "youtube":
-        return `icons/${this.identity.source.toLowerCase()}.png`;
-      default:
-        return "icons/custom-identity.svg";
-    }
   }
 
   getTitle() {
@@ -65,7 +47,7 @@ class IdentityElement extends LitElement {
         <img
           title="${this.getTitle()}"
           class="w-6 h-6"
-          src="${chrome.runtime.getURL(this.getIconPath())}"
+          src="${chrome.runtime.getURL(getIconPath(this.identity.source))}"
         />
       </span>
     `;
