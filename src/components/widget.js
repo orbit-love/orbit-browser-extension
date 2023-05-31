@@ -145,7 +145,7 @@ class Widget extends LitElement {
    */
   memberTemplate() {
     return html`
-      <div class="px-4 py-5 w-80 truncate">
+      <div class="px-4 py-5 w-80">
         <section class="flex gap-4">
           <!-- Avatar -->
           ${this.member.avatarUrl &&
@@ -157,13 +157,12 @@ class Widget extends LitElement {
 
           <div class="flex flex-col">
             <!-- Name -->
-            <span
-              class="block text-lg font-semibold leading-5 text-gray-900 truncate"
+            <span class="block text-lg font-semibold leading-5 text-gray-900"
               >${this.member.name}</span
             >
 
             <!-- Title -->
-            <span class="block text-sm leading-5 text-gray-500 truncate"
+            <span class="block text-sm leading-5 text-gray-500"
               >${this.member.jobTitle}</span
             >
 
@@ -213,11 +212,13 @@ class Widget extends LitElement {
                 icon="${iconOrbitLevel}"
                 value="Teammate"
               ></obe-pill>`
-            : html`<obe-pill
+            : !!this.member.orbitLevel
+            ? html`<obe-pill
                 icon="${iconOrbitLevel}"
                 name="Orbit"
                 value="${this.member.orbitLevel || "N/A"}"
-              ></obe-pill>`}
+              ></obe-pill>`
+            : nothing}
           ${this.member.lastActivityOccurredAt &&
           html` <obe-pill
             name="Last Active"
@@ -228,85 +229,91 @@ class Widget extends LitElement {
         <hr class="block my-5 border-t border-gray-100" role="none" />
 
         <!-- Identities -->
-        ${!!this.member.identities &&
-        html`<section>
-          <p class="sr-only">
-            ${this.member.identities.length} linked profiles & emails
-          </p>
-          <ul class="flex flex-row flex-wrap gap-1 justify-start items-center">
-            ${this.member.identities.map((identity, index) => {
-              // Do not render identities that are above identity limit, unless we are showing all
-              if (!this.showAllIdentities && index > IDENTITY_LIMIT) {
-                return;
-              }
+        ${!!this.member.identities && this.member.identities.length > 0
+          ? html`<section>
+              <p class="sr-only">
+                ${this.member.identities.length} linked profiles & emails
+              </p>
+              <ul
+                class="flex flex-row flex-wrap gap-1 justify-start items-center"
+              >
+                ${this.member.identities.map((identity, index) => {
+                  // Do not render identities that are above identity limit, unless we are showing all
+                  if (!this.showAllIdentities && index > IDENTITY_LIMIT) {
+                    return;
+                  }
 
-              // If we have reached limit, show button to show all identities
-              if (!this.showAllIdentities && index === IDENTITY_LIMIT) {
-                return html`<button
-                  @click="${this._toggleIdentities}"
-                  class="py-1 px-1.5 text-sm text-gray-500 rounded-md ring-1 ring-inset ring-gray-100 cursor-pointer"
-                >
-                  +${this.member.identities.length - IDENTITY_LIMIT} more
-                </button>`;
-              }
+                  // If we have reached limit, show button to show all identities
+                  if (!this.showAllIdentities && index === IDENTITY_LIMIT) {
+                    return html`<button
+                      @click="${this._toggleIdentities}"
+                      class="py-1 px-1.5 text-sm text-gray-500 rounded-md ring-1 ring-inset ring-gray-100 cursor-pointer"
+                    >
+                      +${this.member.identities.length - IDENTITY_LIMIT} more
+                    </button>`;
+                  }
 
-              // Otherwise, render identity
-              return html`<obe-identity .identity=${identity}></obe-identity>`;
-            })}
+                  // Otherwise, render identity
+                  return html`<obe-identity
+                    .identity=${identity}
+                  ></obe-identity>`;
+                })}
 
-            <!-- If identities are expanded, show option to hide extras -->
-            ${this.showAllIdentities
-              ? html`<button
-                  @click="${() => this._toggleIdentities(false)}"
-                  class="py-1 px-1.5 text-sm text-gray-500 rounded-md ring-1 ring-inset ring-gray-100 cursor-pointer"
-                >
-                  Show fewer
-                </button>`
-              : nothing}
-          </ul>
-        </section>`}
+                <!-- If identities are expanded, show option to hide extras -->
+                ${this.showAllIdentities
+                  ? html`<button
+                      @click="${() => this._toggleIdentities(false)}"
+                      class="py-1 px-1.5 text-sm text-gray-500 rounded-md ring-1 ring-inset ring-gray-100 cursor-pointer"
+                    >
+                      Show fewer
+                    </button>`
+                  : nothing}
+              </ul>
+            </section>`
+          : nothing}
 
         <!-- Tags -->
-        ${!!this.member.tags &&
-        html`<section class="mt-5">
-          <p class="sr-only">${this.member.tags.length} tags</p>
-          <ul
-            class="flex flex-row flex-wrap gap-x-1 gap-y-1.5 justify-start items-center"
-          >
-            ${this.member.tags.map((tag, index) => {
-              // Do not render tags that are above tag limit, unless we are showing all
-              if (!this.showAllTags && index > TAG_LIMIT) {
-                return;
-              }
+        ${!!this.member.tags && this.member.tags.length > 0
+          ? html`<section class="mt-5">
+              <p class="sr-only">${this.member.tags.length} tags</p>
+              <ul
+                class="flex flex-row flex-wrap gap-x-1 gap-y-1.5 justify-start items-center"
+              >
+                ${this.member.tags.map((tag, index) => {
+                  // Do not render tags that are above tag limit, unless we are showing all
+                  if (!this.showAllTags && index > TAG_LIMIT) {
+                    return;
+                  }
 
-              // If we have reached limit, show button to show all tags
-              if (!this.showAllTags && index === TAG_LIMIT) {
-                return html`<button
-                  @click="${this._toggleTags}"
-                  class="py-1 px-1.5 text-sm text-gray-500 rounded-md ring-1 ring-inset ring-gray-100 cursor-pointer"
-                >
-                  +${this.member.tags.length - TAG_LIMIT} more
-                </button>`;
-              }
+                  // If we have reached limit, show button to show all tags
+                  if (!this.showAllTags && index === TAG_LIMIT) {
+                    return html`<button
+                      @click="${this._toggleTags}"
+                      class="py-1 px-1.5 text-sm text-gray-500 rounded-md ring-1 ring-inset ring-gray-100 cursor-pointer"
+                    >
+                      +${this.member.tags.length - TAG_LIMIT} more
+                    </button>`;
+                  }
 
-              // Otherwise, render tag
-              return html`<obe-tag
-                tag=${tag}
-                workspace=${this.workspace}
-              ></obe-tag>`;
-            })}
+                  // Otherwise, render tag
+                  return html`<obe-tag
+                    tag=${tag}
+                    workspace=${this.workspace}
+                  ></obe-tag>`;
+                })}
 
-            <!-- If tags are expanded, show option to hide extras -->
-            ${this.showAllTags
-              ? html`<button
-                  @click="${() => this._toggleTags(false)}"
-                  class="py-1 px-1.5 text-sm text-gray-500 rounded-md ring-1 ring-inset ring-gray-100 cursor-pointer"
-                >
-                  Show fewer
-                </button>`
-              : nothing}
-          </ul>
-        </section>`}
+                <!-- If tags are expanded, show option to hide extras -->
+                ${this.showAllTags
+                  ? html`<button
+                      @click="${() => this._toggleTags(false)}"
+                      class="py-1 px-1.5 text-sm text-gray-500 rounded-md ring-1 ring-inset ring-gray-100 cursor-pointer"
+                    >
+                      Show fewer
+                    </button>`
+                  : nothing}
+              </ul>
+            </section>`
+          : nothing}
       </div>
     `;
   }
@@ -361,7 +368,7 @@ class Widget extends LitElement {
             .slug}"
           class="block py-5 px-4 w-full text-left text-[#6C4DF6] font-semibold truncate rounded-b-md hover:bg-gray-100 focus:bg-gray-100"
         >
-          Go to ${this.username}’s Orbit profile &rarr;
+          Visit Orbit profile &rarr;
         </a>
       `;
     } else {
@@ -373,7 +380,7 @@ class Widget extends LitElement {
           class="block py-5 px-4 w-full text-left text-[#6C4DF6] font-semibold truncate rounded-b-md hover:bg-gray-100 focus:bg-gray-100"
           @click="${this._addMemberToWorkspace}"
         >
-          Add ${this.username} to ${this.workspace} on Orbit
+          Add to Orbit
         </button>
       `;
     }

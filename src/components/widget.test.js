@@ -35,7 +35,7 @@ describe("obe-widget", () => {
       "There was an error fetching Orbit data"
     );
 
-    expect(dropdown.innerHTML).toMatch(/Add .* to .* on Orbit/);
+    expect(dropdown.innerHTML).toMatch("Add to Orbit");
   });
 
   it("responds to click event", () => {
@@ -139,7 +139,7 @@ describe("obe-widget", () => {
     expect(dropdown.innerHTML).toMatch("Software Engineer");
     expect(dropdown.innerHTML).toMatch("123");
     expect(dropdown.innerHTML).toMatch("Jan 1");
-    expect(dropdown.innerHTML).toMatch(/Go to .* Orbit profile/);
+    expect(dropdown.innerHTML).toMatch("Visit Orbit profile");
 
     global.chrome = originalChrome;
   });
