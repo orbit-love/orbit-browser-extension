@@ -1,6 +1,8 @@
 import Page from "./page";
 
 export default class TwitterProfilePage extends Page {
+  getPlatform() { return 'twitter' }
+
   detect() {
     /**
      * Since Twitter doesn't have a specific URL pattern for profile

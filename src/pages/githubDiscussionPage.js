@@ -1,6 +1,8 @@
 import Page from "./page";
 
 export default class GitHubDiscussionPage extends Page {
+  getPlatform() { return 'github' }
+
   detect() {
     const pageRegex = /.*\/.*\/discussions?\/.*/;
     return pageRegex.test(window.location.pathname);

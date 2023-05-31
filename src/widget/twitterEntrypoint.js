@@ -14,7 +14,7 @@ const initializeWidget = () => {
   const page = orchestrator.detectPage(pages);
   if (!page) return;
 
-  orchestrator.addWidgetElements(page, "twitter");
+  orchestrator.addWidgetElements(page);
 }
 
 async function setupObserver() {

@@ -20,7 +20,7 @@ const initializeWidget = () => {
   const page = orchestrator.detectPage(pages);
   if (!page) return;
 
-  orchestrator.addWidgetElements(page, "github");
+  orchestrator.addWidgetElements(page);
 };
 
 document.addEventListener("DOMContentLoaded", initializeWidget);

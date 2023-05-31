@@ -2,6 +2,13 @@ export default class Page {
   /**
    * Check if we are currently on this type of page
    *
+   * @returns {String}
+   */
+  getPlatform() {}
+
+  /**
+   * Check if we are currently on this type of page
+   *
    * @returns {Boolean}
    */
   detect() {}
@@ -50,7 +57,9 @@ export default class Page {
 
   /**
    * Returns the name of the CustomElement of the widget button.
-   * If not defined, `obe-{platform}-button` will be used.
+   * Returns `obe-{platform}-button` by default.
+   *
+   * @returns {String}
    */
-  getButtonElementName() {}
+  getButtonElementName() { return `obe-${this.getPlatform()}-button`; }
 }

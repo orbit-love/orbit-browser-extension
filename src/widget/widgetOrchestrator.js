@@ -22,9 +22,9 @@ export default class WidgetOrchestrator {
    * Inserts the widget for each of the zones on given page
    *
    * @param {Page} page the page to insert widget on
-   * @param {string} platform the site we're on, used as a key for naming HTML elements
    */
-  addWidgetElements(page, platform) {
+  addWidgetElements(page) {
+    const platform = page.getPlatform();
     const widgetZones = page.findWidgetZones();
 
     for (const widgetZone of widgetZones) {
@@ -54,7 +54,7 @@ export default class WidgetOrchestrator {
       if (!insertionPoint) continue;
 
       const widgetElement = this.addWidgetElement(username, platform);
-      this.addOrbitButton(widgetElement, platform, page);
+      this.addOrbitButton(widgetElement, page);
       this.addAdditionalDataElements(widgetElement, platform);
 
       insertionPoint.insertBefore(widgetElement, insertionPoint.children[0]);
@@ -83,13 +83,12 @@ export default class WidgetOrchestrator {
    * Adds the orbit button to a given widget element
    *
    * @param {Element} widgetElement element to which we append the button
-   * @param {string} platform the site we're on, used as a key for naming HTML elements
+   * @param {Page} page the current page
    *
    * @returns {Element} the created button
    */
-  addOrbitButton(widgetElement, platform, page) {
-    const buttonElementName =
-      page.getButtonElementName() || `obe-${platform}-button`;
+  addOrbitButton(widgetElement, page) {
+    const buttonElementName = page.getButtonElementName();
     if (!!widgetElement.querySelector(buttonElementName)) return;
 
     const buttonElement = window.document.createElement(buttonElementName);
