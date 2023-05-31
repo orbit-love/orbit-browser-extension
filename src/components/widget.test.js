@@ -35,7 +35,7 @@ describe("obe-widget", () => {
       "There was an error fetching Orbit data"
     );
 
-    expect(dropdown.innerHTML).toMatch(/Add .* to .* on Orbit/);
+    expect(dropdown.innerHTML).toMatch("Add to Orbit");
   });
 
   it("responds to click event", () => {
@@ -138,8 +138,8 @@ describe("obe-widget", () => {
     expect(dropdown.innerHTML).toMatch("John Doe");
     expect(dropdown.innerHTML).toMatch("Software Engineer");
     expect(dropdown.innerHTML).toMatch("123");
-    expect(dropdown.innerHTML).toMatch("Jan 1, 1970");
-    expect(dropdown.innerHTML).toMatch(/See .* profile on Orbit/);
+    expect(dropdown.innerHTML).toMatch("Jan 1");
+    expect(dropdown.innerHTML).toMatch("Visit Orbit profile");
 
     global.chrome = originalChrome;
   });
@@ -182,7 +182,7 @@ describe("obe-widget", () => {
       expect(dropdown.innerHTML).toMatch("tag-4");
       expect(dropdown.innerHTML).toMatch("tag-5");
       expect(dropdown.innerHTML).not.toMatch("tag-6");
-      expect(dropdown.innerHTML).toMatch(/Show .*1 more tags/);
+      expect(dropdown.innerHTML).toMatch(/\+.*1 more/);
       expect(dropdown.innerHTML).not.toMatch("Show fewer");
 
       element._toggleTags();
@@ -194,7 +194,7 @@ describe("obe-widget", () => {
       expect(dropdown.innerHTML).toMatch("tag-4");
       expect(dropdown.innerHTML).toMatch("tag-5");
       expect(dropdown.innerHTML).toMatch("tag-6");
-      expect(dropdown.innerHTML).not.toMatch(/Show .*1 more tags/);
+      expect(dropdown.innerHTML).not.toMatch(/\+.*1 more/);
       expect(dropdown.innerHTML).toMatch("Show fewer");
     });
   });
@@ -247,16 +247,6 @@ describe("obe-widget", () => {
             username: "identity-6",
             profile_url: "faker.com",
           },
-          {
-            source: "reddit",
-            username: "identity-7",
-            profile_url: "faker.com",
-          },
-          {
-            source: "reddit",
-            username: "identity-8",
-            profile_url: "faker.com",
-          },
         ],
         jobTitle: "CEO",
         lastActivityOccurredAt: 1234,
@@ -272,17 +262,15 @@ describe("obe-widget", () => {
 
       const dropdown = element.shadowRoot.querySelector(".obe-dropdown");
 
-      expect(dropdown.querySelectorAll("obe-identity").length).toEqual(7);
-      expect(dropdown.innerHTML).toMatch(/Show .*1/);
-      expect(dropdown.innerHTML).toMatch("more linked profiles");
+      expect(dropdown.querySelectorAll("obe-identity").length).toEqual(5);
+      expect(dropdown.innerHTML).toMatch(/\+.*1 more/);
       expect(dropdown.innerHTML).not.toMatch("Show fewer");
 
       element._toggleIdentities();
       await element.updateComplete;
 
-      expect(dropdown.querySelectorAll("obe-identity").length).toEqual(8);
-      expect(dropdown.innerHTML).not.toMatch(/Show .*1/);
-      expect(dropdown.innerHTML).not.toMatch("more linked profiles");
+      expect(dropdown.querySelectorAll("obe-identity").length).toEqual(6);
+      expect(dropdown.innerHTML).not.toMatch(/\+.*1 more/);
       expect(dropdown.innerHTML).toMatch("Show fewer");
     });
   });

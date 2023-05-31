@@ -73,6 +73,7 @@ export const mockChrome = (objectToStore = {}, runtimeResponse = {}) => {
         resolve(runtimeResponse);
       });
     }),
+    getURL: jest.fn((url) => url),
   };
 
   let originalChrome = global.chrome;

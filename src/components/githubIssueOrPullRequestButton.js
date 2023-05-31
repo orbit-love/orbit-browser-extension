@@ -17,11 +17,10 @@ class GitHubIssueOrPullRequestButton extends LitElement {
           type="button"
           class="inline-block px-[8px] py-[4px] text-[#656d76] hover:text-[#6c4df6]"
           id="menu-button"
-          aria-expanded="true"
           aria-haspopup="true"
         >
           <span class="sr-only">Open Orbit widget</span>
-          ${unsafeSVG(orbitLogo)}
+          <span aria-hidden="true">${unsafeSVG(orbitLogo)}</span>
         </button>
       </div>
     `;
