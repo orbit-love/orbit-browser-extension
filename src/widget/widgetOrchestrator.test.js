@@ -137,10 +137,16 @@ describe("addWidgetElement", () => {
 });
 
 describe("#addOrbitButton", () => {
+  let page;
+  beforeEach(() => {
+    page = new Page();
+    jest.spyOn(page, "getPlatform").mockReturnValue('test');
+  });
+
   it("adds button element if none exist", () => {
     const widget = document.createElement("div");
     document.body.appendChild(widget);
-    const button = orchestrator.addOrbitButton(widget, "test");
+    const button = orchestrator.addOrbitButton(widget, page);
 
     expect(widget.children.item(0)).toEqual(button);
     expect(widget.children.length).toEqual(1);
@@ -155,11 +161,29 @@ describe("#addOrbitButton", () => {
     const button = document.createElement("obe-test-button");
     widget.appendChild(button);
 
-    orchestrator.addOrbitButton(widget, "test");
+    orchestrator.addOrbitButton(widget, page);
 
     expect(widget.children.item(0)).toEqual(button);
     expect(widget.children.length).toEqual(1);
     expect(button.tagName).toEqual("OBE-TEST-BUTTON");
+  });
+
+  it("uses button element name from page if it is defined in #getButtonElementName", () => {
+    jest
+    .spyOn(page, "getButtonElementName")
+    .mockImplementation(() =>
+      'obe-test-profile-button'
+    );
+
+    const widget = document.createElement("div");
+    document.body.appendChild(widget);
+
+    const button = orchestrator.addOrbitButton(widget, page);
+
+    expect(widget.children.item(0)).toEqual(button);
+    expect(widget.children.length).toEqual(1);
+    expect(button.getAttribute("slot")).toBe("button");
+    expect(button.tagName).toEqual("OBE-TEST-PROFILE-BUTTON");
   });
 });
 

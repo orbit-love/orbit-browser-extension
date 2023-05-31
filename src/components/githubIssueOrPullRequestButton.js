@@ -6,8 +6,8 @@ import { customElement } from "lit/decorators.js";
 import tailwindStylesheet from "bundle-text:../styles/tailwind.global.css";
 import orbitLogo from "bundle-text:../icons/orbit-logo.svg";
 
-@customElement("obe-github-button")
-class GitHubButton extends LitElement {
+@customElement("obe-github-issue-or-pull-request-button")
+class GitHubIssueOrPullRequestButton extends LitElement {
   static styles = [unsafeCSS(tailwindStylesheet)];
 
   render() {

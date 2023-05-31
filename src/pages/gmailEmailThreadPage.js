@@ -1,6 +1,8 @@
 import Page from "./page";
 
 export default class GmailEmailThreadPage extends Page {
+  getPlatform() { return 'gmail' }
+
   detect() {
     const topLevelPageRegex =
       /(#inbox|#starred|#snoozed|#sent|#scheduled|#drafts|#imp|#all|#spam|#trash)\/\w+/;
