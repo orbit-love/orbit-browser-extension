@@ -27,4 +27,6 @@ export default class GitHubIssueOrPullRequestPage extends Page {
   findInsertionPoint(comment) {
     return comment.querySelector(".timeline-comment-actions");
   }
+
+  getButtonElementName() { return 'obe-github-issue-or-pull-request-button' }
 }

@@ -1,6 +1,7 @@
 import { Page } from "../pages/page";
 import "../components/widget";
-import "../components/githubButton";
+import "../components/githubIssueOrPullRequestButton";
+import "../components/githubDiscussionButton";
 import "../components/twitterButton";
 import "../components/linkedinButton";
 import "../components/gmailButton";
@@ -24,20 +25,19 @@ export default class WidgetOrchestrator {
    * @param {string} platform the site we're on, used as a key for naming HTML elements
    */
   addWidgetElements(page, platform) {
-
     const widgetZones = page.findWidgetZones();
 
     for (const widgetZone of widgetZones) {
       // If a widget already exists for this widgetZone, remove it.
       // This fixes an issue with SPAs like LinkedIn, where the first widget
       // that was injected remained on other pages.
-      const existingWidget = widgetZone.querySelector('obe-widget');
+      const existingWidget = widgetZone.querySelector("obe-widget");
       if (existingWidget) {
         // TODO: there is an infinite loop happening with Gmail:
         // We’re triggering this method when any element is added to the page, but
         // we’re also adding an element with this method. Friday-evening-quick-workaround is
         // to opt-out of this behavior for now, so that it doesn’t block internal testing.
-        if (platform === 'gmail') {
+        if (platform === "gmail") {
           continue;
         }
         existingWidget.remove();
@@ -54,7 +54,7 @@ export default class WidgetOrchestrator {
       if (!insertionPoint) continue;
 
       const widgetElement = this.addWidgetElement(username, platform);
-      this.addOrbitButton(widgetElement, platform);
+      this.addOrbitButton(widgetElement, platform, page);
       this.addAdditionalDataElements(widgetElement, platform);
 
       insertionPoint.insertBefore(widgetElement, insertionPoint.children[0]);
@@ -87,12 +87,12 @@ export default class WidgetOrchestrator {
    *
    * @returns {Element} the created button
    */
-  addOrbitButton(widgetElement, platform) {
-    if (!!widgetElement.querySelector(`obe-${platform}-button`)) return;
+  addOrbitButton(widgetElement, platform, page) {
+    const buttonElementName =
+      page.getButtonElementName() || `obe-${platform}-button`;
+    if (!!widgetElement.querySelector(buttonElementName)) return;
 
-    const buttonElement = window.document.createElement(
-      `obe-${platform}-button`
-    );
+    const buttonElement = window.document.createElement(buttonElementName);
 
     buttonElement.setAttribute("slot", "button");
 

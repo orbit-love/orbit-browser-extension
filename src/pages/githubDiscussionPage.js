@@ -25,6 +25,8 @@ export default class GitHubDiscussionPage extends Page {
   }
 
   findInsertionPoint(comment) {
-    return comment.querySelector(".timeline-comment-actions");
+    return comment.querySelector(".timeline-comment-actions").children[0];
   }
+
+  getButtonElementName() { return 'obe-github-discussion-button' }
 }

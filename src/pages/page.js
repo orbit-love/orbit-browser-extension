@@ -47,4 +47,10 @@ export default class Page {
    * @returns {Element|null}
    */
   findInsertionPoint(widgetZone) {}
+
+  /**
+   * Returns the name of the CustomElement of the widget button.
+   * If not defined, `obe-{platform}-button` will be used.
+   */
+  getButtonElementName() {}
 }
