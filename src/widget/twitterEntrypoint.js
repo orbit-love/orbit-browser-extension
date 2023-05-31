@@ -33,7 +33,9 @@ async function setupObserver() {
 
       if (newTitle === undefined || newTitle.indexOf('@') === -1) { return }
 
-      initializeWidget();
+      // Adding a small timeout so that page transitions can complete (most of the time),
+      // which helps with detecting profile pages.
+      setTimeout(initializeWidget, 250);
     });
   });
   
