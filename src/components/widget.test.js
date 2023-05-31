@@ -138,7 +138,7 @@ describe("obe-widget", () => {
     expect(dropdown.innerHTML).toMatch("John Doe");
     expect(dropdown.innerHTML).toMatch("Software Engineer");
     expect(dropdown.innerHTML).toMatch("123");
-    expect(dropdown.innerHTML).toMatch("Jan 1, 1970");
+    expect(dropdown.innerHTML).toMatch("Jan 1");
     expect(dropdown.innerHTML).toMatch(/See .* profile on Orbit/);
 
     global.chrome = originalChrome;

@@ -7,6 +7,7 @@ import "./identity";
 
 import tailwindStylesheet from "bundle-text:../styles/tailwind.global.css";
 import iconCustomer from "bundle-text:../icons/icon-customer.svg";
+import iconOrbitLevel from "bundle-text:../icons/icon-orbit-level.svg";
 import { ORBIT_API_ROOT_URL } from "../constants";
 import {
   buildMemberData,
@@ -206,17 +207,21 @@ class Widget extends LitElement {
 
         <!-- Pills -->
         <section
-          class="flex flex-row justify-start items-center mt-1 space-x-1"
+          class="flex flex-row justify-start items-center mt-3 space-x-1"
         >
           ${this.member.teammate
-            ? html`<obe-pill value="Teammate"></obe-pill>`
+            ? html`<obe-pill
+                icon="${iconOrbitLevel}"
+                value="Teammate"
+              ></obe-pill>`
             : html`<obe-pill
-                name="Orbit Level"
+                icon="${iconOrbitLevel}"
+                name="Orbit"
                 value="${this.member.orbitLevel || "N/A"}"
               ></obe-pill>`}
           ${this.member.lastActivityOccurredAt &&
           html` <obe-pill
-            name="Last active"
+            name="Last Active"
             value="${formatDate(this.member.lastActivityOccurredAt)}"
           ></obe-pill>`}
         </section>

@@ -90,7 +90,7 @@ describe("#buildMemberData", () => {
 
 it("formatDate formats date correctly", () => {
   const stringDate = "2023-05-19T21:37:51.000Z";
-  expect(formatDate(stringDate)).toEqual("May 19, 2023");
+  expect(formatDate(stringDate)).toEqual("May 19");
 });
 
 describe("#getThreshold", () => {

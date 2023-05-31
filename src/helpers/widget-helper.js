@@ -48,7 +48,6 @@ export function buildMemberData(member, included) {
  */
 export function formatDate(date) {
   return new Date(Date.parse(date)).toLocaleDateString("en-EN", {
-    year: "numeric",
     month: "short",
     day: "numeric",
   });
