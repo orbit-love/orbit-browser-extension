@@ -466,7 +466,9 @@ describe("obe-widget", () => {
 
         const dropdown = element.shadowRoot.querySelector(".obe-dropdown");
 
-        expect(dropdown.querySelector("[href='//faker.com']")).not.toBe(null);
+        expect(dropdown.querySelector("[href='https://faker.com']")).not.toBe(
+          null
+        );
         expect(dropdown.querySelector("[href='faker.com']")).toBe(null);
       });
 
@@ -494,9 +496,9 @@ describe("obe-widget", () => {
         expect(
           dropdown.querySelector("[href='https://www.faker.com']")
         ).not.toBe(null);
-        expect(dropdown.querySelector("[href='//https://www.faker.com']")).toBe(
-          null
-        );
+        expect(
+          dropdown.querySelector("[href='https://https://www.faker.com']")
+        ).toBe(null);
       });
     });
   });
