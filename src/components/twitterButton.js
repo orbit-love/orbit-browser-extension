@@ -16,11 +16,10 @@ class TwitterButton extends LitElement {
           type="button"
           class="min-w-[36px] min-h-[36px] mr-[8px] mb-[12px] text-[#0f1419] dark:text-[#eff3f4] hover:bg-[#0f14191A] rounded-full border border-[#cfd9de] dark:border-[#536471] flex justify-center items-center"
           id="menu-button"
-          aria-expanded="true"
           aria-haspopup="true"
         >
-          <span class="sr-only">Open Orbit Widget</span>
-          ${unsafeSVG(orbitLogo)}
+          <span class="sr-only">Open Orbit widget</span>
+          <span aria-hidden="true">${unsafeSVG(orbitLogo)}</span>
         </button>
       </div>
     `;

@@ -194,8 +194,8 @@ class Widget extends LitElement {
                       >${this.member.organization.name}</a
                     >
                     ${this.member.organization.lifecycle_stage === "customer"
-                      ? html`<span class="sr-only">Customer</span
-                          ><span aria-hidden="true"
+                      ? html`<span class="sr-only">Customer</span>
+                          <span aria-hidden="true"
                             >${unsafeSVG(iconCustomer)}</span
                           >`
                       : nothing}
