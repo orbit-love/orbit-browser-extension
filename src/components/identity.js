@@ -60,7 +60,7 @@ class IdentityElement extends LitElement {
   identityTemplate() {
     return html`
       <span
-        class="inline-flex gap-x-1.5 items-center p-1 text-xs font-medium text-gray-900 rounded-md ring-1 ring-inset ring-gray-200"
+        class="inline-flex gap-x-1.5 items-center py-0.5 px-1 text-xs font-medium text-gray-900 rounded-md ring-1 ring-inset ring-gray-100"
       >
         <img
           title="${this.getTitle()}"

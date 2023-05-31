@@ -19,14 +19,16 @@ class Pill extends LitElement {
   render() {
     return html`
       <div
-        class="ring-gray-500/10 inline-flex items-center py-1 px-2 bg-gray-50 rounded-full ring-1 ring-inset"
+        class="ring-gray-500/10 inline-flex items-center py-0.5 px-1 bg-gray-50 rounded-full ring-1 ring-inset"
       >
         ${this.icon &&
         html`<span class="mr-1 w-4 text-gray-700"
           >${unsafeSVG(this.icon)}</span
         >`}
         ${this.name &&
-        html`<span class="mr-1 font-medium text-gray-600">${this.name}</span>`}
+        html`<span class="mr-1.5 font-medium text-gray-600"
+          >${this.name}</span
+        >`}
         <span class="font-semibold text-gray-700">${this.value}</span>
       </div>
     `;

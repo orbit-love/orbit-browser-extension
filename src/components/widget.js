@@ -17,7 +17,7 @@ import {
 } from "../helpers/widget-helper";
 
 const TAG_LIMIT = 5;
-const IDENTITY_LIMIT = 7;
+const IDENTITY_LIMIT = 5;
 
 @customElement("obe-widget")
 class Widget extends LitElement {
@@ -226,18 +226,15 @@ class Widget extends LitElement {
           ></obe-pill>`}
         </section>
 
+        <hr class="block my-5 border-t border-gray-100" role="none" />
+
         <!-- Identities -->
         ${!!this.member.identities &&
         html` <section class="mt-3">
-          <p class="block text-sm text-gray-500 uppercase truncate">
-            Linked profiles & emails
-            <span class="ml-1 text-gray-900"
-              >${this.member.identities.length}</span
-            >
+          <p class="sr-only">
+            ${this.member.identities.length} linked profiles & emails
           </p>
-          <div
-            class="flex flex-row flex-wrap gap-1 justify-start items-center py-1"
-          >
+          <div class="flex flex-row flex-wrap gap-1 justify-start items-center">
             ${this.member.identities.map((identity, index) => {
               // Do not render identities that are above identity limit, unless we are showing all
               if (!this.showAllIdentities && index > IDENTITY_LIMIT) {
@@ -248,10 +245,9 @@ class Widget extends LitElement {
               if (!this.showAllIdentities && index === IDENTITY_LIMIT) {
                 return html`<button
                   @click="${this._toggleIdentities}"
-                  class="text-gray-500 cursor-pointer"
+                  class="py-0.5 px-1 text-sm text-gray-500 rounded-md ring-1 ring-inset ring-gray-100 cursor-pointer"
                 >
-                  Show ${this.member.identities.length - IDENTITY_LIMIT} more
-                  linked profiles
+                  +${this.member.identities.length - IDENTITY_LIMIT} more
                 </button>`;
               }
 
@@ -263,7 +259,7 @@ class Widget extends LitElement {
             ${this.showAllIdentities
               ? html`<button
                   @click="${() => this._toggleIdentities(false)}"
-                  class="text-gray-500 cursor-pointer"
+                  class="py-0.5 px-1 text-sm text-gray-500 rounded-md ring-1 ring-inset ring-gray-100 cursor-pointer"
                 >
                   Show fewer
                 </button>`
@@ -327,7 +323,7 @@ class Widget extends LitElement {
    */
   additionalDataTemplate() {
     return html`${this.isAMember
-        ? html`<hr class="block border-t border-[#d0d7de]" role="none" />`
+        ? html`<hr class="block border-t border-gray-100" role="none" />`
         : nothing}
       <section class="flex flex-col gap-2 py-2 px-4 truncate">
         ${this.hasAdditionalDataError
@@ -346,12 +342,12 @@ class Widget extends LitElement {
   actionsTemplate() {
     if (this.hasActionsError) {
       return html`
-        <hr class="block border-t border-[#d0d7de]" role="none" />
+        <hr class="block border-t border-gray-100" role="none" />
         <p class="py-2 px-4">There was an error performing this action</p>
       `;
     } else if (this.isAMember) {
       return html`
-        <hr class="block border-t border-[#d0d7de]" role="none" />
+        <hr class="block border-t border-gray-100" role="none" />
         <a
           target="_blank"
           rel="noreferrer noopener"
@@ -366,7 +362,7 @@ class Widget extends LitElement {
     } else {
       return html`
         ${this.additionalData.length > 0
-          ? html`<hr class="block border-t border-[#d0d7de]" role="none" />`
+          ? html`<hr class="block border-t border-gray-100" role="none" />`
           : nothing}
         <button
           class="block py-2 px-4 w-full text-sm text-left text-gray-700 truncate bg-gray-50 rounded-b-md hover:bg-gray-100 focus:bg-gray-100"

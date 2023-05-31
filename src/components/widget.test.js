@@ -247,16 +247,6 @@ describe("obe-widget", () => {
             username: "identity-6",
             profile_url: "faker.com",
           },
-          {
-            source: "reddit",
-            username: "identity-7",
-            profile_url: "faker.com",
-          },
-          {
-            source: "reddit",
-            username: "identity-8",
-            profile_url: "faker.com",
-          },
         ],
         jobTitle: "CEO",
         lastActivityOccurredAt: 1234,
@@ -272,17 +262,15 @@ describe("obe-widget", () => {
 
       const dropdown = element.shadowRoot.querySelector(".obe-dropdown");
 
-      expect(dropdown.querySelectorAll("obe-identity").length).toEqual(7);
-      expect(dropdown.innerHTML).toMatch(/Show .*1 more/);
-      expect(dropdown.innerHTML).toMatch("linked profiles");
+      expect(dropdown.querySelectorAll("obe-identity").length).toEqual(5);
+      expect(dropdown.innerHTML).toMatch(/\+.*1 more/);
       expect(dropdown.innerHTML).not.toMatch("Show fewer");
 
       element._toggleIdentities();
       await element.updateComplete;
 
-      expect(dropdown.querySelectorAll("obe-identity").length).toEqual(8);
-      expect(dropdown.innerHTML).not.toMatch(/Show .*1 more/);
-      expect(dropdown.innerHTML).not.toMatch("linked profiles");
+      expect(dropdown.querySelectorAll("obe-identity").length).toEqual(6);
+      expect(dropdown.innerHTML).not.toMatch(/\+.*1 more/);
       expect(dropdown.innerHTML).toMatch("Show fewer");
     });
   });
