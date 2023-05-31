@@ -1,6 +1,7 @@
 export default class Page {
   /**
-   * Check if we are currently on this type of page
+   * Returns the standard name of the platform this page belongs to, e.g. "github", "twitter", "gmail".
+   * We use a method rather than internal state to be consistant with this class being an interface.
    *
    * @returns {String}
    */
