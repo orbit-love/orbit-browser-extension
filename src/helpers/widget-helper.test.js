@@ -88,9 +88,21 @@ describe("#buildMemberData", () => {
   });
 });
 
-it("formatDate formats date correctly", () => {
-  const stringDate = "2023-05-19T21:37:51.000Z";
-  expect(formatDate(stringDate)).toEqual("May 19");
+describe("#formatDate", () => {
+  it("formats dates from this year as MMM DD", () => {
+    const date = new Date();
+    expect(formatDate(date.toISOString())).toEqual(
+      date.toLocaleDateString("en-EN", {
+        month: "short",
+        day: "numeric",
+      })
+    );
+  });
+
+  it("formats dates from earlier years as MMM YYYY", () => {
+    const stringDate = "2020-05-19T21:37:51.000Z";
+    expect(formatDate(stringDate)).toEqual("May 2020");
+  });
 });
 
 describe("#getThreshold", () => {

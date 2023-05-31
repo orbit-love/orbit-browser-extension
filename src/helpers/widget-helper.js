@@ -40,17 +40,34 @@ export function buildMemberData(member, included) {
 }
 
 /**
- * Format a given date in the form:
- * May 24, 2023
+ * Format a given date
+ * If given date was from last year or earlier, format as:
+ * May, 2020
+ * If from this year, format as:
+ * May 24
  *
- * @param {String} date as a string
+ * @param {String} dateString as a string
  * @returns {String}
  */
-export function formatDate(date) {
-  return new Date(Date.parse(date)).toLocaleDateString("en-EN", {
-    month: "short",
-    day: "numeric",
-  });
+export function formatDate(dateString) {
+  const now = new Date();
+  const date = new Date(dateString);
+
+  const currentYear = now.getFullYear();
+  const yearOfGivenDate = date.getFullYear();
+
+  // check if the year of the given date is less than the current year
+  if (yearOfGivenDate < currentYear) {
+    return date.toLocaleDateString("en-EN", {
+      year: "numeric",
+      month: "short",
+    });
+  } else {
+    return date.toLocaleDateString("en-EN", {
+      month: "short",
+      day: "numeric",
+    });
+  }
 }
 
 /**

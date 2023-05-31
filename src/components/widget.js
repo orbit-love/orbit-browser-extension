@@ -69,7 +69,7 @@ class Widget extends LitElement {
   dropdownTemplate() {
     return html`
       <div
-        class="obe-dropdown ring-opacity-5 absolute right-0 z-10 mt-2 bg-white rounded-md ring-1 ring-black shadow-lg origin-top-right focus:outline-none"
+        class="obe-dropdown ring-opacity-5 absolute right-0 top-10 z-10 bg-white rounded-md ring-1 ring-black shadow-lg origin-top-right focus:outline-none"
         role="article"
         aria-orientation="vertical"
         aria-labelledby="menu-button"
