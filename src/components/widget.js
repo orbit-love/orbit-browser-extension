@@ -193,7 +193,7 @@ class Widget extends LitElement {
                         : `https://${this.member.organization.website}`}"
                       target="_blank"
                       rel="noreferrer"
-                      class="mr-2 text-sm text-blue-500 hover:underline"
+                      class="mr-2 text-sm font-semibold text-[#6C4DF6] hover:underline"
                       >${this.member.organization.name}</a
                     >
                     ${this.member.organization.lifecycle_stage === "customer"
@@ -347,7 +347,7 @@ class Widget extends LitElement {
     if (this.hasActionsError) {
       return html`
         <hr class="block border-t border-gray-100" role="none" />
-        <p class="py-2 px-4">There was an error performing this action</p>
+        <p class="px-4 py-5">There was an error performing this action</p>
       `;
     } else if (this.isAMember) {
       return html`
@@ -357,10 +357,10 @@ class Widget extends LitElement {
           rel="noreferrer noopener"
           href="${ORBIT_API_ROOT_URL}/${this.workspace}/members/${this.member
             .slug}"
-          class="block py-2 px-4 w-full text-sm text-left text-gray-700 truncate bg-gray-50 rounded-b-md hover:bg-gray-100 focus:bg-gray-100"
+          class="block py-5 px-4 w-full text-left text-[#6C4DF6] font-semibold truncate rounded-b-md hover:bg-gray-100 focus:bg-gray-100"
           role="menuitem"
         >
-          See ${this.username}’s profile on Orbit
+          Go to ${this.username}’s Orbit profile &rarr;
         </a>
       `;
     } else {
@@ -369,7 +369,7 @@ class Widget extends LitElement {
           ? html`<hr class="block border-t border-gray-100" role="none" />`
           : nothing}
         <button
-          class="block py-2 px-4 w-full text-sm text-left text-gray-700 truncate bg-gray-50 rounded-b-md hover:bg-gray-100 focus:bg-gray-100"
+          class="block py-5 px-4 w-full text-left text-[#6C4DF6] font-semibold truncate rounded-b-md hover:bg-gray-100 focus:bg-gray-100"
           role="menuitem"
           @click="${this._addMemberToWorkspace}"
         >

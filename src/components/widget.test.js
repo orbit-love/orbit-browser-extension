@@ -139,7 +139,7 @@ describe("obe-widget", () => {
     expect(dropdown.innerHTML).toMatch("Software Engineer");
     expect(dropdown.innerHTML).toMatch("123");
     expect(dropdown.innerHTML).toMatch("Jan 1");
-    expect(dropdown.innerHTML).toMatch(/See .* profile on Orbit/);
+    expect(dropdown.innerHTML).toMatch(/Go to .* Orbit profile/);
 
     global.chrome = originalChrome;
   });
