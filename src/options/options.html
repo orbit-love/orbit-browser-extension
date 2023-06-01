@@ -97,7 +97,7 @@
 
           <fieldset class="mt-5">
             <legend class="sr-only">Available workspaces</legend>
-            <div class="grid grid-cols-2 gap-2">
+            <div class="grid gap-2" x-bind:class="workspaces.length > 5 ? 'grid-cols-2' : ''">
               <template x-for="workspace in workspaces" :key="workspace.id">
                 <div class="flex items-center">
                   <input x-bind:id="workspace.attributes.slug" name="workspace" type="radio"
