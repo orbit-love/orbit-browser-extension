@@ -18,10 +18,9 @@ document.addEventListener("alpine:init", () => {
     repositories: [],
     selectedWorkspaceSlug: undefined,
     showLogin: true,
-    authenticationCheckStatus: {
-      status: undefined,
-      message: "",
-    },
+    errorMessage: "",
+    warningMessage: "",
+    saveMessage: "",
     saveStatus: {
       success: undefined,
       message: "",
@@ -38,6 +37,11 @@ document.addEventListener("alpine:init", () => {
       apiKeyFromStorage = ORBIT_CREDENTIALS.API_TOKEN;
       selectedWorkspaceSlugFromStorage = ORBIT_CREDENTIALS.WORKSPACE;
       accessTokenFromStorage = ORBIT_CREDENTIALS.ACCESS_TOKEN;
+
+      if (!!apiKeyFromStorage) {
+        this.warningMessage =
+          "You are using an API token, which is deprecated. Sign in to switch to the new process.";
+      }
 
       // If authentication is present, fetch workspaces on page load
       if (!!apiKeyFromStorage || !!accessTokenFromStorage) {
@@ -58,13 +62,13 @@ document.addEventListener("alpine:init", () => {
 
         workspaces = data;
         repositories = included.filter((item) => item.type === "repository");
+
+        this.token = apiKeyFromStorage;
+        this.accessToken = accessTokenFromStorage;
+        this.selectedWorkspaceSlug = selectedWorkspaceSlugFromStorage;
+        this.workspaces = workspaces;
+        this.repositories = repositories;
       }
-      this.authenticationCheckStatus.status = "success";
-      this.token = apiKeyFromStorage;
-      this.accessToken = accessTokenFromStorage;
-      this.selectedWorkspaceSlug = selectedWorkspaceSlugFromStorage;
-      this.workspaces = workspaces;
-      this.repositories = repositories;
     },
     async fetchWorkspaces() {
       const { response, success, ok } = await chrome.runtime.sendMessage({
@@ -73,35 +77,32 @@ document.addEventListener("alpine:init", () => {
         apiKey: this.token,
       });
 
+      // If generic error
       if (!success) {
         console.error(err);
         this.showLogin = true;
-        this.authenticationCheckStatus.status = "error";
-        this.authenticationCheckStatus.message =
-          "There was an unexpected error whilst signing in.";
+        this.errorMessage = "There was an unexpected error whilst signing in.";
         return;
       }
 
+      // If authentication error
       if (!ok) {
         this.showLogin = true;
-        this.authenticationCheckStatus.status = "error";
-        this.authenticationCheckStatus.message =
-          "Failed to authenticate, please try again.";
+        this.errorMessage = "Failed to authenticate, please try again.";
         return;
       }
+
       const { data, included } = response;
       this.workspaces = data;
       this.repositories = included.filter((item) => item.type === "repository");
-      this.authenticationCheckStatus.status = "success";
-      this.authenticationCheckStatus.message =
-        "Signed in successfully. Please select a workspace.";
+      this.errorMessage = "";
 
+      // Hide login if authenticated with OAuth
       if (!!this.accessToken) {
         this.showLogin = false;
-      } else {
-        this.authenticationCheckStatus.message =
-          "WARNING: You are using an API token for authentication, which is deprecated. Use the button above to switch to the new sign in process.";
-        this.authenticationCheckStatus.status = "warning";
+        this.warningMessage = "";
+
+        await chrome.storage.sync.set({ token: "" });
       }
     },
     _findAllReposFullNameByWorkspaceSlug() {
@@ -191,9 +192,7 @@ document.addEventListener("alpine:init", () => {
       );
 
       chrome.storage.sync.set(storageData, function () {
-        that.saveStatus.success = true;
-        that.saveStatus.message =
-          "Saved successfully, you can close this page.";
+        that.saveMessage = "Saved successfully, you can close this page.";
       });
     },
     async startOAuthFlow() {
