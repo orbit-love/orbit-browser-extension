@@ -12,82 +12,95 @@
   <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
     <div class="mx-auto max-w-3xl sm:mt-10 lg:mt-20">
       <div x-data="orbit">
+        <!-- Login preamble & button -->
         <section>
-          <div class="py-5">
-            <h1 class="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-              Thanks for installing the Orbit extension 👋
-            </h1>
-          </div>
-          <div class="py-5">
-            <p class="text-base text-gray-900">
-              The Orbit Chrome extension brings Orbit data right into GitHub,
-              allowing you to view a contributor's activity on your repo and
-              in general, as well as information like Orbit Level, Reach, and
-              Points.
-            </p>
-            <div class="aspect-h-4 aspect-w-3 hidden overflow-hidden pb-6 rounded-lg lg:block">
-              <!-- <img src="../images/screenshot.png" alt="Two each of gray, white, and black shirts laying flat." class="object-cover object-center w-full h-full"> -->
-            </div>
-            <p x-show="!showLogin" x-cloak class="text-base text-gray-900">
-              You are signed in to Orbit.
-              If you wish you sign out, visit your
-              <a href="https://app.orbit.love/user/settings/authorized_applications" rel="noreferrer"
-                target="_blank">User Settings on Orbit</a> & revoke access for the "Orbit Browser Extension"
-              application.
-            </p>
-            <p x-show="showLogin" x-cloak class="text-base text-gray-900">
-              To proceed with the installation, please sign in to Orbit.
-            </p>
-          </div>
+          <h1 class="py-5 text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+            Thanks for installing the Orbit extension 👋
+          </h1>
+
+          <!-- Status messages -->
+          <figure x-show="!!errorMessage || !!warningMessage" x-cloak role="alert"
+            class="flex gap-x-2 items-center px-1 py-2 text-base font-semibold"
+            x-bind:class="!!warningMessage ? 'text-yellow-600' : 'text-red-700'">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+            </svg>
+
+            <figcaption x-show="!!errorMessage" x-cloak x-text="errorMessage"></figcaption>
+            <figcaption x-show="!!warningMessage" x-cloak x-text="warningMessage"></figcaption>
+          </figure>
+
+          <p class="py-5 text-base text-gray-900">
+            The Orbit Chrome extension brings Orbit data right into GitHub,
+            allowing you to view a contributor's activity on your repo and
+            in general, as well as information like Orbit Level, Reach, and
+            Points.
+          </p>
+
+          <p x-show="!showLogin" x-cloak class="text-base text-gray-900">
+            You are signed in to Orbit.
+            If you wish you sign out, visit your
+            <a href="https://app.orbit.love/user/settings/authorized_applications" rel="noreferrer" target="_blank">User
+              Settings on Orbit</a> & revoke access for the "Orbit Browser Extension"
+            application.
+          </p>
+
+          <p x-show="showLogin" x-cloak class="text-base text-gray-900">
+            To proceed with the installation, please sign in to Orbit.
+          </p>
+
           <div x-show="showLogin" x-cloak class="flex justify-end py-4">
             <button type="button"
               class="inline-flex gap-x-2 items-center py-2.5 px-3.5 text-sm font-semibold text-white bg-indigo-600 rounded-md shadow-sm hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-indigo-600 focus-visible:outline focus-visible:outline-offset-2"
               @click="startOAuthFlow">
+              Next: Sign in to Orbit
+
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
                 <path fill-rule="evenodd"
                   d="M2 10a.75.75 0 01.75-.75h12.59l-2.1-1.95a.75.75 0 111.02-1.1l3.5 3.25a.75.75 0 010 1.1l-3.5 3.25a.75.75 0 11-1.02-1.1l2.1-1.95H2.75A.75.75 0 012 10z"
                   clip-rule="evenodd" />
               </svg>
-
-              Next: Sign in to Orbit
             </button>
           </div>
         </section>
-        <section x-cloak
-          x-show="['success', 'warning'].includes(authenticationCheckStatus.status) && workspaces && workspaces.length> 0">
-          <div class="py-5">
-            <label class="text-base font-semibold text-gray-900">Select a workspace</label>
-            <p class="text-sm text-gray-500">
-              This workspace will be used to retrieve information about community members, and create new ones.
-            </p>
-            <fieldset class="mt-4">
-              <legend class="sr-only">Available workspaces</legend>
-              <div class="grid grid-cols-2 gap-2">
-                <template x-for="workspace in workspaces" :key="workspace.id">
-                  <div class="flex items-center">
-                    <input x-bind:id="workspace.attributes.slug" name="workspace" type="radio"
-                      x-bind:value="workspace.attributes.slug" x-model="selectedWorkspaceSlug"
-                      class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-600" />
-                    <label x-bind:for="workspace.attributes.slug"
-                      class="block pt-1.5 ml-3 text-base font-medium leading-6 text-gray-900"
-                      x-text="workspace.attributes.name"></label>
-                  </div>
-                </template>
-              </div>
-            </fieldset>
-            <div class="flex justify-end py-4">
-              <button type="button"
-                class="inline-flex gap-x-2 items-center py-2.5 px-3.5 text-sm font-semibold text-white bg-indigo-600 rounded-md shadow-sm hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-indigo-600 focus-visible:outline focus-visible:outline-offset-2"
-                @click="save">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                  stroke="currentColor" class="w-6 h-6">
-                  <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
 
-                Save
-              </button>
+        <!-- Workspace selector -->
+        <section x-cloak x-show="workspaces && workspaces.length> 0" class="py-5">
+          <label class="text-base font-semibold text-gray-900">Select a workspace</label>
+          <p class="text-sm text-gray-500">
+            This workspace will be used to retrieve information about community members, and create new ones.
+          </p>
+
+          <fieldset class="mt-4">
+            <legend class="sr-only">Available workspaces</legend>
+            <div class="grid grid-cols-2 gap-2">
+              <template x-for="workspace in workspaces" :key="workspace.id">
+                <div class="flex items-center">
+                  <input x-bind:id="workspace.attributes.slug" name="workspace" type="radio"
+                    x-bind:value="workspace.attributes.slug" x-model="selectedWorkspaceSlug"
+                    class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-600" />
+                  <label x-bind:for="workspace.attributes.slug"
+                    class="block pt-1.5 ml-3 text-base font-medium leading-6 text-gray-900"
+                    x-text="workspace.attributes.name"></label>
+                </div>
+              </template>
             </div>
+          </fieldset>
+
+          <div class="flex justify-end py-4">
+            <button type="button"
+              class="inline-flex gap-x-2 items-center py-2.5 px-3.5 text-sm font-semibold text-white bg-indigo-600 rounded-md shadow-sm hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-indigo-600 focus-visible:outline focus-visible:outline-offset-2"
+              @click="save">
+              Save
+
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </button>
           </div>
         </section>
       </div>
