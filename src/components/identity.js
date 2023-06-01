@@ -2,6 +2,7 @@ import { LitElement, html, unsafeCSS } from "lit";
 import { customElement } from "lit/decorators.js";
 
 import tailwindStylesheet from "bundle-text:../styles/tailwind.global.css";
+import { getIconPath } from "../helpers/widget-helper";
 
 @customElement("obe-identity")
 class IdentityElement extends LitElement {
@@ -9,25 +10,6 @@ class IdentityElement extends LitElement {
     return {
       identity: { type: Object },
     };
-  }
-
-  getIconPath() {
-    switch (this.identity.source.toLowerCase()) {
-      case "email":
-        return "icons/email.svg";
-      case "discord":
-      case "discourse":
-      case "github":
-      case "linkedin":
-      case "reddit":
-      case "slack":
-      case "stack_overflow":
-      case "twitter":
-      case "youtube":
-        return `icons/${this.identity.source.toLowerCase()}.png`;
-      default:
-        return "icons/custom-identity.svg";
-    }
   }
 
   getTitle() {
@@ -59,15 +41,16 @@ class IdentityElement extends LitElement {
 
   identityTemplate() {
     return html`
-      <span
-        class="inline-flex gap-x-1.5 items-center p-1 text-xs font-medium text-gray-900 rounded-md ring-1 ring-inset ring-gray-200"
+      <li
+        class="inline-flex gap-x-1.5 items-center py-0.5 px-1 text-xs font-medium text-gray-900 rounded-md ring-1 ring-inset ring-gray-100"
       >
         <img
           title="${this.getTitle()}"
+          alt="${this.getTitle()}"
           class="w-6 h-6"
-          src="${chrome.runtime.getURL(this.getIconPath())}"
+          src="${chrome.runtime.getURL(getIconPath(this.identity.source))}"
         />
-      </span>
+      </li>
     `;
   }
 

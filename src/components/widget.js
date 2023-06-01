@@ -4,9 +4,11 @@ import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 import "./pill";
 import "./tag";
 import "./identity";
+import "./additionalData";
 
 import tailwindStylesheet from "bundle-text:../styles/tailwind.global.css";
 import iconCustomer from "bundle-text:../icons/icon-customer.svg";
+import iconOrbitLevel from "bundle-text:../icons/icon-orbit-level.svg";
 import { ORBIT_API_ROOT_URL } from "../constants";
 import {
   buildMemberData,
@@ -16,7 +18,7 @@ import {
 } from "../helpers/widget-helper";
 
 const TAG_LIMIT = 5;
-const IDENTITY_LIMIT = 7;
+const IDENTITY_LIMIT = 5;
 
 @customElement("obe-widget")
 class Widget extends LitElement {
@@ -67,8 +69,8 @@ class Widget extends LitElement {
   dropdownTemplate() {
     return html`
       <div
-        class="obe-dropdown ring-opacity-5 absolute right-0 z-10 mt-2 bg-white rounded-md ring-1 ring-black shadow-lg origin-top-right focus:outline-none"
-        role="menu"
+        class="obe-dropdown ring-opacity-5 absolute right-0 top-10 z-10 bg-white rounded-md ring-1 ring-black shadow-lg origin-top-right focus:outline-none"
+        role="article"
         aria-orientation="vertical"
         aria-labelledby="menu-button"
         aria-hidden="${!this.isOpen}"
@@ -112,11 +114,7 @@ class Widget extends LitElement {
    */
   textTemplate(text) {
     return html`
-      <span
-        class="block py-1 px-4 text-sm text-gray-500 truncate"
-        role="menuitem"
-        >${text}</span
-      >
+      <span class="block px-4 py-5 text-gray-900 truncate">${text}</span>
     `;
   }
 
@@ -128,17 +126,14 @@ class Widget extends LitElement {
    */
   authErrorTemplate() {
     return html`
-      <span
-        class="block py-1 px-4 text-sm text-gray-500 truncate"
-        role="menuitem"
+      <span class="block px-4 py-5 text-sm text-gray-900 truncate"
         >Authentication error: API token or workspace is missing or
         invalid</span
       >
       <span
         @click=${() => chrome.runtime.sendMessage("showOptions")}
-        class="block py-1 px-4 text-sm text-gray-500 cursor-pointer"
-        role="menuitem"
-        >Click here or on the extension icon to authenticate.</span
+        class="block py-5 px-4 w-full rounded-b-md text-left text-[#6C4DF6] font-semibold cursor-pointer hover:bg-gray-100 focus:bg-gray-100"
+        >Click here or on the extension icon to authenticate &rarr;</span
       >
     `;
   }
@@ -150,87 +145,97 @@ class Widget extends LitElement {
    */
   memberTemplate() {
     return html`
-      <div class="py-1 px-4 truncate" role="menuitem">
-        <section class="mt-1">
-          <!-- Name -->
-          <span class="block text-xl font-bold text-gray-900 truncate"
-            >${this.member.name}</span
-          >
+      <div class="px-4 py-5 w-80">
+        <section class="flex gap-4">
+          <!-- Avatar -->
+          ${this.member.avatarUrl &&
+          html`<img
+            alt=""
+            class="w-14 h-14 rounded-full"
+            src="${this.member.avatarUrl}"
+          />`}
 
-          <!-- Title -->
-          <span class="block text-sm text-gray-500 truncate"
-            >${this.member.jobTitle}</span
-          >
+          <div class="flex flex-col">
+            <!-- Name -->
+            <span class="block text-lg font-semibold leading-5 text-gray-900"
+              >${this.member.name}</span
+            >
 
-          <!-- Organization -->
-          ${
-            !!this.member.organization
+            <!-- Title -->
+            <span class="block text-sm leading-5 text-gray-500"
+              >${this.member.jobTitle}</span
+            >
+
+            <!-- Organization -->
+            ${!!this.member.organization
               ? html`
-            <div class="flex flex-row justify-start items-center mt-1">
-              ${
-                this.member.organization.logo_url &&
-                html`<img
-                  class="mr-1 w-5 h-5"
-                  src="${this.member.organization.logo_url}"
-                />`
-              }
-              <!-- If organisation doesn't include a protocol (ie https://), add one so it's treated as absolute -->
-              <a
-                href="${
-                  this.member.organization.website.match(/https?:\/\//)
-                    ? this.member.organization.website
-                    : `https://${this.member.organization.website}`
-                }"
-                target="_blank"
-                rel="noreferrer"
-                class="mr-2 text-sm text-blue-500 hover:underline"
-                >${this.member.organization.name}</a
-              >
-              ${
-                this.member.organization.lifecycle_stage === "customer"
-                  ? unsafeSVG(iconCustomer)
-                  : nothing
-              }
-            </div>
-          </section>
-          `
+                  <div
+                    class="flex flex-row justify-start items-center mt-1 leading-5"
+                  >
+                    ${this.member.organization.logo_url &&
+                    html`<img
+                      alt=""
+                      class="mr-1 w-5 h-5"
+                      src="${this.member.organization.logo_url}"
+                    />`}
+                    <!-- If organisation doesn't include a protocol (ie https://), add one so it's treated as absolute -->
+                    <a
+                      href="${this.member.organization.website.match(
+                        /https?:\/\//
+                      )
+                        ? this.member.organization.website
+                        : `https://${this.member.organization.website}`}"
+                      target="_blank"
+                      rel="noreferrer"
+                      class="mr-2 text-sm font-semibold text-[#6C4DF6] hover:underline"
+                      >${this.member.organization.name}</a
+                    >
+                    ${this.member.organization.lifecycle_stage === "customer"
+                      ? html`<span class="sr-only">Customer</span>
+                          <span aria-hidden="true"
+                            >${unsafeSVG(iconCustomer)}</span
+                          >`
+                      : nothing}
+                  </div>
+                `
               : // Just used for spacing when the organisation is not present
-                html`<div class="mt-2"></div>`
-          }
+                html`<div class="mt-2"></div>`}
+          </div>
+        </section>
 
-          <!-- Pills -->
-          <section
-            class="flex flex-row justify-start items-center mt-1 space-x-1"
-          >
-            ${
-              this.member.teammate
-                ? html`<obe-pill value="Teammate"></obe-pill>`
-                : html`<obe-pill
-                    name="Orbit Level"
-                    value="${this.member.orbitLevel || "N/A"}"
-                  ></obe-pill>`
-            }
-            ${
-              this.member.lastActivityOccurredAt &&
-              html` <obe-pill
-                name="Last active"
-                value="${formatDate(this.member.lastActivityOccurredAt)}"
+        <!-- Pills -->
+        <section
+          class="flex flex-row justify-start items-center mt-3 space-x-1"
+        >
+          ${this.member.teammate
+            ? html`<obe-pill
+                icon="${iconOrbitLevel}"
+                value="Teammate"
               ></obe-pill>`
-            }
-          </section>
+            : !!this.member.orbitLevel
+            ? html`<obe-pill
+                icon="${iconOrbitLevel}"
+                name="Orbit"
+                value="${this.member.orbitLevel || "N/A"}"
+              ></obe-pill>`
+            : nothing}
+          ${this.member.lastActivityOccurredAt &&
+          html` <obe-pill
+            name="Last Active"
+            value="${formatDate(this.member.lastActivityOccurredAt)}"
+          ></obe-pill>`}
+        </section>
 
-          <!-- Identities -->
-          ${
-            !!this.member.identities &&
-            html` <section class="mt-3">
-              <p class="block text-sm text-gray-500 uppercase truncate">
-                Linked profiles & emails
-                <span class="ml-1 text-gray-900"
-                  >${this.member.identities.length}</span
-                >
+        <hr class="block my-5 border-t border-gray-100" role="none" />
+
+        <!-- Identities -->
+        ${!!this.member.identities && this.member.identities.length > 0
+          ? html`<section>
+              <p class="sr-only">
+                ${this.member.identities.length} linked profiles & emails
               </p>
-              <div
-                class="flex flex-row flex-wrap gap-1 justify-start items-center py-1"
+              <ul
+                class="flex flex-row flex-wrap gap-1 justify-start items-center"
               >
                 ${this.member.identities.map((identity, index) => {
                   // Do not render identities that are above identity limit, unless we are showing all
@@ -242,10 +247,9 @@ class Widget extends LitElement {
                   if (!this.showAllIdentities && index === IDENTITY_LIMIT) {
                     return html`<button
                       @click="${this._toggleIdentities}"
-                      class="text-gray-500 cursor-pointer"
+                      class="py-1 px-1.5 text-sm text-gray-500 rounded-md ring-1 ring-inset ring-gray-100 cursor-pointer"
                     >
-                      Show ${this.member.identities.length - IDENTITY_LIMIT}
-                      more linked profiles
+                      +${this.member.identities.length - IDENTITY_LIMIT} more
                     </button>`;
                   }
 
@@ -259,27 +263,21 @@ class Widget extends LitElement {
                 ${this.showAllIdentities
                   ? html`<button
                       @click="${() => this._toggleIdentities(false)}"
-                      class="text-gray-500 cursor-pointer"
+                      class="py-1 px-1.5 text-sm text-gray-500 rounded-md ring-1 ring-inset ring-gray-100 cursor-pointer"
                     >
                       Show fewer
                     </button>`
                   : nothing}
-              </div>
+              </ul>
             </section>`
-          }
+          : nothing}
 
-          <!-- Tags -->
-          ${
-            !!this.member.tags &&
-            html` <section class="mt-3">
-              <p class="block text-sm text-gray-500 uppercase truncate">
-                Tags
-                <span class="ml-1 text-gray-900"
-                  >${this.member.tags.length}</span
-                >
-              </p>
-              <div
-                class="flex flex-row flex-wrap gap-1 justify-start items-center py-1"
+        <!-- Tags -->
+        ${!!this.member.tags && this.member.tags.length > 0
+          ? html`<section class="mt-5">
+              <p class="sr-only">${this.member.tags.length} tags</p>
+              <ul
+                class="flex flex-row flex-wrap gap-x-1 gap-y-1.5 justify-start items-center"
               >
                 ${this.member.tags.map((tag, index) => {
                   // Do not render tags that are above tag limit, unless we are showing all
@@ -291,9 +289,9 @@ class Widget extends LitElement {
                   if (!this.showAllTags && index === TAG_LIMIT) {
                     return html`<button
                       @click="${this._toggleTags}"
-                      class="text-gray-500 cursor-pointer"
+                      class="py-1 px-1.5 text-sm text-gray-500 rounded-md ring-1 ring-inset ring-gray-100 cursor-pointer"
                     >
-                      Show ${this.member.tags.length - TAG_LIMIT} more tags
+                      +${this.member.tags.length - TAG_LIMIT} more
                     </button>`;
                   }
 
@@ -308,14 +306,14 @@ class Widget extends LitElement {
                 ${this.showAllTags
                   ? html`<button
                       @click="${() => this._toggleTags(false)}"
-                      class="text-gray-500 cursor-pointer"
+                      class="py-1 px-1.5 text-sm text-gray-500 rounded-md ring-1 ring-inset ring-gray-100 cursor-pointer"
                     >
                       Show fewer
                     </button>`
                   : nothing}
-              </div>
+              </ul>
             </section>`
-          }
+          : nothing}
       </div>
     `;
   }
@@ -328,13 +326,23 @@ class Widget extends LitElement {
    */
   additionalDataTemplate() {
     return html`${this.isAMember
-        ? html`<hr class="block border-t border-[#d0d7de]" role="none" />`
-        : nothing}
-      <section class="flex flex-col gap-2 py-2 px-4 truncate">
-        ${this.hasAdditionalDataError
-          ? html`<p>There was an error fetching data</p>`
-          : this.additionalData.map((datum) => html`<p>${datum}</p>`)}
-      </section> `;
+      ? html`<hr class="block border-t border-gray-100" role="none" />`
+      : nothing}
+    ${this.hasAuthError
+      ? nothing
+      : html`<section class="flex flex-col gap-2 px-4 py-5">
+          ${this.hasAdditionalDataError
+            ? html`<p class="text-gray-900">
+                There was an error fetching data
+              </p>`
+            : this.additionalData.map(
+                (datum) =>
+                  html`<obe-additional-data
+                    value="${datum}"
+                    platform="${this.platform}"
+                  ></obe-additional-data>`
+              )}
+        </section>`} `;
   }
 
   /**
@@ -347,34 +355,32 @@ class Widget extends LitElement {
   actionsTemplate() {
     if (this.hasActionsError) {
       return html`
-        <hr class="block border-t border-[#d0d7de]" role="none" />
-        <p class="py-2 px-4">There was an error performing this action</p>
+        <hr class="block border-t border-gray-100" role="none" />
+        <p class="px-4 py-5">There was an error performing this action</p>
       `;
     } else if (this.isAMember) {
       return html`
-        <hr class="block border-t border-[#d0d7de]" role="none" />
+        <hr class="block border-t border-gray-100" role="none" />
         <a
           target="_blank"
           rel="noreferrer noopener"
           href="${ORBIT_API_ROOT_URL}/${this.workspace}/members/${this.member
             .slug}"
-          class="block py-2 px-4 w-full text-sm text-left text-gray-700 truncate bg-gray-50 rounded-b-md hover:bg-gray-100 focus:bg-gray-100"
-          role="menuitem"
+          class="block py-5 px-4 w-full text-left text-[#6C4DF6] font-semibold truncate rounded-b-md hover:bg-gray-100 focus:bg-gray-100"
         >
-          See ${this.username}’s profile on Orbit
+          Visit Orbit profile &rarr;
         </a>
       `;
     } else {
       return html`
         ${this.additionalData.length > 0
-          ? html`<hr class="block border-t border-[#d0d7de]" role="none" />`
+          ? html`<hr class="block border-t border-gray-100" role="none" />`
           : nothing}
         <button
-          class="block py-2 px-4 w-full text-sm text-left text-gray-700 truncate bg-gray-50 rounded-b-md hover:bg-gray-100 focus:bg-gray-100"
-          role="menuitem"
+          class="block py-5 px-4 w-full text-left text-[#6C4DF6] font-semibold truncate rounded-b-md hover:bg-gray-100 focus:bg-gray-100"
           @click="${this._addMemberToWorkspace}"
         >
-          Add ${this.username} to ${this.workspace} on Orbit
+          Add to Orbit
         </button>
       `;
     }
@@ -395,7 +401,7 @@ class Widget extends LitElement {
   }
 
   /**
-   * Run on mouseover of widget - loads member data & additional data
+   * Run on mouseover or focus of widget - loads member data & additional data
    * via background.js, then re-renders widget with new data.
    * Uses `hasLoaded` to prevent requests running repeatedly
    */
@@ -473,9 +479,7 @@ class Widget extends LitElement {
     }
 
     this.additionalData = [
-      `Contributed ${getThreshold(
-        response.contributions_total
-      )} times on GitHub`,
+      `${getThreshold(response.contributions_total)} GitHub Contributions`,
     ];
 
     if (response.contributions_on_this_repo_total === 1) {
@@ -484,9 +488,9 @@ class Widget extends LitElement {
       return;
     } else {
       this.additionalData.push(
-        `Contributed ${getThreshold(
+        `${getThreshold(
           response.contributions_on_this_repo_total
-        )} times to this repository`
+        )} contributions on this repository`
       );
     }
   }
@@ -534,6 +538,7 @@ class Widget extends LitElement {
           name="button"
           @click="${this._toggle}"
           @mouseover="${this._loadOrbitData}"
+          @focusin="${this._loadOrbitData}"
         ></slot>
         ${this.dropdownTemplate()}
       </div>

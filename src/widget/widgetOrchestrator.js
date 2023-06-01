@@ -33,13 +33,6 @@ export default class WidgetOrchestrator {
       // that was injected remained on other pages.
       const existingWidget = widgetZone.querySelector("obe-widget");
       if (existingWidget) {
-        // TODO: there is an infinite loop happening with Gmail:
-        // We’re triggering this method when any element is added to the page, but
-        // we’re also adding an element with this method. Friday-evening-quick-workaround is
-        // to opt-out of this behavior for now, so that it doesn’t block internal testing.
-        if (platform === "gmail") {
-          continue;
-        }
         existingWidget.remove();
       }
 

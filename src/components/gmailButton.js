@@ -17,8 +17,8 @@ class GmailButton extends LitElement {
         display: block;
         opacity: 0;
         position: absolute;
-        transition-duration: .15s;
-        transition-timing-function: cubic-bezier(0.4,0,0.2,1);
+        transition-duration: 0.15s;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
         z-index: -1;
         bottom: -10px;
         left: -10px;
@@ -28,7 +28,7 @@ class GmailButton extends LitElement {
         border-radius: 50%;
         box-sizing: border-box;
         transform: scale(0);
-        transition-property: transform,opacity;
+        transition-property: transform, opacity;
       }
 
       button:hover::before {
@@ -38,7 +38,7 @@ class GmailButton extends LitElement {
         opacity: 1;
         transform: scale(1);
       }
-    `
+    `,
   ];
 
   render() {
@@ -48,11 +48,10 @@ class GmailButton extends LitElement {
           type="button"
           class="relative top[-1px] z-0 w-[20px] h-[20px] ml-[20px] mb-[12px] text-[#454746] rounded-full flex justify-center items-center"
           id="menu-button"
-          aria-expanded="true"
           aria-haspopup="true"
         >
-          <span class="sr-only">Open Orbit Widget</span>
-          ${unsafeSVG(orbitLogo)}
+          <span class="sr-only">Open Orbit widget</span>
+          <span aria-hidden="true">${unsafeSVG(orbitLogo)}</span>
         </button>
       </div>
     `;
