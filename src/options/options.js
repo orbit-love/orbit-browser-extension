@@ -94,10 +94,14 @@ document.addEventListener("alpine:init", () => {
       const { data, included } = response;
       this.workspaces = data;
       this.repositories = included.filter((item) => item.type === "repository");
+      this.errorMessage = "";
 
       // Hide login if authenticated with OAuth
       if (!!this.accessToken) {
         this.showLogin = false;
+        this.warningMessage = "";
+
+        await chrome.storage.sync.set({ token: "" });
       }
     },
     _findAllReposFullNameByWorkspaceSlug() {
