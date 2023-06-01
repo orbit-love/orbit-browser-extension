@@ -20,6 +20,7 @@ document.addEventListener("alpine:init", () => {
     showLogin: true,
     errorMessage: "",
     warningMessage: "",
+    saveMessage: "",
     saveStatus: {
       success: undefined,
       message: "",
@@ -191,9 +192,7 @@ document.addEventListener("alpine:init", () => {
       );
 
       chrome.storage.sync.set(storageData, function () {
-        that.saveStatus.success = true;
-        that.saveStatus.message =
-          "Saved successfully, you can close this page.";
+        that.saveMessage = "Saved successfully, you can close this page.";
       });
     },
     async startOAuthFlow() {
