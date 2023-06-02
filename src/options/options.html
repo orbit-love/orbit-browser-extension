@@ -97,7 +97,7 @@
             This workspace will be used to retrieve information about community members, and create new ones.
           </p>
 
-          <fieldset class="mt-5">
+          <fieldset class="mt-5" @change="disableSave = false">
             <legend class="sr-only">Available workspaces</legend>
             <div class="grid gap-2" x-bind:class="workspaces.length > 5 ? 'grid-cols-2' : ''">
               <template x-for="workspace in workspaces" :key="workspace.id">
@@ -115,8 +115,8 @@
 
           <div class="flex flex-row-reverse gap-2 justify-start py-4">
             <button type="button"
-              class="inline-flex gap-x-2 items-center py-2.5 px-3.5 text-sm font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-indigo-600 focus-visible:outline focus-visible:outline-offset-2"
-              @click="save">
+              class="inline-flex gap-x-2 items-center py-2.5 px-3.5 text-sm font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-indigo-600 focus-visible:outline focus-visible:outline-offset-2 disabled:bg-indigo-500"
+              @click="save" x-bind:disabled="disableSave">
               Save
 
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"

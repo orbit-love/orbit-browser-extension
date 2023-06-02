@@ -11,19 +11,25 @@ import { getOrbitCredentials } from "../oauth-helpers";
 
 document.addEventListener("alpine:init", () => {
   Alpine.data("orbit", () => ({
+    // API token
     token: "",
+
+    // OAuth token
     accessToken: "",
+
+    // Data from API
     workspaces: [],
     repositories: [],
     selectedWorkspaceSlug: undefined,
+
+    // State management for UI
     showLogin: true,
+    disableSave: true,
+
+    // Status messages
     errorMessage: "",
     warningMessage: "",
     saveMessage: "",
-    saveStatus: {
-      success: undefined,
-      message: "",
-    },
     async init() {
       let apiKeyFromStorage,
         selectedWorkspaceSlugFromStorage,
@@ -67,6 +73,9 @@ document.addEventListener("alpine:init", () => {
         this.selectedWorkspaceSlug = selectedWorkspaceSlugFromStorage;
         this.workspaces = workspaces;
         this.repositories = repositories;
+
+        // Workspace has been selected previously, so save is enabled
+        this.disableSave = false;
       }
     },
     async fetchWorkspaces() {
