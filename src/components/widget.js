@@ -477,9 +477,11 @@ class Widget extends LitElement {
       return;
     }
 
-    this.additionalData = [
-      `${getThreshold(response.contributions_total)} GitHub Contributions`,
-    ];
+    if (response.contributions_total !== null) {
+      this.additionalData.push(
+        `${getThreshold(response.contributions_total)} GitHub Contributions`
+      );
+    }
 
     if (response.contributions_on_this_repo_total === 1) {
       this.additionalData.push("First contribution to this repository");
