@@ -3,7 +3,6 @@ import Alpine from "alpinejs";
 
 import { ORBIT_API_ROOT_URL, OAUTH_CLIENT_ID } from "../constants";
 import {
-  configureRequest,
   generateCodeChallenge,
   generateCodeVerifier,
   parseQueryParams as parseQueryParams,
