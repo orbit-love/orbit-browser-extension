@@ -24,7 +24,6 @@ document.addEventListener("alpine:init", () => {
 
     // State management for UI
     showLogin: true,
-    disableSave: true,
 
     // Status messages
     errorMessage: "",
@@ -73,9 +72,6 @@ document.addEventListener("alpine:init", () => {
         this.selectedWorkspaceSlug = selectedWorkspaceSlugFromStorage;
         this.workspaces = workspaces;
         this.repositories = repositories;
-
-        // Workspace has been selected previously, so save is enabled
-        this.disableSave = false;
       }
     },
     async fetchWorkspaces() {
