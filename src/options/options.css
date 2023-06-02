@@ -1,7 +1,5 @@
 @tailwind base;
-
 @tailwind components;
-
 @tailwind utilities;
 
 html {
@@ -19,109 +17,8 @@ body {
   font-size: 14px;
 }
 
-[x-cloak] { display: none !important; }
-
-blockquote,
-dl,
-dd,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-hr,
-figure,
-p,
-pre {
-  margin: 0;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-size: inherit;
-  font-weight: inherit;
-}
-
-h1 {
-  font-weight: 400;
-  margin-top: 0;
-  margin-bottom: 16px;
-  --text-opacity: 1;
-  color: #3a4045;
-  color: rgba(58, 64, 69, var(--text-opacity));
-  font-size: 23px;
-}
-
-input,
-select,
-textarea {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  --bg-opacity: 1;
-  background-color: #f1f2f3;
-  background-color: rgba(241, 242, 243, var(--bg-opacity));
-  border-width: 1px;
-  border-style: solid;
-  border-color: transparent;
-  font-weight: 400;
-  outline: 0;
-  border-radius: 5px;
-  --text-opacity: 1;
-  color: #4f565f;
-  color: rgba(79, 86, 95, var(--text-opacity));
-  transition-duration: 100ms;
-  transition-property: background-color, border-color, color, fill, stroke,
-    opacity, box-shadow, transform;
-}
-
-label,
-.label-like {
-  display: block;
-  font-weight: 400;
-  margin-bottom: 8px;
-  --text-opacity: 1;
-  color: #3a4045;
-  color: rgba(58, 64, 69, var(--text-opacity));
-  font-size: 14px;
-}
-
-.field,
-.form-field {
-  margin-top: 16px;
-  margin-bottom: 16px;
-}
-
-.actions,
-.form-actions {
-  margin-top: 16px;
-  margin-bottom: 24px;
-}
-
-button,
-input[type="submit"],
-input[type="button"] {
-  --bg-opacity: 1;
-  background-color: #6c4df6;
-  background-color: rgba(108, 77, 246, var(--bg-opacity));
-  cursor: pointer;
-  font-weight: 700;
-  padding-left: 16px;
-  padding-right: 16px;
-  border-radius: 5px;
-  --text-opacity: 1;
-  color: #ffffff;
-  color: rgba(255, 255, 255, var(--text-opacity));
-  transition-duration: 200ms;
-  transition-property: background-color, border-color, color, fill, stroke,
-    opacity, box-shadow, transform;
-  padding-bottom: 7px;
-  padding-top: 7px;
+[x-cloak] {
+  display: none !important;
 }
 
 a,
