@@ -220,7 +220,15 @@ document.addEventListener("alpine:init", () => {
 
             return this.getOAuthToken(parsed.code, codeVerifier);
           } else {
-            // TODO: Verify failure routes from OAuth
+            // How to reach this block:
+            // - Revoke any existing access tokens (ie, sign out)
+            // - Click sign in
+            // - In the popup, click “Orbit Account Settings” link at bottom of page
+            // - Go back
+            // - Click cancel
+            this.showLogin = true;
+            this.errorMessage = "Failed to authenticate, please try again.";
+
             console.error(
               "launchWebAuthFlow login failed. Is your redirect URL (" +
                 chrome.identity.getRedirectURL("oauth2") +
