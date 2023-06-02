@@ -16,8 +16,22 @@
       "run_at": "document_start",
       "matches": ["https://github.com/*"],
       "exclude_matches": ["https://*/login/*"],
-      "css": ["github/orbit-action.css"],
-      "js": ["github/github.js"]
+      "js": ["widget/githubEntrypoint.js"]
+    },
+    {
+      "run_at": "document_start",
+      "matches": ["https://twitter.com/*"],
+      "js": ["widget/twitterEntrypoint.js"]
+    },
+    {
+      "run_at": "document_start",
+      "matches": ["https://www.linkedin.com/*"],
+      "js": ["widget/linkedinEntrypoint.js"]
+    },
+    {
+      "run_at": "document_start",
+      "matches": ["https://mail.google.com/mail/*"],
+      "js": ["widget/gmailEntrypoint.js"]
     }
   ],
   "browser_action": {
