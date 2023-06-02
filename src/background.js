@@ -1,5 +1,5 @@
 import "chrome-extension-async";
-import { ORBIT_API_ROOT_URL, OAUTH_CLIENT_ID } from "./constants";
+import { ORBIT_ROOT_URL, ORBIT_API_ROOT_URL, OAUTH_CLIENT_ID } from "./constants";
 import { configureRequest, getOrbitCredentials } from "./oauth-helpers";
 
 // When clicking on the Orbit extension button, open the options page
@@ -97,7 +97,7 @@ const loadWorkspaces = async ({ accessToken, apiKey }) => {
  */
 const getOAuthToken = async ({ oAuthCode, codeVerifier }) => {
   try {
-    let authUrl = new URL(`${ORBIT_API_ROOT_URL}/oauth/token`);
+    let authUrl = new URL(`${ORBIT_ROOT_URL}/oauth/token`);
 
     let params = new URLSearchParams({
       client_id: OAUTH_CLIENT_ID,
@@ -128,7 +128,7 @@ const getOAuthToken = async ({ oAuthCode, codeVerifier }) => {
  */
 const refreshOAuthToken = async ({ refreshToken }) => {
   try {
-    const url = new URL(`${ORBIT_API_ROOT_URL}/oauth/token`);
+    const url = new URL(`${ORBIT_ROOT_URL}/oauth/token`);
     let params = new URLSearchParams({
       grant_type: "refresh_token",
       client_id: OAUTH_CLIENT_ID,

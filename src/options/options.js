@@ -1,9 +1,8 @@
 import "chrome-extension-async";
 import Alpine from "alpinejs";
 
-import { ORBIT_API_ROOT_URL, OAUTH_CLIENT_ID } from "../constants";
+import { ORBIT_ROOT_URL, OAUTH_CLIENT_ID } from "../constants";
 import {
-  configureRequest,
   generateCodeChallenge,
   generateCodeVerifier,
   parseQueryParams as parseQueryParams,
@@ -199,7 +198,7 @@ document.addEventListener("alpine:init", () => {
       let codeVerifier = generateCodeVerifier();
       let codeChallenge = await generateCodeChallenge(codeVerifier);
 
-      let authUrl = new URL(`${ORBIT_API_ROOT_URL}/oauth/authorize`);
+      let authUrl = new URL(`${ORBIT_ROOT_URL}/oauth/authorize`);
 
       let params = new URLSearchParams({
         client_id: OAUTH_CLIENT_ID,
