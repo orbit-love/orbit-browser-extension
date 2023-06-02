@@ -1,7 +1,7 @@
 {
   "name": "orbit-browser-extension",
   "version": "0.6.0",
-  "description": "The Orbit extension brings all your community data right at your fingertips",
+  "description": "The Orbit extension: all your community data, right at your fingertips.",
   "repository": "git@github.com:orbit-love/orbit-browser-extension.git",
   "contributors": [
     {
