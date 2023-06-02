@@ -69,7 +69,7 @@ class Widget extends LitElement {
   dropdownTemplate() {
     return html`
       <div
-        class="obe-dropdown ring-opacity-5 absolute right-0 top-10 z-10 bg-white rounded-md ring-1 ring-black shadow-lg origin-top-right focus:outline-none"
+        class="obe-dropdown ring-opacity-5 absolute right-0 top-10 z-10 w-80 bg-white rounded-md ring-1 ring-black shadow-lg origin-top-right focus:outline-none"
         role="article"
         aria-orientation="vertical"
         aria-labelledby="menu-button"
@@ -145,7 +145,7 @@ class Widget extends LitElement {
    */
   memberTemplate() {
     return html`
-      <div class="px-4 py-5 w-80">
+      <div class="px-4 py-5">
         <section class="flex gap-4">
           <!-- Avatar -->
           ${this.member.avatarUrl &&
@@ -333,7 +333,7 @@ class Widget extends LitElement {
       : html`<section class="flex flex-col gap-2 px-4 py-5">
           ${this.hasAdditionalDataError
             ? html`<p class="text-gray-900">
-                There was an error fetching data
+                There was an error fetching site data
               </p>`
             : this.additionalData.map(
                 (datum) =>
