@@ -3,7 +3,6 @@ import Alpine from "alpinejs";
 
 import { ORBIT_API_ROOT_URL, OAUTH_CLIENT_ID } from "../constants";
 import {
-  configureRequest,
   generateCodeChallenge,
   generateCodeVerifier,
   parseQueryParams as parseQueryParams,
@@ -12,19 +11,24 @@ import { getOrbitCredentials } from "../oauth-helpers";
 
 document.addEventListener("alpine:init", () => {
   Alpine.data("orbit", () => ({
+    // API token
     token: "",
+
+    // OAuth token
     accessToken: "",
+
+    // Data from API
     workspaces: [],
     repositories: [],
     selectedWorkspaceSlug: undefined,
+
+    // State management for UI
     showLogin: true,
+
+    // Status messages
     errorMessage: "",
     warningMessage: "",
     saveMessage: "",
-    saveStatus: {
-      success: undefined,
-      message: "",
-    },
     async init() {
       let apiKeyFromStorage,
         selectedWorkspaceSlugFromStorage,
