@@ -1,9 +1,18 @@
 {
   "name": "orbit-browser-extension",
   "version": "0.6.0",
-  "description": "Orbit browser extension",
+  "description": "The Orbit extension brings all your community data right at your fingertips",
   "repository": "git@github.com:orbit-love/orbit-browser-extension.git",
-  "author": "Nicolas Goutay <nicolas.goutay@gmail.com>",
+  "contributors": [
+    {
+      "name": "Nicolas Goutay",
+      "email": "nicolas.goutay@gmail.com"
+    },
+    {
+      "name": "delete-44",
+      "email": "delete44@protonmail.com"
+    }
+  ],
   "license": "MIT",
   "private": true,
   "scripts": {
