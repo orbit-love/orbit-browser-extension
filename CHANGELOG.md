@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [1.0.0] - 2023-06-02
+
+### Added
+
+- Brand new support for Twitter profile pages, LinkedIn profile pages, and Gmail
+- Surfacing additional member information from Orbit: Last Active, Identities, Organization and more
+
+### Improved
+
+- Redesigned the Options page
+- We revamped the Extension codebase to make it easier to add new features—and more websites
+
 ## [0.6.0] - 2023-05-05
 
 ### Added
