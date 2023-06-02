@@ -1,8 +1,12 @@
 /**
- * The URL of the API root.
- * To be changed to `https://orbit.eu.ngrok.io` for local development.
+ * The URL of the Orbit app.
  */
-export const ORBIT_API_ROOT_URL = "https://app.orbit.love";
+export const ORBIT_ROOT_URL = "https://app.orbit.love";
+
+/**
+ * The URL of the API root.
+ */
+export const ORBIT_API_ROOT_URL = `${ORBIT_ROOT_URL}/api/v1`;
 
 /**
  * Client ID of the OAUTH application generated in Orbit app
