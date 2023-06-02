@@ -3,7 +3,7 @@ import { customElement } from "lit/decorators.js";
 
 import tailwindStylesheet from "bundle-text:../styles/tailwind.global.css";
 
-import { ORBIT_API_ROOT_URL } from "../constants";
+import { ORBIT_ROOT_URL } from "../constants";
 
 @customElement("obe-tag")
 class Tag extends LitElement {
@@ -20,7 +20,7 @@ class Tag extends LitElement {
     return html`
       <li>
         <a
-          href="${ORBIT_API_ROOT_URL}/${this
+          href="${ORBIT_ROOT_URL}/${this
             .workspace}/members?tags_contains_any_of[]=${this.tag}"
           title="View all members tagged ${this.tag} in Orbit"
           target="_blank"

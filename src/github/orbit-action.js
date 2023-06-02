@@ -8,7 +8,7 @@ import {
   createOrbitMetrics,
   createTagList,
 } from "./dom-helpers";
-import { ORBIT_API_ROOT_URL } from "../constants";
+import { ORBIT_ROOT_URL } from "../constants";
 import { getThreshold } from "../helpers/widget-helper";
 
 /**
@@ -321,7 +321,7 @@ export async function createOrbitDetailsElement(
     detailsMenuLinkProfile.setAttribute("role", "menuitem");
     detailsMenuLinkProfile.setAttribute(
       "href",
-      `${ORBIT_API_ROOT_URL}/${normalizedWorkspace}/members/${$slug}`
+      `${ORBIT_ROOT_URL}/${normalizedWorkspace}/members/${$slug}`
     );
     detailsMenuLinkProfile.setAttribute("target", "_blank");
     detailsMenuLinkProfile.setAttribute("rel", "noopener");
@@ -384,7 +384,7 @@ export async function createOrbitDetailsElement(
     if (success) {
       event.target.setAttribute(
         "href",
-        `${ORBIT_API_ROOT_URL}/${normalizedWorkspace}/members/${gitHubUsername}`
+        `${ORBIT_ROOT_URL}/${normalizedWorkspace}/members/${gitHubUsername}`
       );
       event.target.setAttribute("target", "_blank");
       event.target.setAttribute("rel", "noopener");
