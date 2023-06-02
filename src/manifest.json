@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Orbit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "The Orbit extension: all your community data, right at your fingertips.",
   "short_name": "Orbit",
   "homepage_url": "https://orbit.love",
