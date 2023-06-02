@@ -158,7 +158,7 @@ class Widget extends LitElement {
           <div class="flex flex-col">
             <!-- Name -->
             <span class="block text-lg font-semibold leading-5 text-gray-900"
-              >${this.member.name}</span
+              >${this.member.name || this.member.slug}</span
             >
 
             <!-- Title -->
@@ -364,8 +364,7 @@ class Widget extends LitElement {
         <a
           target="_blank"
           rel="noreferrer noopener"
-          href="${ORBIT_ROOT_URL}/${this.workspace}/members/${this.member
-            .slug}"
+          href="${ORBIT_ROOT_URL}/${this.workspace}/members/${this.member.slug}"
           class="block py-5 px-4 w-full text-left text-[#6C4DF6] font-semibold truncate rounded-b-md hover:bg-gray-100 focus:bg-gray-100"
         >
           Visit Orbit profile &rarr;
