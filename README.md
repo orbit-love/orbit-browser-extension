@@ -50,7 +50,7 @@ Run `yarn test` to start the test suite, or `yarn test:watch` to run them contin
 
 To reload the extension after some changes, open [`chrome://extensions`](chrome://extensions) and click on the “reload” button for the Orbit one.
 
-To use the local API instead of the prod one, change `ORBIT_API_ROOT_URL` in `orbit-helper.js` to your ngrok tunnel address.
+To use the local API instead of the prod one, change `ORBIT_ROOT_URL` in `orbit-helper.js` to your ngrok tunnel address.
 
 ## Deployment
 

@@ -9,7 +9,7 @@ import "./additionalData";
 import tailwindStylesheet from "bundle-text:../styles/tailwind.global.css";
 import iconCustomer from "bundle-text:../icons/icon-customer.svg";
 import iconOrbitLevel from "bundle-text:../icons/icon-orbit-level.svg";
-import { ORBIT_API_ROOT_URL } from "../constants";
+import { ORBIT_ROOT_URL } from "../constants";
 import {
   buildMemberData,
   formatDate,
@@ -364,7 +364,7 @@ class Widget extends LitElement {
         <a
           target="_blank"
           rel="noreferrer noopener"
-          href="${ORBIT_API_ROOT_URL}/${this.workspace}/members/${this.member
+          href="${ORBIT_ROOT_URL}/${this.workspace}/members/${this.member
             .slug}"
           class="block py-5 px-4 w-full text-left text-[#6C4DF6] font-semibold truncate rounded-b-md hover:bg-gray-100 focus:bg-gray-100"
         >
