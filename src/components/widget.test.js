@@ -92,7 +92,7 @@ describe("obe-widget", () => {
     element.hasAdditionalDataError = true;
     element.update();
     const dropdown = element.shadowRoot.querySelector(".obe-dropdown");
-    expect(dropdown.innerHTML).toMatch("There was an error fetching data");
+    expect(dropdown.innerHTML).toMatch("There was an error fetching site data");
   });
 
   it("renders actions error state when hasActionsError is true", () => {

@@ -3,7 +3,6 @@ import Alpine from "alpinejs";
 
 import { ORBIT_API_ROOT_URL, OAUTH_CLIENT_ID } from "../constants";
 import {
-  configureRequest,
   generateCodeChallenge,
   generateCodeVerifier,
   parseQueryParams as parseQueryParams,
@@ -12,19 +11,24 @@ import { getOrbitCredentials } from "../oauth-helpers";
 
 document.addEventListener("alpine:init", () => {
   Alpine.data("orbit", () => ({
+    // API token
     token: "",
+
+    // OAuth token
     accessToken: "",
+
+    // Data from API
     workspaces: [],
     repositories: [],
     selectedWorkspaceSlug: undefined,
+
+    // State management for UI
     showLogin: true,
+
+    // Status messages
     errorMessage: "",
     warningMessage: "",
     saveMessage: "",
-    saveStatus: {
-      success: undefined,
-      message: "",
-    },
     async init() {
       let apiKeyFromStorage,
         selectedWorkspaceSlugFromStorage,
@@ -220,7 +224,15 @@ document.addEventListener("alpine:init", () => {
 
             return this.getOAuthToken(parsed.code, codeVerifier);
           } else {
-            // TODO: Verify failure routes from OAuth
+            // How to reach this block:
+            // - Revoke any existing access tokens (ie, sign out)
+            // - Click sign in
+            // - In the popup, click “Orbit Account Settings” link at bottom of page
+            // - Go back
+            // - Click cancel
+            this.showLogin = true;
+            this.errorMessage = "Failed to authenticate, please try again.";
+
             console.error(
               "launchWebAuthFlow login failed. Is your redirect URL (" +
                 chrome.identity.getRedirectURL("oauth2") +
