@@ -9,7 +9,7 @@
 
 <div align="center">
   <a href="https://chrome.google.com/webstore/detail/orbit/ibgahekkldapaohbpmpbckmeljidicmn">
-    <img width="1400" alt="A screenshot of the Orbit Browser extension, shown on a GitHub Pull Request. The legend reads: 'Community data at your fingertips. One-click overview of your community members, inside GitHub, Twitter, LinkedIn, and Gmail.'" src="https://github.com/orbit-love/ops/assets/2587348/729fe4f4-247d-4de2-ae0f-491d8b985564">
+    <img width="1400" alt="A screenshot of the Orbit Browser extension, shown on a GitHub Pull Request. The legend reads: 'Community data at your fingertips. One-click overview of your community members, inside GitHub, Twitter, LinkedIn, and Gmail.'" src="https://github.com/orbit-love/orbit-browser-extension/assets/2587348/26983029-8b80-4e4f-b9a3-15f46cfa6db2">
   </a>
 </div>
 
