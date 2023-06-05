@@ -144,7 +144,7 @@ describe("obe-widget", () => {
     global.chrome = originalChrome;
   });
 
-  describe("'_toggleTags", () => {
+  describe("#_toggleTags", () => {
     it("sets showAllTags to true by default", () => {
       expect(element.showAllTags).toBe(false);
       element._toggleTags();
@@ -272,6 +272,32 @@ describe("obe-widget", () => {
       expect(dropdown.querySelectorAll("obe-identity").length).toEqual(6);
       expect(dropdown.innerHTML).not.toMatch(/\+.*1 more/);
       expect(dropdown.innerHTML).toMatch("Show fewer");
+    });
+  });
+
+  describe("#_getMemberInitials", () => {
+    it("uses the name initials if it exists and has a space", () => {
+      element.member = {
+        name: "Sally Ride",
+        slug: "sally-ride",
+      };
+      expect(element._getMemberInitials()).toBe('SR')
+    });
+
+    it("uses the slug first two letters if name does not have a space", () => {
+      element.member = {
+        name: "Nospace",
+        slug: "sally-ride",
+      };
+      expect(element._getMemberInitials()).toBe('SA')
+    });
+
+    it("uses the slug first two letters if name does not exist", () => {
+      element.member = {
+        name: null,
+        slug: "sally-ride",
+      };
+      expect(element._getMemberInitials()).toBe('SA')
     });
   });
 
