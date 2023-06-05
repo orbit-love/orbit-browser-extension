@@ -4,21 +4,21 @@
   </a>
 </p>
 <h1 align="center">
-  Orbit Chrome Extension
+  Orbit Browser Extension
 </h1>
 
 <div align="center">
   <a href="https://chrome.google.com/webstore/detail/orbit/ibgahekkldapaohbpmpbckmeljidicmn">
-    <img alt="screenshot" src="https://cdn.sanity.io/images/cad8jutx/production/29bbc3dd073bc1b8e027dc56f4064ce157e85d15-800x351.gif" width="600"/>
+    <img width="1400" alt="A screenshot of the Orbit Browser extension, shown on a GitHub Pull Request. The legend reads: 'Community data at your fingertips. One-click overview of your community members, inside GitHub, Twitter, LinkedIn, and Gmail.'" src="https://github.com/orbit-love/ops/assets/2587348/729fe4f4-247d-4de2-ae0f-491d8b985564">
   </a>
 </div>
 
 <br />
 
 <p align="center">
-    Add useful developer information right into GitHub issues and PRs.
+    Community data at your fingertips, available inside GitHub, Twitter, LinkedIn, and Gmail.
     <br />
-    <a href="https://chrome.google.com/webstore/detail/orbit/ibgahekkldapaohbpmpbckmeljidicmn">Get it on the Chrome web store</a> (requires an Orbit account).
+    <a href="https://chrome.google.com/webstore/detail/orbit/ibgahekkldapaohbpmpbckmeljidicmn">Get it on the Chrome web store</a> (requires an <a href="https://orbit.love">Orbit</a> account).
 </p>
 
 ## Local installation
@@ -67,4 +67,4 @@ To deploy a new version of the browser extension:
 
 ## About Orbit
 
-[Orbit](https://orbit.love) is the Community CRM for developers, helping organizations grow their communities and accelerate technology adoption.
+Thousands of businesses use [Orbit](https://orbit.love) to grow and measure their community across any platform.
