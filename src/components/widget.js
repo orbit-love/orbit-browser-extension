@@ -179,17 +179,21 @@ class Widget extends LitElement {
                       src="${this.member.organization.logo_url}"
                     />`}
                     <!-- If organisation doesn't include a protocol (ie https://), add one so it's treated as absolute -->
-                    <a
-                      href="${this.member.organization.website.match(
-                        /https?:\/\//
-                      )
-                        ? this.member.organization.website
-                        : `https://${this.member.organization.website}`}"
-                      target="_blank"
-                      rel="noreferrer"
-                      class="mr-2 text-sm font-semibold text-[#6C4DF6] hover:underline"
-                      >${this.member.organization.name}</a
-                    >
+                    ${this.member.organization.website
+                      ? html`<a
+                          href="${this.member.organization.website.match(
+                            /https?:\/\//
+                          )
+                            ? this.member.organization.website
+                            : `https://${this.member.organization.website}`}"
+                          target="_blank"
+                          rel="noreferrer"
+                          class="mr-2 text-sm font-semibold text-[#6C4DF6] hover:underline"
+                          >${this.member.organization.name}</a
+                        >`
+                      : html`<span class="mr-2 text-sm font-semibold text-gray-500"
+                          >${this.member.organization.name}</span
+                        >`}
                     ${this.member.organization.lifecycle_stage === "customer"
                       ? html`<span class="sr-only">Customer</span>
                           <span aria-hidden="true"
