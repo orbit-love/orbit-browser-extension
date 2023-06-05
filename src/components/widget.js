@@ -1,6 +1,7 @@
 import { LitElement, html, css, nothing, unsafeCSS } from "lit";
 import { customElement } from "lit/decorators.js";
 import { unsafeSVG } from "lit/directives/unsafe-svg.js";
+import "./avatar";
 import "./pill";
 import "./tag";
 import "./identity";
@@ -147,13 +148,7 @@ class Widget extends LitElement {
     return html`
       <div class="px-4 py-5">
         <section class="flex gap-4">
-          <!-- Avatar -->
-          ${this.member.avatarUrl &&
-          html`<img
-            alt=""
-            class="w-14 h-14 rounded-full"
-            src="${this.member.avatarUrl}"
-          />`}
+          <obe-avatar avatar-url="${this.member.avatarUrl}" fallback="${this._getMemberInitials()}"></obe-avatar>
 
           <div class="flex flex-col">
             <!-- Name -->
@@ -179,17 +174,21 @@ class Widget extends LitElement {
                       src="${this.member.organization.logo_url}"
                     />`}
                     <!-- If organisation doesn't include a protocol (ie https://), add one so it's treated as absolute -->
-                    <a
-                      href="${this.member.organization.website.match(
-                        /https?:\/\//
-                      )
-                        ? this.member.organization.website
-                        : `https://${this.member.organization.website}`}"
-                      target="_blank"
-                      rel="noreferrer"
-                      class="mr-2 text-sm font-semibold text-[#6C4DF6] hover:underline"
-                      >${this.member.organization.name}</a
-                    >
+                    ${this.member.organization.website
+                      ? html`<a
+                          href="${this.member.organization.website.match(
+                            /https?:\/\//
+                          )
+                            ? this.member.organization.website
+                            : `https://${this.member.organization.website}`}"
+                          target="_blank"
+                          rel="noreferrer"
+                          class="mr-2 text-sm font-semibold text-[#6C4DF6] hover:underline"
+                          >${this.member.organization.name}</a
+                        >`
+                      : html`<span class="mr-2 text-sm font-semibold text-gray-500"
+                          >${this.member.organization.name}</span
+                        >`}
                     ${this.member.organization.lifecycle_stage === "customer"
                       ? html`<span class="sr-only">Customer</span>
                           <span aria-hidden="true"
@@ -397,6 +396,16 @@ class Widget extends LitElement {
   _toggleIdentities(showIdentities = true) {
     this.showAllIdentities = showIdentities;
     this.requestUpdate();
+  }
+
+  _getMemberInitials() {
+    if (!this.member.name && !this.member.slug) { return null }
+
+    if (this.member.name && this.member.name.split(' ').length > 1) {
+      return `${this.member.name.split(' ')[0][0]}${this.member.name.split(' ')[1][0]}`.toUpperCase()
+    } else {
+      return this.member.slug.slice(0, 2).toUpperCase()
+    }
   }
 
   /**
