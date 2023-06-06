@@ -114,7 +114,7 @@ class Widget extends LitElement {
    * @returns {HTMLElement}
    */
   textTemplate(text) {
-    return html` <span class="block px-4 py-5 text-gray-900">${text}</span> `;
+    return html`<span class="block px-4 py-5 text-gray-900">${text}</span>`;
   }
 
   /**
@@ -217,7 +217,7 @@ class Widget extends LitElement {
               ></obe-pill>`
             : nothing}
           ${this.member.lastActivityOccurredAt &&
-          html` <obe-pill
+          html`<obe-pill
             name="Last Active"
             value="${formatDate(this.member.lastActivityOccurredAt)}"
           ></obe-pill>`}
@@ -335,7 +335,7 @@ class Widget extends LitElement {
                     platform="${this.platform}"
                   ></obe-additional-data>`
               )}
-        </section>`} `;
+        </section>`}`;
   }
 
   /**
@@ -434,14 +434,19 @@ class Widget extends LitElement {
       platform: this.platform,
     });
 
+    // If request was unauthorised or no workspace in chrome storage,
+    // ask user to reauthenticate
     if (status === 401 || !response?.workspace) {
       this.hasAuthError = true;
     } else if (status === 404) {
+      // If member not found in workspace, show "add to workspace" action
       this.isAMember = false;
       this.workspace = response?.workspace;
     } else if (success === false) {
+      // If request fails
       this.hasError = true;
     } else {
+      // If member is found
       const { data, included, workspace } = response;
 
       if (!data) {
