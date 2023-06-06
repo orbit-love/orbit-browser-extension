@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [1.0.3] - 2023-06-06
+
+### Fixed
+
+- Correctly checking for unauthorised requests & missing workspaces
+- No longer truncating error messages
+
+### Improved
+
+- Simplified Tailwind by moving repeated classes into @apply blocks
+
 ## [1.0.2] - 2023-06-05
 
 ### Added
