@@ -1,5 +1,6 @@
 import "./widget";
 import { mockChrome } from "../test-helpers";
+import { getOrbitCredentials } from "../oauth-helpers";
 
 describe("obe-widget", () => {
   let element;
@@ -111,6 +112,7 @@ describe("obe-widget", () => {
         success: true,
         status: 200,
         response: {
+          workspace: "workspace",
           data: {
             attributes: {
               name: "John Doe",
@@ -281,7 +283,7 @@ describe("obe-widget", () => {
         name: "Sally Ride",
         slug: "sally-ride",
       };
-      expect(element._getMemberInitials()).toBe('SR')
+      expect(element._getMemberInitials()).toBe("SR");
     });
 
     it("uses the slug first two letters if name does not have a space", () => {
@@ -289,7 +291,7 @@ describe("obe-widget", () => {
         name: "Nospace",
         slug: "sally-ride",
       };
-      expect(element._getMemberInitials()).toBe('SA')
+      expect(element._getMemberInitials()).toBe("SA");
     });
 
     it("uses the slug first two letters if name does not exist", () => {
@@ -297,7 +299,7 @@ describe("obe-widget", () => {
         name: null,
         slug: "sally-ride",
       };
-      expect(element._getMemberInitials()).toBe('SA')
+      expect(element._getMemberInitials()).toBe("SA");
     });
   });
 
@@ -345,6 +347,9 @@ describe("obe-widget", () => {
         {
           success: true,
           status: 404,
+          response: {
+            workspace: "workspace",
+          },
         }
       );
 
@@ -364,6 +369,9 @@ describe("obe-widget", () => {
         {
           success: false,
           status: 500,
+          response: {
+            workspace: "workspace",
+          },
         }
       );
 
@@ -386,7 +394,9 @@ describe("obe-widget", () => {
         {
           success: true,
           status: 200,
-          response: {},
+          response: {
+            workspace: "workspace",
+          },
         }
       );
 
@@ -410,6 +420,7 @@ describe("obe-widget", () => {
           success: true,
           status: 200,
           response: {
+            workspace: "workspace",
             data: {
               attributes: {
                 name: "Delete",
