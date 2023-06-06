@@ -1,5 +1,9 @@
 import "chrome-extension-async";
-import { ORBIT_ROOT_URL, ORBIT_API_ROOT_URL, OAUTH_CLIENT_ID } from "./constants";
+import {
+  ORBIT_ROOT_URL,
+  ORBIT_API_ROOT_URL,
+  OAUTH_CLIENT_ID,
+} from "./constants";
 import { configureRequest, getOrbitCredentials } from "./oauth-helpers";
 
 // When clicking on the Orbit extension button, open the options page
@@ -182,13 +186,16 @@ const loadMemberData = async ({ username, platform }) => {
       headers,
     });
 
+    // We cannot parse the JSON for some failed responses successfully, causing unexpected errors
+    // .:., only parse JSON if response succeeds
+    const payload = response.ok
+      ? { workspace: ORBIT_CREDENTIALS.WORKSPACE, ...(await response.json()) }
+      : {};
+
     return {
-      success: true,
-      response: {
-        workspace: ORBIT_CREDENTIALS.WORKSPACE,
-        ...(await response.json()),
-      },
+      success: response.ok,
       status: response.status,
+      response: payload,
     };
   } catch (e) {
     return { success: false, response: e.message, status: 500 };

@@ -148,7 +148,10 @@ class Widget extends LitElement {
     return html`
       <div class="px-4 py-5">
         <section class="flex gap-4">
-          <obe-avatar avatar-url="${this.member.avatarUrl}" fallback="${this._getMemberInitials()}"></obe-avatar>
+          <obe-avatar
+            avatar-url="${this.member.avatarUrl}"
+            fallback="${this._getMemberInitials()}"
+          ></obe-avatar>
 
           <div class="flex flex-col">
             <!-- Name -->
@@ -186,7 +189,8 @@ class Widget extends LitElement {
                           class="mr-2 text-sm font-semibold text-[#6C4DF6] hover:underline"
                           >${this.member.organization.name}</a
                         >`
-                      : html`<span class="mr-2 text-sm font-semibold text-gray-500"
+                      : html`<span
+                          class="mr-2 text-sm font-semibold text-gray-500"
                           >${this.member.organization.name}</span
                         >`}
                     ${this.member.organization.lifecycle_stage === "customer"
@@ -399,12 +403,16 @@ class Widget extends LitElement {
   }
 
   _getMemberInitials() {
-    if (!this.member.name && !this.member.slug) { return null }
+    if (!this.member.name && !this.member.slug) {
+      return null;
+    }
 
-    if (this.member.name && this.member.name.split(' ').length > 1) {
-      return `${this.member.name.split(' ')[0][0]}${this.member.name.split(' ')[1][0]}`.toUpperCase()
+    if (this.member.name && this.member.name.split(" ").length > 1) {
+      return `${this.member.name.split(" ")[0][0]}${
+        this.member.name.split(" ")[1][0]
+      }`.toUpperCase();
     } else {
-      return this.member.slug.slice(0, 2).toUpperCase()
+      return this.member.slug.slice(0, 2).toUpperCase();
     }
   }
 
