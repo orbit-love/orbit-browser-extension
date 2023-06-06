@@ -114,9 +114,7 @@ class Widget extends LitElement {
    * @returns {HTMLElement}
    */
   textTemplate(text) {
-    return html`
-      <span class="block px-4 py-5 text-gray-900 truncate">${text}</span>
-    `;
+    return html`<span class="block px-4 py-5 text-gray-900">${text}</span>`;
   }
 
   /**
@@ -127,14 +125,14 @@ class Widget extends LitElement {
    */
   authErrorTemplate() {
     return html`
-      <span class="block px-4 py-5 text-sm text-gray-900 truncate"
-        >Authentication error: API token or workspace is missing or
-        invalid</span
+      <span class="block px-4 py-5 text-sm text-gray-900"
+        >Authentication error: Credentials are invalid or workspace has not been
+        selected</span
       >
       <span
         @click=${() => chrome.runtime.sendMessage("showOptions")}
-        class="block py-5 px-4 w-full rounded-b-md text-left text-[#6C4DF6] font-semibold cursor-pointer hover:bg-gray-100 focus:bg-gray-100"
-        >Click here or on the extension icon to authenticate &rarr;</span
+        class="action-link"
+        >Visit the extension settings to authenticate &rarr;</span
       >
     `;
   }
@@ -148,7 +146,10 @@ class Widget extends LitElement {
     return html`
       <div class="px-4 py-5">
         <section class="flex gap-4">
-          <obe-avatar avatar-url="${this.member.avatarUrl}" fallback="${this._getMemberInitials()}"></obe-avatar>
+          <obe-avatar
+            avatar-url="${this.member.avatarUrl}"
+            fallback="${this._getMemberInitials()}"
+          ></obe-avatar>
 
           <div class="flex flex-col">
             <!-- Name -->
@@ -164,9 +165,7 @@ class Widget extends LitElement {
             <!-- Organization -->
             ${!!this.member.organization
               ? html`
-                  <div
-                    class="flex flex-row justify-start items-center mt-1 leading-5"
-                  >
+                  <div class="flex-start mt-1 leading-5">
                     ${this.member.organization.logo_url &&
                     html`<img
                       alt=""
@@ -186,7 +185,8 @@ class Widget extends LitElement {
                           class="mr-2 text-sm font-semibold text-[#6C4DF6] hover:underline"
                           >${this.member.organization.name}</a
                         >`
-                      : html`<span class="mr-2 text-sm font-semibold text-gray-500"
+                      : html`<span
+                          class="mr-2 text-sm font-semibold text-gray-500"
                           >${this.member.organization.name}</span
                         >`}
                     ${this.member.organization.lifecycle_stage === "customer"
@@ -203,9 +203,7 @@ class Widget extends LitElement {
         </section>
 
         <!-- Pills -->
-        <section
-          class="flex flex-row justify-start items-center mt-3 space-x-1"
-        >
+        <section class="flex-start mt-3 space-x-1">
           ${this.member.teammate
             ? html`<obe-pill
                 icon="${iconOrbitLevel}"
@@ -219,13 +217,13 @@ class Widget extends LitElement {
               ></obe-pill>`
             : nothing}
           ${this.member.lastActivityOccurredAt &&
-          html` <obe-pill
+          html`<obe-pill
             name="Last Active"
             value="${formatDate(this.member.lastActivityOccurredAt)}"
           ></obe-pill>`}
         </section>
 
-        <hr class="block my-5 border-t border-gray-100" role="none" />
+        <hr class="divider my-5" role="none" />
 
         <!-- Identities -->
         ${!!this.member.identities && this.member.identities.length > 0
@@ -233,9 +231,7 @@ class Widget extends LitElement {
               <p class="sr-only">
                 ${this.member.identities.length} linked profiles & emails
               </p>
-              <ul
-                class="flex flex-row flex-wrap gap-1 justify-start items-center"
-              >
+              <ul class="flex-start flex-wrap gap-1">
                 ${this.member.identities.map((identity, index) => {
                   // Do not render identities that are above identity limit, unless we are showing all
                   if (!this.showAllIdentities && index > IDENTITY_LIMIT) {
@@ -246,7 +242,7 @@ class Widget extends LitElement {
                   if (!this.showAllIdentities && index === IDENTITY_LIMIT) {
                     return html`<button
                       @click="${this._toggleIdentities}"
-                      class="py-1 px-1.5 text-sm text-gray-500 rounded-md ring-1 ring-inset ring-gray-100 cursor-pointer"
+                      class="show-more"
                     >
                       +${this.member.identities.length - IDENTITY_LIMIT} more
                     </button>`;
@@ -262,7 +258,7 @@ class Widget extends LitElement {
                 ${this.showAllIdentities
                   ? html`<button
                       @click="${() => this._toggleIdentities(false)}"
-                      class="py-1 px-1.5 text-sm text-gray-500 rounded-md ring-1 ring-inset ring-gray-100 cursor-pointer"
+                      class="show-more"
                     >
                       Show fewer
                     </button>`
@@ -275,9 +271,7 @@ class Widget extends LitElement {
         ${!!this.member.tags && this.member.tags.length > 0
           ? html`<section class="mt-5">
               <p class="sr-only">${this.member.tags.length} tags</p>
-              <ul
-                class="flex flex-row flex-wrap gap-x-1 gap-y-1.5 justify-start items-center"
-              >
+              <ul class="flex-start flex-wrap gap-x-1 gap-y-1.5">
                 ${this.member.tags.map((tag, index) => {
                   // Do not render tags that are above tag limit, unless we are showing all
                   if (!this.showAllTags && index > TAG_LIMIT) {
@@ -288,7 +282,7 @@ class Widget extends LitElement {
                   if (!this.showAllTags && index === TAG_LIMIT) {
                     return html`<button
                       @click="${this._toggleTags}"
-                      class="py-1 px-1.5 text-sm text-gray-500 rounded-md ring-1 ring-inset ring-gray-100 cursor-pointer"
+                      class="show-more"
                     >
                       +${this.member.tags.length - TAG_LIMIT} more
                     </button>`;
@@ -305,7 +299,7 @@ class Widget extends LitElement {
                 ${this.showAllTags
                   ? html`<button
                       @click="${() => this._toggleTags(false)}"
-                      class="py-1 px-1.5 text-sm text-gray-500 rounded-md ring-1 ring-inset ring-gray-100 cursor-pointer"
+                      class="show-more"
                     >
                       Show fewer
                     </button>`
@@ -325,7 +319,7 @@ class Widget extends LitElement {
    */
   additionalDataTemplate() {
     return html`${this.isAMember
-      ? html`<hr class="block border-t border-gray-100" role="none" />`
+      ? html`<hr class="divider" role="none" />`
       : nothing}
     ${this.hasAuthError
       ? nothing
@@ -341,7 +335,7 @@ class Widget extends LitElement {
                     platform="${this.platform}"
                   ></obe-additional-data>`
               )}
-        </section>`} `;
+        </section>`}`;
   }
 
   /**
@@ -354,17 +348,17 @@ class Widget extends LitElement {
   actionsTemplate() {
     if (this.hasActionsError) {
       return html`
-        <hr class="block border-t border-gray-100" role="none" />
+        <hr class="divider" role="none" />
         <p class="px-4 py-5">There was an error performing this action</p>
       `;
     } else if (this.isAMember) {
       return html`
-        <hr class="block border-t border-gray-100" role="none" />
+        <hr class="divider" role="none" />
         <a
           target="_blank"
           rel="noreferrer noopener"
           href="${ORBIT_ROOT_URL}/${this.workspace}/members/${this.member.slug}"
-          class="block py-5 px-4 w-full text-left text-[#6C4DF6] font-semibold truncate rounded-b-md hover:bg-gray-100 focus:bg-gray-100"
+          class="action-link"
         >
           Visit Orbit profile &rarr;
         </a>
@@ -372,12 +366,9 @@ class Widget extends LitElement {
     } else {
       return html`
         ${this.additionalData.length > 0
-          ? html`<hr class="block border-t border-gray-100" role="none" />`
+          ? html`<hr class="divider" role="none" />`
           : nothing}
-        <button
-          class="block py-5 px-4 w-full text-left text-[#6C4DF6] font-semibold truncate rounded-b-md hover:bg-gray-100 focus:bg-gray-100"
-          @click="${this._addMemberToWorkspace}"
-        >
+        <button class="action-link" @click="${this._addMemberToWorkspace}">
           Add to Orbit
         </button>
       `;
@@ -399,12 +390,16 @@ class Widget extends LitElement {
   }
 
   _getMemberInitials() {
-    if (!this.member.name && !this.member.slug) { return null }
+    if (!this.member.name && !this.member.slug) {
+      return null;
+    }
 
-    if (this.member.name && this.member.name.split(' ').length > 1) {
-      return `${this.member.name.split(' ')[0][0]}${this.member.name.split(' ')[1][0]}`.toUpperCase()
+    if (this.member.name && this.member.name.split(" ").length > 1) {
+      return `${this.member.name.split(" ")[0][0]}${
+        this.member.name.split(" ")[1][0]
+      }`.toUpperCase();
     } else {
-      return this.member.slug.slice(0, 2).toUpperCase()
+      return this.member.slug.slice(0, 2).toUpperCase();
     }
   }
 
@@ -439,14 +434,19 @@ class Widget extends LitElement {
       platform: this.platform,
     });
 
-    if (status === 401) {
+    // If request was unauthorised or no workspace in chrome storage,
+    // ask user to reauthenticate
+    if (status === 401 || !response?.workspace) {
       this.hasAuthError = true;
     } else if (status === 404) {
+      // If member not found in workspace, show "add to workspace" action
       this.isAMember = false;
       this.workspace = response?.workspace;
     } else if (success === false) {
+      // If request fails
       this.hasError = true;
     } else {
+      // If member is found
       const { data, included, workspace } = response;
 
       if (!data) {
