@@ -16,3 +16,19 @@
 .obe-dropdown[aria-hidden="false"] {
   animation: fade-in 0.25s ease-out;
 }
+
+.flex-start {
+  @apply flex flex-row justify-start items-center;
+}
+
+.divider {
+  @apply block border-t border-gray-100;
+}
+
+.show-more {
+  @apply py-1 px-1.5 text-sm text-gray-500 rounded-md ring-1 ring-inset ring-gray-100 cursor-pointer;
+}
+
+.action-link {
+  @apply block py-5 px-4 w-full rounded-b-md text-left text-[#6C4DF6] font-semibold cursor-pointer hover:bg-gray-100 focus:bg-gray-100;
+}
