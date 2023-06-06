@@ -190,7 +190,7 @@ const loadMemberData = async ({ username, platform }) => {
     // .:., only parse JSON if response succeeds
     const payload = response.ok
       ? { workspace: ORBIT_CREDENTIALS.WORKSPACE, ...(await response.json()) }
-      : {};
+      : { workspace: ORBIT_CREDENTIALS.WORKSPACE };
 
     return {
       success: response.ok,

@@ -114,9 +114,7 @@ class Widget extends LitElement {
    * @returns {HTMLElement}
    */
   textTemplate(text) {
-    return html`
-      <span class="block px-4 py-5 text-gray-900 truncate">${text}</span>
-    `;
+    return html` <span class="block px-4 py-5 text-gray-900">${text}</span> `;
   }
 
   /**
@@ -127,14 +125,14 @@ class Widget extends LitElement {
    */
   authErrorTemplate() {
     return html`
-      <span class="block px-4 py-5 text-sm text-gray-900 truncate"
-        >Authentication error: API token or workspace is missing or
-        invalid</span
+      <span class="block px-4 py-5 text-sm text-gray-900"
+        >Authentication error: Credentials are invalid or workspace has not been
+        selected</span
       >
       <span
         @click=${() => chrome.runtime.sendMessage("showOptions")}
         class="block py-5 px-4 w-full rounded-b-md text-left text-[#6C4DF6] font-semibold cursor-pointer hover:bg-gray-100 focus:bg-gray-100"
-        >Click here or on the extension icon to authenticate &rarr;</span
+        >Visit the extension settings to authenticate &rarr;</span
       >
     `;
   }
@@ -368,7 +366,7 @@ class Widget extends LitElement {
           target="_blank"
           rel="noreferrer noopener"
           href="${ORBIT_ROOT_URL}/${this.workspace}/members/${this.member.slug}"
-          class="block py-5 px-4 w-full text-left text-[#6C4DF6] font-semibold truncate rounded-b-md hover:bg-gray-100 focus:bg-gray-100"
+          class="block py-5 px-4 w-full text-left text-[#6C4DF6] font-semibold rounded-b-md hover:bg-gray-100 focus:bg-gray-100"
         >
           Visit Orbit profile &rarr;
         </a>
@@ -379,7 +377,7 @@ class Widget extends LitElement {
           ? html`<hr class="block border-t border-gray-100" role="none" />`
           : nothing}
         <button
-          class="block py-5 px-4 w-full text-left text-[#6C4DF6] font-semibold truncate rounded-b-md hover:bg-gray-100 focus:bg-gray-100"
+          class="block py-5 px-4 w-full text-left text-[#6C4DF6] font-semibold rounded-b-md hover:bg-gray-100 focus:bg-gray-100"
           @click="${this._addMemberToWorkspace}"
         >
           Add to Orbit
@@ -447,7 +445,7 @@ class Widget extends LitElement {
       platform: this.platform,
     });
 
-    if (status === 401) {
+    if (status === 401 || !response?.workspace) {
       this.hasAuthError = true;
     } else if (status === 404) {
       this.isAMember = false;
