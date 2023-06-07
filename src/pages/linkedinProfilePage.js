@@ -1,7 +1,9 @@
 import Page from "./page";
 
 export default class LinkedinProfilePage extends Page {
-  getPlatform() { return 'linkedin' }
+  getPlatform() {
+    return "linkedin";
+  }
 
   detect() {
     const pathname = window.location.pathname;
@@ -24,6 +26,6 @@ export default class LinkedinProfilePage extends Page {
   }
 
   findInsertionPoint(main) {
-    return main.querySelector(".pv-top-card__badge-wrap") || null
+    return main.querySelector(".pv-top-card__badge-wrap") || null;
   }
 }

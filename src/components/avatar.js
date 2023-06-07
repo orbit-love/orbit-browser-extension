@@ -7,7 +7,7 @@ import tailwindStylesheet from "bundle-text:../styles/tailwind.global.css";
 class Avatar extends LitElement {
   static get properties() {
     return {
-      avatarUrl: { attribute: "avatar-url", type: String, },
+      avatarUrl: { attribute: "avatar-url", type: String },
       fallback: { type: String },
       isAvatarUrlValid: { state: true, type: Boolean },
     };
@@ -20,7 +20,9 @@ class Avatar extends LitElement {
   }
 
   async checkAvatarUrlValidity() {
-    if (!this.avatarUrl) { return false }
+    if (!this.avatarUrl) {
+      return false;
+    }
     const response = await fetch(this.avatarUrl);
     return response.ok;
   }
@@ -35,7 +37,7 @@ class Avatar extends LitElement {
       return html`<div
         class="flex justify-center items-center w-14 h-14 bg-gradient-to-br from-purple-400 to-blue-500 rounded-full"
       >
-        <span class="text-white font-bold text-xl" role="img" alt=""
+        <span class="text-xl font-bold text-white" role="img" alt=""
           >${this.fallback}</span
         >
       </div>`;

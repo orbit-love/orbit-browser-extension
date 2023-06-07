@@ -85,7 +85,11 @@ const loadWorkspaces = async ({ accessToken, apiKey }) => {
       headers: headers,
     });
 
-    return { success: true, response: await response.json(), ok: response.ok };
+    return {
+      success: true,
+      response: await response.json(),
+      ok: response.ok,
+    };
   } catch (e) {
     return { success: false, response: e.message };
   }
@@ -189,7 +193,10 @@ const loadMemberData = async ({ username, platform }) => {
     // We cannot parse the JSON for some failed responses successfully, causing unexpected errors
     // .:., only parse JSON if response succeeds
     const payload = response.ok
-      ? { workspace: ORBIT_CREDENTIALS.WORKSPACE, ...(await response.json()) }
+      ? {
+          workspace: ORBIT_CREDENTIALS.WORKSPACE,
+          ...(await response.json()),
+        }
       : { workspace: ORBIT_CREDENTIALS.WORKSPACE };
 
     return {
@@ -350,7 +357,11 @@ const addMemberToWorkspace = async ({ username, platform }) => {
       body: JSON.stringify({ identity }),
     });
 
-    return { success: true, response: await response.json(), ok: response.ok };
+    return {
+      success: true,
+      response: await response.json(),
+      ok: response.ok,
+    };
   } catch (e) {
     return { success: false, response: e.message };
   }

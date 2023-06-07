@@ -140,7 +140,7 @@ describe("#addOrbitButton", () => {
   let page;
   beforeEach(() => {
     page = new Page();
-    jest.spyOn(page, "getPlatform").mockReturnValue('test');
+    jest.spyOn(page, "getPlatform").mockReturnValue("test");
   });
 
   it("adds button element if none exist", () => {
@@ -170,10 +170,8 @@ describe("#addOrbitButton", () => {
 
   it("uses button element name from page if it is defined in #getButtonElementName", () => {
     jest
-    .spyOn(page, "getButtonElementName")
-    .mockImplementation(() =>
-      'obe-test-profile-button'
-    );
+      .spyOn(page, "getButtonElementName")
+      .mockImplementation(() => "obe-test-profile-button");
 
     const widget = document.createElement("div");
     document.body.appendChild(widget);

@@ -47,7 +47,7 @@ describe("GmailEmailThreadPage", () => {
         "#category/promotions/FMfcgzGsmhcLDSfWfLpqHrmhvJWjnplW",
         "#label/My+Label/FMfcgxwLsSWMtGrdNwQgnSqZZLhGFbrT",
         "#search/my+search/FMfcgzGsmWtVBtqcfngzFbZVmWlgnVSG",
-        "#advanced-search/subset=all&has=my+search&within=1d&sizeoperator=s_sl&sizeunit=s_smb&query=my+search/FMfcgzGsmWtVBtqcfngzFbZVmWlgnVSG"
+        "#advanced-search/subset=all&has=my+search&within=1d&sizeoperator=s_sl&sizeunit=s_smb&query=my+search/FMfcgzGsmWtVBtqcfngzFbZVmWlgnVSG",
       ];
 
       for (const secondLevelEmailThreadPage of secondLevelEmailThreadPages) {
@@ -78,7 +78,7 @@ describe("GmailEmailThreadPage", () => {
         "#category/promotions",
         "#label/My+Label",
         "#search/my+search",
-        "#advanced-search/subset=all&has=my+search&within=1d&sizeoperator=s_sl&sizeunit=s_smb&query=my+search"
+        "#advanced-search/subset=all&has=my+search&within=1d&sizeoperator=s_sl&sizeunit=s_smb&query=my+search",
       ];
 
       for (const inboxPage of inboxPages) {

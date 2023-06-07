@@ -42,7 +42,7 @@ describe("LinkedinProfilePage", () => {
         pathname: "/in/nicolas-goutay-4b984258",
       };
 
-      expect(page.findUsername()).toBe('nicolas-goutay-4b984258');
+      expect(page.findUsername()).toBe("nicolas-goutay-4b984258");
     });
-  })
+  });
 });

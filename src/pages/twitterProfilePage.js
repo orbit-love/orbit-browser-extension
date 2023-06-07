@@ -1,7 +1,9 @@
 import Page from "./page";
 
 export default class TwitterProfilePage extends Page {
-  getPlatform() { return 'twitter' }
+  getPlatform() {
+    return "twitter";
+  }
 
   detect() {
     /**
@@ -40,8 +42,7 @@ export default class TwitterProfilePage extends Page {
       if (headerElement) {
         headerElement.setAttribute("style", "z-index: 1;");
 
-        const actionButtonsContainerElement =
-          headerElement.children[0];
+        const actionButtonsContainerElement = headerElement.children[0];
 
         if (actionButtonsContainerElement) {
           actionButtonsContainerElement.setAttribute("style", "z-index: 1;");
@@ -57,15 +58,17 @@ export default class TwitterProfilePage extends Page {
      */
     const headerProfilePhoto = main.querySelector('a[href$="/photo"]');
 
-    if (!headerProfilePhoto) { return }
+    if (!headerProfilePhoto) {
+      return;
+    }
 
-    return headerProfilePhoto.getAttribute('href').split('/')[1];
+    return headerProfilePhoto.getAttribute("href").split("/")[1];
   }
 
   findInsertionPoint(main) {
     return (
-      main.querySelector("div[data-testid='UserName']")?.parentElement?.children[0]?.children[1] ||
-      null
+      main.querySelector("div[data-testid='UserName']")?.parentElement
+        ?.children[0]?.children[1] || null
     );
   }
 }

@@ -1,12 +1,15 @@
 import Page from "./page";
 
 export default class GmailEmailThreadPage extends Page {
-  getPlatform() { return 'gmail' }
+  getPlatform() {
+    return "gmail";
+  }
 
   detect() {
     const topLevelPageRegex =
       /(#inbox|#starred|#snoozed|#sent|#scheduled|#drafts|#imp|#all|#spam|#trash)\/\w+/;
-    const secondLevelPageRegex = /(#category|#label|#search|#advanced-search)\/[^\/]+\/\w+/;
+    const secondLevelPageRegex =
+      /(#category|#label|#search|#advanced-search)\/[^\/]+\/\w+/;
 
     return (
       topLevelPageRegex.test(window.location.hash) ||
@@ -15,7 +18,9 @@ export default class GmailEmailThreadPage extends Page {
   }
 
   findWidgetZones() {
-    return window.document.querySelectorAll("[role='listitem'] [data-message-id]");
+    return window.document.querySelectorAll(
+      "[role='listitem'] [data-message-id]"
+    );
   }
 
   validateWidgetZone(_expandedEmail) {

@@ -38,7 +38,9 @@ describe("obe-avatar", () => {
 
     it("displays a fallback placeholder", async () => {
       const image = element.shadowRoot.querySelector("img");
-      const placeholder = element.shadowRoot.querySelector("div span[role='img']");
+      const placeholder = element.shadowRoot.querySelector(
+        "div span[role='img']"
+      );
       expect(image).toBeNull();
       expect(placeholder.innerHTML).toMatch("SR");
     });
