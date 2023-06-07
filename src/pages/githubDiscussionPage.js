@@ -1,7 +1,9 @@
 import Page from "./page";
 
 export default class GitHubDiscussionPage extends Page {
-  getPlatform() { return 'github' }
+  getPlatform() {
+    return "github";
+  }
 
   detect() {
     const pageRegex = /.*\/.*\/discussions?\/.*/;
@@ -30,5 +32,7 @@ export default class GitHubDiscussionPage extends Page {
     return comment.querySelector(".timeline-comment-actions").children[0];
   }
 
-  getButtonElementName() { return 'obe-github-discussion-button' }
+  getButtonElementName() {
+    return "obe-github-discussion-button";
+  }
 }

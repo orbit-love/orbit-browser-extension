@@ -7,7 +7,7 @@ import WidgetOrchestrator from "./widgetOrchestrator";
 import LinkedinProfilePage from "../pages/linkedinProfilePage";
 
 const initializeWidget = () => {
-  const pages = [ new LinkedinProfilePage() ];
+  const pages = [new LinkedinProfilePage()];
 
   const orchestrator = new WidgetOrchestrator();
 
@@ -15,21 +15,26 @@ const initializeWidget = () => {
   if (!page) return;
 
   orchestrator.addWidgetElements(page);
-}
+};
 
 async function setupObserver() {
-  const titleElement = await elementReady('head > title', { stopOnDomReady: false, timeout: 5000 });
+  const titleElement = await elementReady("head > title", {
+    stopOnDomReady: false,
+    timeout: 5000,
+  });
 
-  if (!titleElement) { return }
+  if (!titleElement) {
+    return;
+  }
 
   const observer = new MutationObserver((_mutationList, _observer) => {
     initializeWidget();
   });
-  
+
   observer.observe(titleElement, {
     subtree: true,
     childList: true,
-    characterData: true
+    characterData: true,
   });
 }
 

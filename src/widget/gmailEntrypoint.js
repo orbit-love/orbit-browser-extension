@@ -6,8 +6,7 @@ import WidgetOrchestrator from "./widgetOrchestrator";
 import GmailEmailThreadPage from "../pages/gmailEmailThreadPage";
 
 const initializeWidget = () => {
-
-  const pages = [ new GmailEmailThreadPage() ];
+  const pages = [new GmailEmailThreadPage()];
 
   const orchestrator = new WidgetOrchestrator();
 
@@ -17,9 +16,11 @@ const initializeWidget = () => {
   orchestrator.addWidgetElements(page);
 
   // Element id=:1 is the "thread view" on thread pages (and also the "inbox view" for inbox pages)
-  const threadElement = document.querySelector('#\\:1');
+  const threadElement = document.querySelector("#\\:1");
 
-  if (!threadElement) { return }
+  if (!threadElement) {
+    return;
+  }
 
   /**
    * GMail threads have two kinds of emails: "collapsed" and "expanded". We only want to show the widget on
@@ -31,15 +32,20 @@ const initializeWidget = () => {
    * on the email that the user clicked on.
    */
   const addEventListenersToCollapsedEmailElements = () => {
-    const collapsedEmailElements = threadElement.querySelectorAll("[role='listitem']:not([aria-expanded='true'])")
+    const collapsedEmailElements = threadElement.querySelectorAll(
+      "[role='listitem']:not([aria-expanded='true'])"
+    );
 
     for (const collapsedEmailElement of collapsedEmailElements) {
-      collapsedEmailElement.addEventListener('click', function handleClickOnCollapsedEmail() {
-        this.removeEventListener('click', handleClickOnCollapsedEmail)
-        orchestrator.addWidgetElements(page);
-      })
+      collapsedEmailElement.addEventListener(
+        "click",
+        function handleClickOnCollapsedEmail() {
+          this.removeEventListener("click", handleClickOnCollapsedEmail);
+          orchestrator.addWidgetElements(page);
+        }
+      );
     }
-  }
+  };
 
   addEventListenersToCollapsedEmailElements();
 
@@ -48,19 +54,28 @@ const initializeWidget = () => {
    * When clicking on the button, new collapsed emails are created in the DOM, and we can run the method described
    * above again.
    */
-  const expandThreadButtonElement = threadElement.querySelector("span[role='button'][aria-expanded='false']")
+  const expandThreadButtonElement = threadElement.querySelector(
+    "span[role='button'][aria-expanded='false']"
+  );
 
-  if (!expandThreadButtonElement) { return }
-  expandThreadButtonElement.addEventListener('click', function handleClickOnExpandThread() {
-    // Note: we need a short timeout here so that the collapsed emails are created in the DOM
-    setTimeout(addEventListenersToCollapsedEmailElements, 100);
-  });
-}
+  if (!expandThreadButtonElement) {
+    return;
+  }
+  expandThreadButtonElement.addEventListener(
+    "click",
+    function handleClickOnExpandThread() {
+      // Note: we need a short timeout here so that the collapsed emails are created in the DOM
+      setTimeout(addEventListenersToCollapsedEmailElements, 100);
+    }
+  );
+};
 
 // I could not find any event fired after the page has finished loading.
 // As a stopgap, we listen for DOMContentLoaded (fired when the loading screen appears)
 // and wait 2s more to be safe.
-document.addEventListener("DOMContentLoaded", () => setTimeout(initializeWidget, 2000));
+document.addEventListener("DOMContentLoaded", () =>
+  setTimeout(initializeWidget, 2000)
+);
 
 // Navigating around GMail changes the hash
-window.addEventListener('hashchange', initializeWidget);
+window.addEventListener("hashchange", initializeWidget);

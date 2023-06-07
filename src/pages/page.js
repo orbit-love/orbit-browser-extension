@@ -62,5 +62,7 @@ export default class Page {
    *
    * @returns {String}
    */
-  getButtonElementName() { return `obe-${this.getPlatform()}-button`; }
+  getButtonElementName() {
+    return `obe-${this.getPlatform()}-button`;
+  }
 }
