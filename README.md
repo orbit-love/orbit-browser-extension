@@ -42,7 +42,6 @@ On Google Chrome:
 7. Fill in the form with your API key and workspace name (the extension uses the prod API by default), and save;
 8. Go to a GitHub repository corresponding to your workspace settings, open an issue or a pull request and voilà!
 
-
 ## Development
 
 Run `yarn start` to watch the changes.
@@ -51,6 +50,35 @@ Run `yarn test` to start the test suite, or `yarn test:watch` to run them contin
 To reload the extension after some changes, open [`chrome://extensions`](chrome://extensions) and click on the “reload” button for the Orbit one.
 
 To use the local API instead of the prod one, change `ORBIT_ROOT_URL` in `orbit-helper.js` to your ngrok tunnel address.
+
+## Contributing
+
+Pull requests welcome!
+
+### Code overview
+
+There are two main views for this application:
+
+1. `src/options/`, which contains the markup & behaviour for the options page that shows when you visit chrome-extension://ibgahekkldapaohbpmpbckmeljidicmn/options.b25ed5a0.html
+2. `src/components/widget.js`, which is the actual popup that shows when you open the extension on a different page.
+
+If you are new to developing browser extensions you should also be aware of:
+
+1. `src/manifest.json`, which decides which scripts to run when - you'll need to refer to this if you intend to add support for a new site
+2. `src/background.js`, which manages requests to the Orbit API in a separate thread. Search for `chrome.runtime.sendMessage` for examples of how we use this
+
+## The Code Flow
+
+Each supported website has an associated entrypoint, for example `src/widget/githubEntrypoint.js`. The function of this entrypoint is to decide _when_ to try loading the widget. For example, for GitHub we can just watch for `DOMContentLoaded` & `turbo:render` events, but some sites (see gmail) require more complicated logic.
+
+The entrypoint will also initialise an array of `Page`s on which it is able to load the widget. See `src/pages/githubDiscussionPage.js` for an example. These are responsible for page-specific logic, such as seeing if we are _on_ this page (`#detect()`) or deciding where to insert the widget (`#findInsertionPoiint()`). The superclass `src/pages/page.js` provides more context about these functions.
+
+The final job of the entrypoint is to boot up the `src/widget/widgetOrchestrator.js`. This will use the pages to:
+
+1. Verify if the widget can load on the current page
+2. Insert a button, widget, and slot for additional data on each of the sites where we can inject a widget
+
+The widget element is where most of the remaining logic occurs: `src/components/widget.js`. This is largely concerned with consuming the Orbit API and rendering various states for the widget accordingly.
 
 ## Deployment
 
