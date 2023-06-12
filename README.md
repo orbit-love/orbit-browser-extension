@@ -55,6 +55,10 @@ To use the local API instead of the prod one, change `ORBIT_ROOT_URL` in `orbit-
 
 Pull requests welcome!
 
+### Accessibility
+
+### Issue templates, PR templates
+
 ### Code overview
 
 There are two main views for this application:
