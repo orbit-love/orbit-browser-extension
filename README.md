@@ -53,36 +53,71 @@ To use the local API instead of the prod one, change `ORBIT_ROOT_URL` in `orbit-
 
 ## Contributing
 
-Pull requests welcome!
+Pull requests & issues welcome!
 
 ### Accessibility
 
-### Issue templates, PR templates
+Accessibility is a fundamental part of web design, and something we consider critical to the further development of this extension. Future contirbutions should aim to meet [WCAG2.1 AA](https://www.w3.org/TR/WCAG21/) - if you notice any areas where we're failing, please raise them as issues or submit PRs to address them.
+
+Common issues to check:
+
+1. Verify all functionality is usable with keyboard-only control
+2. Open your screenreader (VoiceOver is built-in for macOS, or Narrator in windows) & confirm navigating across the widget provides clear, contextual, and useful information akin to what is shown visually.
+3. Confirm colours satisfy contrast requirmeents using a tool such as [colourcontrast.cc](https://colourcontrast.cc/)
 
 ### Code overview
 
-There are two main views for this application:
+The extension's functionality mainly relies on two views:
 
-1. `src/options/`, which contains the markup & behaviour for the options page that shows when you visit chrome-extension://ibgahekkldapaohbpmpbckmeljidicmn/options.b25ed5a0.html
-2. `src/components/widget.js`, which is the actual popup that shows when you open the extension on a different page.
+1. **Options View** - Located in the `src/options/` directory. This view displays the page users see when they access the extension's options using the specified chrome-extension URL. Here, you'll find both the markup and behavior logic for the options page.
 
-If you are new to developing browser extensions you should also be aware of:
+2. **Widget View** - Found in `src/components/widget.js`, this view represents the popup that appears when users open the extension on a supported page they're browsing.
 
-1. `src/manifest.json`, which decides which scripts to run when - you'll need to refer to this if you intend to add support for a new site
-2. `src/background.js`, which manages requests to the Orbit API in a separate thread. Search for `chrome.runtime.sendMessage` for examples of how we use this
+If you're new to developing browser extensions, there are a couple of crucial parts you need to be aware of:
+
+1. **Manifest File** - Located at `src/manifest.json`. This file instructs the browser when to run which scripts (for example, "on a page that matches a GitHub pull request, run the github entrypoint"). If you plan to extend our extension's capabilities to new sites, you'll have to update this file accordingly.
+
+2. **Background Runner** - The `src/background.js` file handles requests to the Orbit API in a separate thread, ensuring smooth performance. Look for instances of `chrome.runtime.sendMessage` to see examples of how this communication is performed.
 
 ## The Code Flow
 
-Each supported website has an associated entrypoint, for example `src/widget/githubEntrypoint.js`. The function of this entrypoint is to decide _when_ to try loading the widget. For example, for GitHub we can just watch for `DOMContentLoaded` & `turbo:render` events, but some sites (see gmail) require more complicated logic.
+There exists a dedicated entrypoint for each supported site, like `src/widget/githubEntrypoint.js`. This script is responsible for determining the right moment to attempt loading the widget.
 
-The entrypoint will also initialise an array of `Page`s on which it is able to load the widget. See `src/pages/githubDiscussionPage.js` for an example. These are responsible for page-specific logic, such as seeing if we are _on_ this page (`#detect()`) or deciding where to insert the widget (`#findInsertionPoiint()`). The superclass `src/pages/page.js` provides more context about these functions.
+During initialization, the entrypoint script also sets up an array of `Page` objects. Each `Page` represents a specific type of page on the website where our widget can load. They handle all the site-specific logic. For instance, to confirm we're on a particular type of page, a `Page` object would use the `#detect()` method. Or, to figure out where to place our widget, it would use `#findInsertionPoint()`. You can get more insights into these functions in the superclass at `src/pages/page.js`.
 
-The final job of the entrypoint is to boot up the `src/widget/widgetOrchestrator.js`. This will use the pages to:
+The entry point's final task is to kickstart the `src/widget/widgetOrchestrator.js`. This script checks if our widget can load on the current page and inserts a button, the widget, and a slot for additional data in appropriate zones on the supported sites.
 
-1. Verify if the widget can load on the current page
-2. Insert a button, widget, and slot for additional data on each of the sites where we can inject a widget
+Lastly, most of the remaining logic takes place in `src/components/widget.js`, which handles interactions with the Orbit API and manages the widget's various display states.
 
-The widget element is where most of the remaining logic occurs: `src/components/widget.js`. This is largely concerned with consuming the Orbit API and rendering various states for the widget accordingly.
+## Adding Support for a New Site
+
+**For an example of this process being followed: https://github.com/orbit-love/orbit-browser-extension/pull/45**
+
+To add support for a new site to the extension:
+
+1. Create a New Entrypoint
+
+Start by creating a new entry point file, similar to src/widget/githubEntrypoint.js. This will require understanding when to load the widget for this specific site. Broadly speaking, `DOMContentLoaded` is a good place to start. However different sites have different requirements, so it will require some investigation to identify the appropriate events to observe for the page load lifecycle.
+
+In creating this, you'll reach a point where you need to define the pages to pass to the widget orchestrator. So...
+
+2. Create a New Page Class
+
+Create a new Page class for the new site by extending `src/pages/page.js`. This class will handles page-specific logic - see the comments in the superclass for details on the functions to implement, and take inspiration from the existing types of page.
+
+3. Create a Page-Specific Button
+
+This is a custom element that needs to match the styling of the new site. This will be the button that users click to open the widget. By default the widget should be named `obe-#{platform}-button` where platform is an identifier for the new site (ie "github"), but you can customise this by overriding the getButtonElementName function in your page.
+
+4. Modify the Manifest.json File
+
+Update src/manifest.json to specify on which URLs the new entry point script should run. Be sure to follow the correct JSON syntax and the Google Chrome extension manifest version specifications.
+
+5. (Optional) Supply AdditionalData in Widget
+
+The widget contains a slot called additionalData, which you can update with site-specific content. For example, on Github we show the number of github contributions the member has made.This may require some more involved engineering to make work, including adding new requests to the background runner.
+
+Remember to conduct thorough testing to ensure the new site is supported correctly and that existing functionality is not compromised. Implement automated tests, if possible, to prevent future regressions.
 
 ## Deployment
 
