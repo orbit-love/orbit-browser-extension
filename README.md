@@ -81,6 +81,8 @@ If you're new to developing browser extensions, there are a couple of crucial pa
 
 ## The Code Flow
 
+![image](https://github.com/orbit-love/orbit-browser-extension/assets/45462299/5adce40c-7e09-4f7c-ac20-474c9f6cefc1)
+
 There exists a dedicated entrypoint for each supported site, like `src/widget/githubEntrypoint.js`. This script is responsible for determining the right moment to attempt loading the widget: on page load, after a specific element is visible on screen, after a navigation event - this varies depending on a site-by-site basis.
 
 During initialization, the entrypoint script also sets up an array of `Page` objects. Each `Page` represents a specific type of page on the website where our widget can load (e.g. a GitHub Issue, a GitHub Discussion). They handle all the site-specific logic. For instance, to confirm we're on a particular type of page, a `Page` object would use the `#detect()` method. Or, to figure out where to place our widget, it would use `#findInsertionPoint()`. You can get more insights into these functions in the superclass at `src/pages/page.js`.
