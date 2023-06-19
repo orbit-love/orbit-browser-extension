@@ -39,8 +39,9 @@ On Google Chrome:
 4. Select the `orbit-browser-extension/dist` folder;
 5. An Orbit logo should appear in the top-right corner of Chrome indicating that the extension is active;
 6. Right-click on this logo, then click on Options;
-7. Fill in the form with your API key and workspace name (the extension uses the prod API by default), and save;
-8. Go to a GitHub repository corresponding to your workspace settings, open an issue or a pull request and voilà!
+7. Sign in with your Orbit account and select a workspace;
+8. Go to any GitHub issue/PR/Discussion, LinkedIn profile, Twitter profile, or Gmail email;
+9. You should see the Orbit widget: you’re all set!
 
 ## Development
 
