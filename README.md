@@ -81,7 +81,7 @@ If you're new to developing browser extensions, there are a couple of crucial pa
 
 ## The Code Flow
 
-![image](https://github.com/orbit-love/orbit-browser-extension/assets/45462299/5adce40c-7e09-4f7c-ac20-474c9f6cefc1)
+![](https://github.com/orbit-love/orbit-browser-extension/assets/45462299/5adce40c-7e09-4f7c-ac20-474c9f6cefc1)
 
 There exists a dedicated entrypoint for each supported site, like `src/widget/githubEntrypoint.js`. This script is responsible for determining the right moment to attempt loading the widget: on page load, after a specific element is visible on screen, after a navigation event - this varies depending on a site-by-site basis.
 
