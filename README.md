@@ -64,7 +64,7 @@ Common issues to check:
 
 1. Verify all functionality is usable with keyboard-only control
 2. Open your screenreader ([VoiceOver](https://support.apple.com/en-gb/guide/voiceover/vo2682/mac) is built-in for macOS, or [Narrator](https://support.microsoft.com/en-us/windows/chapter-1-introducing-narrator-7fe8fd72-541f-4536-7658-bfc37ddaf9c6#ID0EDDBBDBD) in Windows) and confirm navigating across the widget provides clear, contextual, and useful information akin to what is shown visually.
-3. Confirm colours satisfy contrast requirmeents using a tool such as [colourcontrast.cc](https://colourcontrast.cc/)
+3. Confirm colours satisfy contrast requirements using a tool such as [colourcontrast.cc](https://colourcontrast.cc/)
 
 ### Code overview
 
